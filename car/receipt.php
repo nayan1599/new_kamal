@@ -1,6 +1,8 @@
 <?php 
-session_start();
+//  phplibary/libary.php
 
+include './phplibary/libary.php';
+  
 // ---------- সার্চ + রেকর্ড খোঁজা ----------
 // GET id দিয়ে অথবা সার্চ বক্স থেকে invoice_no / phone দিয়ে খোঁজা যাবে
 $id      = trim($_GET['id'] ?? '');
@@ -33,218 +35,304 @@ if ($search !== '') {
 $total = $record['total_price']  ?? 0;
 $paid  = $record['paid_amount']  ?? 0;
 $due   = $record['due_amount']   ?? 0;
+
+
 ?>
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ইনভয়েস <?= $record ? '#' . htmlspecialchars($record['invoice_no'] ?? '') : 'সার্চ' ?></title>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    :root{
-        --primary:#1e3a8a;
-        --primary-light:#2563eb;
-        --accent:#0ea5e9;
-        --success:#16a34a;
-        --danger:#dc2626;
-        --bg:#f1f5f9;
-        --card-bg:#ffffff;
-        --border:#e2e8f0;
-        --text:#1e293b;
-        --muted:#64748b;
-    }
-    *{box-sizing:border-box;}
- 
-    .wrap{max-width:900px;margin:0 auto;}
+:root {
+    --primary: #1e3a8a;
+    --primary-light: #2563eb;
+    --accent: #0ea5e9;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --bg: #f1f5f9;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+}
 
-    /* ---------- সার্চ বার ---------- */
-    .search-box{
-        background:var(--card-bg);
-        border:1px solid var(--border);
-        border-radius:14px;
-        padding:18px 20px;
-        margin-bottom:22px;
-        box-shadow:0 1px 3px rgba(0,0,0,0.06);
-        display:flex;
-        gap:10px;
-        flex-wrap:wrap;
-    }
-    .search-box input[type=text]{
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border:1px solid var(--border);
-        border-radius:10px;
-        font-family:inherit;
-        font-size:15px;
-        outline:none;
-        transition:border-color .15s;
-    }
-    .search-box input[type=text]:focus{border-color:var(--primary-light);}
-    .search-box button{
-        background:var(--primary);
-        color:#fff;
-        border:none;
-        padding:12px 24px;
-        border-radius:10px;
-        font-family:inherit;
-        font-size:15px;
-        font-weight:600;
-        cursor:pointer;
-        transition:background .15s;
-    }
-    .search-box button:hover{background:var(--primary-light);}
+* {
+    box-sizing: border-box;
+}
 
-    .alert{
-        background:#fef2f2;
-        border:1px solid #fecaca;
-        color:var(--danger);
-        padding:14px 18px;
-        border-radius:10px;
-        text-align:center;
-        font-weight:600;
-        margin-bottom:20px;
+.wrap {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ---------- সার্চ বার ---------- */
+.search-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search-box input[type=text] {
+    flex: 1;
+    min-width: 220px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .15s;
+}
+
+.search-box input[type=text]:focus {
+    border-color: var(--primary-light);
+}
+
+.search-box button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.search-box button:hover {
+    background: var(--primary-light);
+}
+
+.alert {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: var(--danger);
+    padding: 14px 18px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* ---------- সামারি কার্ড ---------- */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    text-align: center;
+    border-top: 4px solid var(--primary-light);
+    transition: transform .15s;
+}
+
+.card.total {
+    border-top-color: var(--primary-light);
+}
+
+.card.paid {
+    border-top-color: var(--success);
+}
+
+.card.due {
+    border-top-color: var(--danger);
+}
+
+.card .label {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: .3px;
+}
+
+.card .value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.card.total .value {
+    color: var(--primary);
+}
+
+.card.paid .value {
+    color: var(--success);
+}
+
+.card.due .value {
+    color: var(--danger);
+}
+
+/* ---------- রিসিপ্ট ---------- */
+.receipt {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.receipt-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 32px 30px 26px;
+    text-align: center;
+}
+
+.receipt-header .title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+}
+
+.receipt-header .meta {
+    display: flex;
+    justify-content: center;
+    gap: 26px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    opacity: .95;
+}
+
+.receipt-body {
+    padding: 26px 30px 10px;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 22px 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 6px;
+}
+
+th,
+td {
+    padding: 11px 14px;
+    font-size: 14.5px;
+}
+
+th {
+    width: 38%;
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-right: none;
+}
+
+td {
+    border: 1px solid var(--border);
+    border-left: none;
+}
+
+.amount-table td {
+    text-align: right;
+    font-weight: 700;
+}
+
+.amount-table .due-row td {
+    color: var(--danger);
+    font-size: 16px;
+}
+
+.amount-table .paid-row td {
+    color: var(--success);
+}
+
+.footer {
+    text-align: center;
+    padding: 22px 20px 30px;
+    font-size: 13.5px;
+    color: var(--muted);
+    border-top: 1px dashed var(--border);
+    margin-top: 10px;
+}
+
+.footer strong {
+    color: var(--text);
+}
+
+.print-btn {
+    display: block;
+    margin: 20px auto 0;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.print-btn:hover {
+    opacity: .9;
+}
+
+@media(max-width:640px) {
+    .cards {
+        grid-template-columns: 1fr;
     }
 
-    /* ---------- সামারি কার্ড ---------- */
-    .cards{
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:14px;
-        margin-bottom:24px;
+    th {
+        width: 45%;
     }
-    .card{
-        background:var(--card-bg);
-        border:1px solid var(--border);
-        border-radius:14px;
-        padding:18px;
-        box-shadow:0 1px 3px rgba(0,0,0,0.06);
-        text-align:center;
-        border-top:4px solid var(--primary-light);
-        transition:transform .15s;
-    }
-    .card.total{border-top-color:var(--primary-light);}
-    .card.paid{border-top-color:var(--success);}
-    .card.due{border-top-color:var(--danger);}
-    .card .label{
-        font-size:13px;
-        color:var(--muted);
-        font-weight:600;
-        margin-bottom:8px;
-        letter-spacing:.3px;
-    }
-    .card .value{
-        font-size:24px;
-        font-weight:700;
-    }
-    .card.total .value{color:var(--primary);}
-    .card.paid .value{color:var(--success);}
-    .card.due .value{color:var(--danger);}
+}
 
-    /* ---------- রিসিপ্ট ---------- */
-    .receipt{
-        background:var(--card-bg);
-        border:1px solid var(--border);
-        border-radius:16px;
-        overflow:hidden;
-        box-shadow:0 4px 14px rgba(0,0,0,0.08);
+@media print {
+    body {
+        background: #fff;
+        padding: 0;
     }
-    .receipt-header{
-        background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);
-        color:#fff;
-        padding:32px 30px 26px;
-        text-align:center;
-    }
-    .receipt-header .title{
-        font-size:26px;
-        font-weight:700;
-        letter-spacing:1px;
-        margin:0 0 12px;
-    }
-    .receipt-header .meta{
-        display:flex;
-        justify-content:center;
-        gap:26px;
-        flex-wrap:wrap;
-        font-size:14px;
-        opacity:.95;
-    }
-    .receipt-body{padding:26px 30px 10px;}
-    .section-title{
-        font-size:15px;
-        font-weight:700;
-        color:var(--primary);
-        margin:22px 0 10px;
-        padding-bottom:8px;
-        border-bottom:2px solid var(--border);
-    }
-    table{width:100%;border-collapse:collapse;margin-bottom:6px;}
-    th,td{padding:11px 14px;font-size:14.5px;}
-    th{
-        width:38%;
-        text-align:left;
-        color:var(--muted);
-        font-weight:600;
-        background:#f8fafc;
-        border:1px solid var(--border);
-        border-right:none;
-    }
-    td{
-        border:1px solid var(--border);
-        border-left:none;
-    }
-    .amount-table td{text-align:right;font-weight:700;}
-    .amount-table .due-row td{color:var(--danger);font-size:16px;}
-    .amount-table .paid-row td{color:var(--success);}
 
-    .footer{
-        text-align:center;
-        padding:22px 20px 30px;
-        font-size:13.5px;
-        color:var(--muted);
-        border-top:1px dashed var(--border);
-        margin-top:10px;
+    .search-box,
+    .print-btn {
+        display: none;
     }
-    .footer strong{color:var(--text);}
 
-    .print-btn{
-        display:block;
-        margin:20px auto 0;
-        background:var(--accent);
-        color:#fff;
-        border:none;
-        padding:12px 28px;
-        border-radius:10px;
-        font-family:inherit;
-        font-size:15px;
-        font-weight:600;
-        cursor:pointer;
+    .receipt {
+        box-shadow: none;
+        border: 1px solid #000;
     }
-    .print-btn:hover{opacity:.9;}
-
-    @media(max-width:640px){
-        .cards{grid-template-columns:1fr;}
-        th{width:45%;}
-    }
-    @media print{
-        body{background:#fff;padding:0;}
-        .search-box,.print-btn{display:none;}
-        .receipt{box-shadow:none;border:1px solid #000;}
-    }
+}
 </style>
-</head>
-<body>
+
+
+
 <div class="wrap">
 
     <!-- সার্চ বার -->
     <form class="search-box" method="GET">
-        <input type="text" name="search" placeholder="ইনভয়েস নং অথবা ফোন নম্বর দিয়ে সার্চ করুন..." value="<?= htmlspecialchars($search) ?>">
+        <input type="text" name="search" placeholder="ইনভয়েস নং অথবা ফোন নম্বর দিয়ে সার্চ করুন..."
+            value="<?= htmlspecialchars($search) ?>">
         <button type="submit">সার্চ করুন</button>
     </form>
 
     <?php if ($error): ?>
-        <div class="alert"><?= htmlspecialchars($error) ?></div>
+    <div class="alert"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <?php if ($record): ?>
@@ -277,34 +365,86 @@ $due   = $record['due_amount']   ?? 0;
         <div class="receipt-body">
             <div class="section-title">কাস্টমারের তথ্য</div>
             <table>
-                <tr><th>কাস্টমারের নাম</th><td><?= htmlspecialchars($record['customer_name'] ?? '') ?></td></tr>
-                <tr><th>ফোন নম্বর</th><td><?= htmlspecialchars($record['customer_phone'] ?? '') ?></td></tr>
-                <tr><th>এনআইডি নম্বর</th><td><?= htmlspecialchars($record['nid'] ?? '') ?></td></tr>
-                <tr><th>ঠিকানা</th><td><?= htmlspecialchars($record['address'] ?? '') ?></td></tr>
+                <tr>
+                    <th>কাস্টমারের নাম</th>
+                    <td><?= bn_number(htmlspecialchars($record['customer_name'] ?? '')) ?></td>
+                </tr>
+                <tr>
+                    <th>ফোন নম্বর</th>
+                    <td><?= bn_number(htmlspecialchars($record['customer_phone'] ?? '')) ?></td>
+                </tr>
+                <tr>
+                    <th>এনআইডি নম্বর</th>
+                    <td><?= bn_number(htmlspecialchars($record['nid'] ?? '')) ?></td>
+                </tr>
+                <tr>
+                    <th>ঠিকানা</th>
+                    <td><?= bn_number(htmlspecialchars($record['address'] ?? '')) ?></td>
+                </tr>
             </table>
 
             <div class="section-title">গাড়ির তথ্য</div>
             <table>
-                <tr><th>গাড়ির নাম/মডেল</th><td><?= htmlspecialchars($record['car_name'] ?? '') ?> (<?= htmlspecialchars($record['car_model'] ?? '') ?>)</td></tr>
-                <tr><th>গাড়ির নম্বর</th><td><?= htmlspecialchars($record['car_number'] ?? '') ?></td></tr>
-                <tr><th>সাল</th><td><?= htmlspecialchars($record['car_year'] ?? '') ?></td></tr>
+                <tr>
+                    <th>গাড়ির নাম/মডেল</th>
+                    <td><?= htmlspecialchars($record['car_name'] ?? '') ?>
+                        (<?= htmlspecialchars($record['car_model'] ?? '') ?>)</td>
+                </tr>
+                <tr>
+                    <th>গাড়ির নম্বর</th>
+                    <td><?= htmlspecialchars($record['car_number'] ?? '') ?></td>
+                </tr>
+                <tr>
+                    <th>সাল</th>
+                    <td><?= htmlspecialchars($record['car_year'] ?? '') ?></td>
+                </tr>
             </table>
 
             <div class="section-title">পেমেন্ট তথ্য</div>
             <table class="amount-table">
-                <tr><th>ধরন</th><td style="text-align:left;font-weight:600;"><?= strtoupper(htmlspecialchars($record['type'] ?? '')) ?></td></tr>
-                <tr><th>মোট টাকা</th><td>৳ <?= number_format($total, 2) ?></td></tr>
-                <tr class="paid-row"><th>পেইড অ্যামাউন্ট</th><td>৳ <?= number_format($paid, 2) ?></td></tr>
-                <tr class="due-row"><th>বাকি টাকা</th><td>৳ <?= number_format($due, 2) ?></td></tr>
+                <tr>
+                    <th>ধরন</th>
+                    <td>
+                        <?= ($record['type'] === 'installment') 
+    ? 'কিস্তি' 
+    : strtoupper(htmlspecialchars($record['type'] ?? '')) ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>মোট টাকা</th>
+                    <td>৳ <?= bn_number(number_format($total, 2)) ?></td>
+                </tr>
+                <tr class="paid-row">
+                    <th>পেইড অ্যামাউন্ট</th>
+                    <td>৳ <?= bn_number(number_format($paid, 2)) ?></td>
+                </tr>
+                <tr class="due-row">
+                    <th>বাকি টাকা</th>
+                    <td>৳ <?= bn_number(number_format($due, 2)) ?></td>
+                </tr>
             </table>
 
             <?php if (($record['type'] ?? '') == 'installment'): ?>
             <div class="section-title">কিস্তি তথ্য</div>
             <table>
-                <tr><th>মোট কিস্তি</th><td><?= (int)($record['total_kisti'] ?? 0) ?> মাস</td></tr>
-                <tr><th>মাসিক কিস্তি</th><td>৳ <?= number_format($record['monthly_kisti'] ?? 0, 2) ?></td></tr>
-                <tr><th>কিস্তি শুরুর তারিখ</th><td><?= !empty($record['kisti_start_date']) ? date('d-m-Y', strtotime($record['kisti_start_date'])) : 'N/A' ?></td></tr>
-                <tr><th>পরবর্তী কিস্তির তারিখ</th><td><?= !empty($record['next_due_date']) ? date('d-m-Y', strtotime($record['next_due_date'])) : 'N/A' ?></td></tr>
+                <tr>
+                    <th>মোট কিস্তি</th>
+                    <td><?= bn_number((int)($record['total_kisti'] ?? 0)) ?> মাস</td>
+                </tr>
+                <tr>
+                    <th>মাসিক কিস্তি</th>
+                    <td>৳ <?= bn_number(number_format($record['monthly_kisti'] ?? 0, 2)) ?></td>
+                </tr>
+                <tr>
+                    <th>কিস্তি শুরুর তারিখ</th>
+                    <td><?= bn_number(!empty($record['kisti_start_date']) ? date('d-m-Y', strtotime($record['kisti_start_date'])) : 'N/A') ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>পরবর্তী কিস্তির তারিখ</th>
+                    <td><?= bn_number(!empty($record['next_due_date']) ? date('d-m-Y', strtotime($record['next_due_date'])) : 'N/A') ?>
+                    </td>
+                </tr>
             </table>
             <?php endif; ?>
 
@@ -323,11 +463,12 @@ $due   = $record['due_amount']   ?? 0;
     <button class="print-btn" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
 
     <?php elseif (!$error): ?>
-        <div class="alert" style="background:#eff6ff;border-color:#bfdbfe;color:var(--primary);">
-            উপরে ইনভয়েস নং বা ফোন নম্বর লিখে সার্চ করুন।
-        </div>
+    <div class="alert" style="background:#eff6ff;border-color:#bfdbfe;color:var(--primary);">
+        উপরে ইনভয়েস নং বা ফোন নম্বর লিখে সার্চ করুন।
+    </div>
     <?php endif; ?>
 
 </div>
 </body>
+
 </html>

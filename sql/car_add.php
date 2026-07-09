@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             $_SESSION['success'] = "✅ নতুন রেকর্ড সফলভাবে সংরক্ষিত হয়েছে! ইনভয়েস নং: " . $invoice_no;
-            header("Location: car/index");
+            header("Location:index.php?page=car/index");
             exit();
 
         } catch(PDOException $e) {

@@ -1,5 +1,5 @@
 <?php
- 
+ include './phplibary/libary.php';
  
 // সব রেকর্ড
 $stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC LIMIT 100");
@@ -8,7 +8,7 @@ $records = $stmt->fetchAll();
 ?>
 
 <div class="container-fluid px-3 px-lg-4 py-4">
-    
+
     <!-- Page Heading -->
     <div class="page-heading">
         <div class="page-heading-copy">
@@ -20,15 +20,15 @@ $records = $stmt->fetchAll();
             </div>
         </div>
 
-<!-- report button  --> 
-<a href="index.php?page=car/report" class="btn btn-primary">
-    <i class="bi bi-file-earmark-text"></i> রিপোর্ট
-</a>
-        <a href="index.php?page=car/add" class="btn btn-success"> <i class="bi bi-plus-circle"></i> নতুন এন্ট্রি  </a>
+        <!-- report button  -->
+        <a href="index.php?page=car/report" class="btn btn-primary">
+            <i class="bi bi-file-earmark-text"></i> রিপোর্ট
+        </a>
+        <a href="index.php?page=car/add" class="btn btn-success"> <i class="bi bi-plus-circle"></i> নতুন এন্ট্রি </a>
     </div>
 
 
- 
+
     <!-- সব রেকর্ড -->
     <section class="panel">
         <div class="panel-header">
@@ -38,14 +38,11 @@ $records = $stmt->fetchAll();
                     <span>সকল রেকর্ড</span>
                 </h2>
             </div>
-            
+
             <div class="d-flex align-items-center gap-2">
-                
-                <input class="form-control form-control-sm table-search" 
-                       type="search" 
-                       id="searchInput"
-                       placeholder="🔍 নাম, ফোন বা গাড়ির নম্বর সার্চ করুন..." 
-                       aria-label="Search">
+
+                <input class="form-control form-control-sm table-search" type="search" id="searchInput"
+                    placeholder="🔍 নাম, ফোন বা গাড়ির নম্বর সার্চ করুন..." aria-label="Search">
             </div>
         </div>
 
@@ -54,7 +51,6 @@ $records = $stmt->fetchAll();
                 <thead>
                     <tr>
                         <th>তারিখ</th>
-                        <th>ইনভয়েস</th>
                         <th>কাস্টমার</th>
                         <th>ফোন</th>
                         <th>গাড়ি</th>
@@ -66,41 +62,41 @@ $records = $stmt->fetchAll();
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach($records as $row): ?>
-                <tr>
-                    <td><?= date('d-m-Y', strtotime($row['created_at'])) ?></td>
-                    <td class="fw-semibold"><?= $row['invoice_no'] ?? 'N/A' ?></td>
-                    <td><?= htmlspecialchars($row['customer_name']) ?></td>
-                    <td><?= htmlspecialchars($row['customer_phone']) ?></td>
-                    <td><?= htmlspecialchars($row['car_name'] ?? '-') ?></td>
-                    
-                    <td class="text-end text-primary fw-semibold">
-                        ৳ <?= number_format($row['total_price'] ?? 0, 2) ?>
-                    </td>
-                    <td class="text-end text-success fw-semibold">
-                        ৳ <?= number_format($row['paid_amount'] ?? 0, 2) ?>
-                    </td>
-                    <td class="text-end text-danger fw-semibold">
-                        ৳ <?= number_format($row['due_amount'] ?? 0, 2) ?>
-                    </td>
+                    <?php foreach($records as $row): ?>
+                    <tr>
+                        <td><?= bn_number (date('d-m-Y', strtotime($row['kisti_start_date']))) ?></td>
 
-                    <td>
-                        <span class="badge bg-<?= ($row['status'] ?? '') == 'completed' ? 'success' : 'warning' ?>">
-                            <?= strtoupper($row['status'] ?? 'Pending') ?>
-                        </span>
-                    </td>
+                        <td><?= htmlspecialchars($row['customer_name']) ?></td>
+                        <td><?= bn_number(htmlspecialchars($row['customer_phone'])) ?></td>
+                        <td><?= htmlspecialchars($row['car_number'] ?? '-') ?></td>
 
-                    <td class="text-end">
-                        <a href="index.php?page=car/view&car_number=<?= urlencode($row['car_number'] ?? '') ?>" 
-                           class="btn btn-info btn-sm text-white">View</a>
-                        <a href="index.php?page=car/edit&id=<?= $row['id'] ?>" 
-                           class="btn btn-warning btn-sm">Edit</a>
+                        <td class="text-end text-primary fw-semibold">
+                            ৳ <?= bn_number(number_format($row['total_price'] ?? 0, 2)) ?>
+                        </td>
+                        <td class="text-end text-success fw-semibold">
+                            ৳ <?= bn_number(number_format($row['paid_amount'] ?? 0, 2)) ?>
+                        </td>
+                        <td class="text-end text-danger fw-semibold">
+                            ৳ <?= bn_number(number_format($row['due_amount'] ?? 0, 2)) ?>
+                        </td>
 
-                               <a href="index.php?page=car/receipt&id=<?= $row['id'] ?>" 
-                           class="btn btn-warning btn-sm">রসিদ</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                        <td>
+                            <span class="badge bg-<?= ($row['status'] ?? '') == 'completed' ? 'success' : 'warning' ?>">
+                                <?= strtoupper($row['status'] ?? 'Pending') ?>
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+                            <a href="index.php?page=car/view&car_number=<?= urlencode($row['car_number'] ?? '') ?>"
+                                class="btn btn-info btn-sm text-white">View</a>
+                            <a href="index.php?page=car/edit&id=<?= $row['id'] ?>"
+                                class="btn btn-warning btn-sm">Edit</a>
+
+                            <a href="index.php?page=car/receipt&id=<?= $row['id'] ?>"
+                                class="btn btn-warning btn-sm">রসিদ</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
