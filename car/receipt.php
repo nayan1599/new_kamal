@@ -1,7 +1,7 @@
 <?php 
 //  phplibary/libary.php
 
-include './phplibary/libary.php';
+ 
   
 // ---------- সার্চ + রেকর্ড খোঁজা ----------
 // GET id দিয়ে অথবা সার্চ বক্স থেকে invoice_no / phone দিয়ে খোঁজা যাবে

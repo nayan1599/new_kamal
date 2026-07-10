@@ -1,11 +1,8 @@
-<?php
- 
- 
-// সব রেকর্ড
-$stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC LIMIT 100");
-$records = $stmt->fetchAll();
- 
+<?php 
+$stmt = $pdo->query("SELECT * FROM rents ORDER BY created_at DESC LIMIT 100");
+$rents = $stmt->fetchAll();
 ?>
+
 
 <div class="container-fluid px-3 px-lg-4 py-4">
 
@@ -15,14 +12,14 @@ $records = $stmt->fetchAll();
             <span class="page-icon"><i class="bi bi-car-front"></i></span>
             <div>
                 <p class="eyebrow mb-1">রেকর্ডস</p>
-                <h1 class="h3 mb-1">কাস্টমার রেকর্ডস</h1>
-                <p class="text-muted mb-0">সকল লেনদেন ও কাস্টমার তথ্য</p>
+                <h1 class="h3 mb-1">গাড়ি ভারা লিস্ট </h1>
+                <p class="text-muted mb-0">সকল গাড়ি ভারা লিস্ট </p>
             </div>
         </div>
 
         <!-- report button  -->
         
-        <a href="index.php?page=car/add" class="btn btn-success"> <i class="bi bi-plus-circle"></i> নতুন এন্ট্রি </a>
+        <a href="index.php?page=rent/collection" class="btn btn-success"> <i class="bi bi-plus-circle"></i> নতুন এন্ট্রি </a>
     </div>
 
 
@@ -45,7 +42,7 @@ $records = $stmt->fetchAll();
         </div>
 
         <div class="table-responsive">
-            <table class="table align-middle mb-0" id="dataTable">
+            <table class="table align-middle mb-0 border" id="dataTable">
                 <thead>
                     <tr>
                         <th>তারিখ</th>
@@ -53,49 +50,29 @@ $records = $stmt->fetchAll();
                         <th>ফোন</th>
                         <th>গাড়ি</th>
                         <th class="text-end">মোট টাকা</th>
-                        <th class="text-end">পেইড</th>
-                        <th class="text-end">বাকি</th>
-                        <th>স্ট্যাটাস</th>
-                        <th class="text-end">অ্যাকশন</th>
+                        <th class="text-center">নোট</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($records as $row): ?>
+                    <?php foreach($rents as $row): ?>
                     <tr>
-                        <td><?= bn_number (date('d-m-Y', strtotime($row['kisti_start_date']))) ?></td>
-
+                        <td><?= bn_number (date('d-m-Y', strtotime($row['rent_date']))) ?></td>
                         <td><?= htmlspecialchars($row['customer_name']) ?></td>
                         <td><?= bn_number(htmlspecialchars($row['customer_phone'])) ?></td>
                         <td><?= htmlspecialchars($row['car_number'] ?? '-') ?></td>
 
                         <td class="text-end text-primary fw-semibold">
-                            ৳ <?= bn_number(number_format($row['total_price'] ?? 0, 2)) ?>
+                            ৳ <?= bn_number(number_format($row['rent_amount'] ?? 0, 2)) ?>
                         </td>
-                        <td class="text-end text-success fw-semibold">
-                            ৳ <?= bn_number(number_format($row['paid_amount'] ?? 0, 2)) ?>
-                        </td>
-                        <td class="text-end text-danger fw-semibold">
-                            ৳ <?= bn_number(number_format($row['due_amount'] ?? 0, 2)) ?>
-                        </td>
+                        
+                         
 
                         <td>
-                            <span class="badge bg-<?= ($row['status'] ?? '') == 'completed' ? 'success' : 'warning' ?>">
-                                <?= strtoupper($row['status'] ?? 'Pending') ?>
-                            </span>
-                        </td>
+                                 <?= strtoupper($row['note'] ?? "") ?>
+                         </td>
 
-                        <td class="text-end">
-    <a href="index.php?page=car/view&car_number=<?= urlencode($row['car_number'] ?? '') ?>"
-        class="btn btn-info btn-sm text-white">দেখুন</a>
-
-<a href="index.php?page=car/edit&id=<?= $row['id'] ?>"
-    class="btn btn-warning btn-sm">সম্পাদনা</a>
-
-<a href="index.php?page=car/receipt&id=<?= $row['id'] ?>"
-    class="btn btn-success btn-sm">রসিদ</a>
- 
-
-</td>
+                         
 
                     </tr>
                     <?php endforeach; ?>

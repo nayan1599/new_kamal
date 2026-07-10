@@ -3,8 +3,8 @@
 
 $host     = 'localhost';
 $dbname   = 'garage_management';
-$username = 'root';
-$password = '';
+$username = 'nayan';
+$password = '123456';
 
 try {
     $pdo = new PDO(

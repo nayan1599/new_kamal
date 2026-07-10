@@ -1,5 +1,5 @@
 <?php
- include './phplibary/libary.php';
+  
 if (!isset($_GET['car_number']) || empty($_GET['car_number'])) {
     die("<h3 class='text-center mt-5 text-danger'>গাড়ির নম্বর দেয়া হয়নি!</h3>");
 }

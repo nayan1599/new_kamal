@@ -1,15 +1,16 @@
 <?php
 include './config/db.php';
 include './config/session_check.php';
+include './phplibary/libary.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-include 'layout/header.php';
-include 'layout/sidebar.php';
-include 'layout/top.php';
+include './layout/header.php';
+include './layout/sidebar.php';
+include './layout/top.php';
 ?>
 
 
@@ -32,5 +33,5 @@ if (file_exists($page_path)) {
 ?>
  
 <?php 
-include 'layout/footer.php';
+include './layout/footer.php';
 ?>

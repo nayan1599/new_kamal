@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
+        <div class="col-lg-12 col-md-10">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white text-center">
                     <h3><i class="fas fa-hand-holding-dollar me-2"></i>কিস্তি আদায় ফর্ম</h3>
@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <div class="text-center mt-5">
+                        <div class="text-end mt-5">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-save me-2"></i>সংরক্ষণ করুন
                             </button>

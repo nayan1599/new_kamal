@@ -3,74 +3,118 @@
 
     <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
       <div class="sidebar-header">
-        <a class="brand-mark" href="index.html" aria-label="adminHMD dashboard">
+        <a class="brand-mark" href="index.php" aria-label="<?php echo $_SESSION['user_name']; ?>">
           <span class="brand-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span>
           <span class="brand-copy">
-            <span class="brand-title">adminHMD</span>
-            <span class="brand-subtitle">Admin Template</span>
+            <span class="brand-title"><?php echo $_SESSION['user_name']; ?></span>
+            <!-- <span class="brand-subtitle">Admin Template</span> -->
           </span>
         </a>
       </div>
+ <nav class="sidebar-nav p-3">
 
-      <nav class="sidebar-nav">
-        <a class="nav-link active" href="index.php" aria-current="page">
-          <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
-          <span class="nav-text">Dashboard</span>
-        </a>
-        <a class="nav-link" href="index.php?page=car/index">
-          <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
-          <span class="nav-text">Cars</span>
-        </a>
-        <a class="nav-link" href="index.php?page=payment/index">
-          <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-          <span class="nav-text">Add Payment</span>
-        </a>
-        <a class="nav-link" href="index.php?page=accounting/index">
-          <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-          <span class="nav-text">Accounting</span>
-        </a>
-        <a class="nav-link" href="charts.html">
-          <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
-          <span class="nav-text">Charts</span>
-        </a>
-        <a class="nav-link" href="tables.html">
-          <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
-          <span class="nav-text">Tables</span>
-        </a>
-        <a class="nav-link" href="forms.html">
-          <span class="nav-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
-          <span class="nav-text">Forms</span>
-        </a>
-        <a class="nav-link" href="components.html">
-          <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
-          <span class="nav-text">Components</span>
-        </a>
-        <a class="nav-link" href="alerts.html">
-          <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
-          <span class="nav-text">Alerts</span>
-        </a>
-        <a class="nav-link" href="modals.html">
-          <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
-          <span class="nav-text">Modals</span>
-        </a>
-        <a class="nav-link" href="settings.html">
-          <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
-          <span class="nav-text">Settings</span>
-        </a>
-        <a class="nav-link" href="blank.html">
-          <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-          <span class="nav-text">Blank Page</span>
-        </a>
-      </nav>
+<!-- Dashboard -->
 
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/avatar/avatar.jpg" alt="Admin Hasan">
-        <strong>Admin Hasan</strong>
-        <small>Active Workspace</small>
-      </div>
+<a class="nav-link active" href="index.php">
+    <i class="bi bi-speedometer2"></i> ড্যাশবোর্ড
+</a>
 
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
+<!-- Customer / Cars -->
+
+<a class="nav-link d-flex justify-content-between align-items-center" 
+data-bs-toggle="collapse" 
+href="#carMenu"> <span><i class="bi bi-car-front"></i> গাড়ি ও গ্রাহক</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
+
+<div class="collapse" id="carMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=car/index">সকল গাড়ি</a>
+        <a class="nav-link" href="index.php?page=car/add">নতুন গাড়ি যোগ</a>
+    </div>
+</div>
+
+<!-- Installment / Payment -->
+
+<a class="nav-link d-flex justify-content-between align-items-center" 
+data-bs-toggle="collapse" 
+href="#paymentMenu"> <span><i class="bi bi-cash-coin"></i> কিস্তি ও পেমেন্ট</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
+
+<div class="collapse" id="paymentMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=payment/index">সকল কিস্তি</a>
+        <a class="nav-link" href="index.php?page=payment/add">কিস্তি গ্রহণ</a>
+        <a class="nav-link" href="index.php?page=payment/due">বকেয়া তালিকা</a>
+    </div>
+</div>
+
+<!-- Accounting -->
+
+<a class="nav-link d-flex justify-content-between align-items-center" 
+data-bs-toggle="collapse" 
+href="#accountingMenu"> <span><i class="bi bi-calculator"></i> হিসাব ব্যবস্থাপনা</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
+
+<div class="collapse" id="accountingMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=accounting/index">হিসাবের তালিকা</a>
+        <a class="nav-link" href="index.php?page=accounting/add">নতুন হিসাব হেড</a>
+        <a class="nav-link" href="index.php?page=accounting/report">রিপোর্ট</a>
+    </div>
+</div>
+
+
+<!-- Rent / ভাড়া -->
+
+<a class="nav-link d-flex justify-content-between align-items-center" 
+data-bs-toggle="collapse" 
+href="#rentMenu"> <span><i class="bi bi-house-door"></i> ভাড়া ব্যবস্থাপনা</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
+
+<div class="collapse" id="rentMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=rent/index">সকল ভাড়া</a>
+        <a class="nav-link" href="index.php?page=rent/collection">ভাড়া গ্রহণ</a>
+        <a class="nav-link" href="index.php?page=rent/due">বকেয়া ভাড়া</a>
+        <a class="nav-link" href="index.php?page=rent/report">ভাড়া রিপোর্ট</a>
+    </div>
+</div>
+
+
+
+
+
+<!-- Reports -->
+
+<a class="nav-link d-flex justify-content-between align-items-center" 
+data-bs-toggle="collapse" 
+href="#reportMenu"> <span><i class="bi bi-bar-chart-line"></i> রিপোর্ট</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
+
+<div class="collapse" id="reportMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=report/daily">দৈনিক রিপোর্ট</a>
+        <a class="nav-link" href="index.php?page=report/monthly">মাসিক রিপোর্ট</a>
+        <a class="nav-link" href="index.php?page=report/customer">গ্রাহক রিপোর্ট</a>
+    </div>
+</div>
+
+<!-- Settings -->
+
+<a class="nav-link d-flex justify-content-between align-items-center" 
+data-bs-toggle="collapse" 
+href="#settingsMenu"> <span><i class="bi bi-gear"></i> সেটিংস</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
+
+<div class="collapse" id="settingsMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=profile">প্রোফাইল</a>
+        <a class="nav-link" href="index.php?page=profile/settings">অ্যাকাউন্ট সেটিংস</a>
+        <a class="nav-link text-danger" href="index.php?page=profile/logout">লগআউট</a>
+    </div>
+</div>
+
+</nav>
+
+
+       
+ 
     </aside>
+
+    <!-- <style> .submenu { padding-left: 25px; } /* icon rotate */ .nav-link[aria-expanded="true"] .toggle-icon { transform: rotate(180deg); transition: 0.3s; } .nav-link .toggle-icon { transition: 0.3s; } </style> -->
+
+ 

@@ -2,35 +2,11 @@
 
 
 // মূল ডাটা
-$today = date('Y-m-d');
+// $today = date('Y-m-d');
 
-$stmt = $pdo->query("SELECT * FROM kisti_payments WHERE payment_date = '$today' ORDER BY payment_date DESC");
+$stmt = $pdo->query("SELECT * FROM kisti_payments ORDER BY payment_date DESC");
 $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// সামারি ক্যালকুলেশন
-$totalRecords = count($records);
-$totalAmount = 0;
-$totalFine = 0;
-$todayAmount = 0;
-$carSummary = [];
-
-$today = date('Y-m-d');
-
-foreach ($records as $row) {
-    $totalAmount += $row['amount'] ?? 0;
-    $totalFine += $row['fine_amount'] ?? 0;
-    
-    if (date('Y-m-d', strtotime($row['payment_date'])) === $today) {
-        $todayAmount += $row['amount'] ?? 0;
-    }
-    
-    $car = $row['car_number'] ?: 'অন্যান্য';
-    if (!isset($carSummary[$car])) {
-        $carSummary[$car] = ['count' => 0, 'total' => 0];
-    }
-    $carSummary[$car]['count']++;
-    $carSummary[$car]['total'] += $row['amount'] ?? 0;
-}
+ 
 ?>
 
 <div class="container-fluid px-3 px-lg-4 py-4">
@@ -45,87 +21,7 @@ foreach ($records as $row) {
             <i class="fas fa-plus me-2"></i> নতুন কিস্তি আদায়
         </a>
     </div>
-
-    <!-- Summary Cards -->
-    <div class="row g-3 mb-5">
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="opacity-75">মোট কিস্তি</h6>
-                            <h2 class="mb-0"><?= $totalRecords ?></h2>
-                        </div>
-                        <i class="fas fa-receipt fa-3x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="opacity-75">মোট আদায়</h6>
-                            <h2 class="mb-0"><?= number_format($totalAmount, 2) ?> ৳</h2>
-                        </div>
-                        <i class="fas fa-money-bill-wave fa-3x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="opacity-75">আজকের আদায়</h6>
-                            <h2 class="mb-0"><?= number_format($todayAmount, 2) ?> ৳</h2>
-                        </div>
-                        <i class="fas fa-calendar-day fa-3x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 bg-warning text-dark">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="opacity-75">মোট জরিমানা</h6>
-                            <h2 class="mb-0"><?= number_format($totalFine, 2) ?> ৳</h2>
-                        </div>
-                        <i class="fas fa-exclamation-triangle fa-3x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- গাড়ি অনুযায়ী সামারি -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light">
-            <h5 class="mb-0"><i class="fas fa-car me-2"></i>গাড়ি অনুযায়ী সামারি</h5>
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <?php foreach($carSummary as $car => $data): ?>
-                <div class="col-lg-4 col-md-6">
-                    <div class="d-flex align-items-center p-3 border rounded hover-shadow">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1"><?= htmlspecialchars($car) ?></h6>
-                            <small class="text-muted"><?= $data['count'] ?> টি পেমেন্ট</small>
-                        </div>
-                        <div class="text-end">
-                            <h5 class="text-success mb-0"><?= number_format($data['total'], 2) ?> ৳</h5>
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </div>
-
+ 
     <!-- মেইন টেবিল -->
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
@@ -145,10 +41,9 @@ foreach ($records as $row) {
                 <table class="table table-hover align-middle mb-0" id="paymentTable">
                     <thead class="table-light">
                         <tr>
-                            <th>তারিখ</th>
-                            <th>গ্রাহক</th>
+                            <th>তারিখ</th>                          
                             <th>গাড়ির নং</th>
-                            <th>মোবাইল</th>
+                            
                             <th>কিস্তি নং</th>
                             <th class="text-end">টাকা</th>
                             <th class="text-end">জরিমানা</th>
@@ -161,19 +56,19 @@ foreach ($records as $row) {
                     <tbody>
                         <?php foreach($records as $row): ?>
                         <tr>
-                            <td><?= date('d/m/Y', strtotime($row['payment_date'])) ?></td>
-                            <td><?= htmlspecialchars($row['customer_name']) ?></td>
+                            <td><?= bn_number(date('d/m/Y', strtotime($row['payment_date']))) ?></td>
+                          
                             <td><strong><?= htmlspecialchars($row['car_number'] ?: '—') ?></strong></td>
-                            <td><?= htmlspecialchars($row['customer_phone']) ?></td>
+                            
                             <td><?= $row['kisti_number'] ?? '—' ?></td>
-                            <td class="text-end fw-bold text-success">৳ <?= number_format($row['amount'], 2) ?></td>
+                            <td class="text-end fw-bold text-success">৳ <?= bn_number(number_format($row['amount'], 2)) ?></td>
                             <td class="text-end text-danger">
-                                <?= $row['fine_amount'] ? '৳ ' . number_format($row['fine_amount'], 2) : '—' ?>
+                                <?= $row['fine_amount'] ? '৳ ' . bn_number(number_format($row['fine_amount'], 2)) : '—' ?>
                             </td>
                             <td>
-                                <span class="badge bg-<?= $row['payment_method'] == 'cash' ? 'success' : 'info' ?>">
-                                    <?= strtoupper($row['payment_method']) ?>
-                                </span>
+                                <?php $methodMap = [ 'cash' => 'ক্যাশ', 'bank_transfer' => 'ব্যাংক ট্রান্সফার', 'bkash' => 'বিকাশ', 'nagad' => 'নগদ', 'rocket' => 'রকেট', 'cheque' => 'চেক', 'others' => 'অন্যান্য' ]; $method = $row['payment_method'] ?? ''; $methodText = $methodMap[$method] ?? $method; ?>
+
+<span class="badge bg-<?= $method == 'cash' ? 'success' : 'info' ?>"> <?= $methodText ?> </span>
                             </td>
                             <td>
                                 <span class="badge bg-<?= $row['status'] == 'paid' ? 'success' : 'warning' ?>">
@@ -182,14 +77,18 @@ foreach ($records as $row) {
                             </td>
                             <td><?= htmlspecialchars($row['received_by'] ?? '—') ?></td>
                             <td class="text-center">
-                                <a href="index.php?page=payment/edit&id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">
-                                    edit
-                                </a>
-                                <a href="delete_payment.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger"
-                                   onclick="return confirm('এই রেকর্ড ডিলিট করতে চান?')">
-                                     delete
-                                </a>
-                            </td>
+    <a href="index.php?page=payment/edit&id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">
+        সম্পাদনা
+    </a>
+
+<a href="delete_payment.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger"
+   onclick="return confirm('আপনি কি এই রেকর্ডটি মুছে ফেলতে চান?')">
+    মুছুন
+</a>
+
+
+</td>
+
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

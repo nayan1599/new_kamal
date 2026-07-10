@@ -1,21 +1,32 @@
 <div class="container mt-4">
     <h3 class="mb-4">নতুন অ্যাকাউন্টিং হেড যোগ করুন</h3>
 
-    <form method="POST">
+    <form method="POST" action="index.php?page=sql/transactions_add">
 
         <div class="row">
             
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label fw-bold">হেড নাম<span class="text-danger">*</span></label>
-                <input type="text" name="head_name" class="form-control" required>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Date<span class="text-danger">*</span></label>
+                <input type="date" name="date" class="form-control" required>
             </div>
 
+             <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Taka IN<span class="text-danger">*</span></label>
+                <input type="number" name="taka_in" class="form-control" required>
+            </div>
             
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Taka out<span class="text-danger">*</span></label>
+                <input type="number" name="taka_out" class="form-control" required>
+            </div>
 
-            <div class="col-md-4 mb-3">
+
+
+
+            <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">হেড টাইপ <span class="text-danger">*</span></label>
-                <select name="head_type" class="form-select" required>
+                <select name="head_name" class="form-select" required>
                     <option value="">নির্বাচন করুন</option>
                     <option value="Asset">Asset (সম্পদ)</option>
                     <option value="Liability">Liability (দায়)</option>
