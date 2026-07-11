@@ -7,12 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $taka_out       = (float)($_POST['taka_out'] ?? 0);
     $head_name      = $_POST['head_name'];
     $date           = $_POST['date'];
+    $type           = $_POST['type'];
      $description   = trim($_POST['description'] ?? '');
     $status         = 1;
 
     $stmt = $pdo->prepare("INSERT INTO transactions 
-        (taka_in, taka_out, status, head_name, date, description)
-        VALUES (?, ?, ?, ?, ?, ?)");
+        (taka_in, taka_out, status, head_name, date, type, description)
+        VALUES (?, ?, ?, ?, ?, ?, ?)");
 
     $stmt->execute([
         
@@ -21,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status,
         $head_name,
         $date,
+        $type,
         $description
     ]);
 
