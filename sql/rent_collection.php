@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $advance_amount  = (float)($_POST['advance_amount'] ?? 0);
     $rent_month      = $_POST['rent_month'];
     $rent_date       = $_POST['rent_date'];
-
+    $payment_status       = $_POST['payment_status'];
     $payment_method  = $_POST['payment_method'];
     $transaction_id  = trim($_POST['transaction_id'] ?? '');
     $note            = trim($_POST['note'] ?? '');
@@ -19,8 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $due_amount = 0;
 
     $stmt = $pdo->prepare("INSERT INTO rents 
-        (car_number, customer_name, customer_phone, rent_amount, advance_amount, due_amount, rent_month, rent_date, payment_method, transaction_id, note)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        (car_number, customer_name, customer_phone, rent_amount, advance_amount, due_amount, rent_month, rent_date, payment_status, payment_method, transaction_id, note)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     $stmt->execute([
         $car_number,
@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $due_amount,
         $rent_month,
         $rent_date,
+        $payment_status,
         $payment_method,
         $transaction_id,
         $note

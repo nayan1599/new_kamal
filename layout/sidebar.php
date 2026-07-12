@@ -45,6 +45,27 @@ href="#paymentMenu"> <span><i class="bi bi-cash-coin"></i> কিস্তি �
         <a class="nav-link" href="index.php?page=payment/due">বকেয়া তালিকা</a>
     </div>
 </div>
+<!-- call story  -->
+<a class="nav-link d-flex justify-content-between align-items-center" 
+   data-bs-toggle="collapse" 
+   href="#callStoryMenu"> 
+   
+   <span><i class="bi bi-telephone-forward"></i> কল স্টোরি</span> 
+   <i class="bi bi-chevron-down toggle-icon"></i> 
+</a>
+
+<div class="collapse" id="callStoryMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=call_story/index"> 📋 সকল কল তালিকা  </a>
+        <a class="nav-link" href="index.php?page=call_story/add">  ➕ নতুন কল এন্ট্রি  </a>
+        <a class="nav-link" href="index.php?page=call_story/followup"> 🔔 ফলোআপ তালিকা  </a>
+        <a class="nav-link" href="index.php?page=call_story/promise">  📅 প্রমিজ ডেট </a>
+        <a class="nav-link" href="index.php?page=call_story/due_calls">  ⚠️ বকেয়া কল  </a>
+        <a class="nav-link" href="index.php?page=call_story/report">  📊 রিপোর্ট </a>
+
+    </div>
+</div>
+
 
 <!-- Accounting -->
 

@@ -12,16 +12,16 @@
         <form method="POST" action="index.php?page=sql/rent_collection">
 
             <div class="row">
-
+  <div class="col-md-6 mb-3">
+                    <label class="form-label">গ্রাহকের নাম</label>
+                    <input type="text" name="customer_name" class="form-control" required>
+                </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">গাড়ি নম্বর</label>
                     <input type="text" name="car_number" class="form-control" required>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">গ্রাহকের নাম</label>
-                    <input type="text" name="customer_name" class="form-control" required>
-                </div>
+              
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">মোবাইল নম্বর</label>
@@ -30,7 +30,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label"> ভাড়া</label>
-                    <input type="number" step="0.01" name="rent_amount" class="form-control" required>
+                    <input type="number" step="0.01" name="rent_amount" class="form-control">
                 </div>
 
                 <!-- <div class="col-md-6 mb-3">
@@ -59,6 +59,17 @@
                         <option value="cheque">চেক</option>
                     </select>
                 </div>
+
+
+<div class="col-md-6 mb-3">
+    <label class="form-label">পেমেন্ট স্ট্যাটাস</label>
+    <select name="payment_status" class="form-control">
+        <option value="">-- নির্বাচন করুন --</option>
+        <option value="paid">পেইড</option>
+        <option value="pending">পেন্ডিং</option>
+        <option value="due">বাকি</option>
+    </select>
+</div>
 
                 <!-- <div class="col-md-6 mb-3">
                     <label class="form-label">ট্রানজেকশন আইডি</label>

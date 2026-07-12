@@ -60,6 +60,8 @@ $paid_amount = $hasContractTotal ? floatval($record['paid_amount'] ?? 0) : null;
 $nextDueDate = $record['next_due_date'] ?? null;
 $kistiStartDate = $record['kisti_start_date'] ?? null;
 
+
+
 // বাকি টাকা — রেকর্ডে due_amount থাকলে সেটাই ব্যবহার হবে (সবচেয়ে নির্ভরযোগ্য),
 // নাহলে চুক্তির টাকা থেকে হিসাব করা হবে
 // if (!empty($record) && isset($record['due_amount'])) {
@@ -77,7 +79,7 @@ $remainingAmount = 0;
 
 $remainingAmount = $totalPrice - ($paid_amount + $discountAmount + $totalPaid);
 
-
+$total_due = $remainingAmount + $totalPaid;
 
 
 $progressPct = ($hasContractTotal && $totalKistiPlanned > 0)
@@ -589,9 +591,12 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                     <div class="info-row"><span class="k">ক্রয়ের ধরন</span><span
                             class="v"><?= $record['type'] === 'installment' ? 'কিস্তিতে' : htmlspecialchars($record['type']) ?></span>
                     </div>
+                       <div class="info-row"><span class="k">ক্রয়ের তারিখ</span>
+                       <span class="v"><?= bn_number(date('d/m/Y', strtotime($record['kisti_start_date']))) ?></span>
+                    </div>
                     <?php endif; ?>
-                    <div class="info-row"><span class="k">সর্বশেষ পরিশোধ</span><span
-                            class="v"><?= $lastPaymentDate ? date('d/m/Y', strtotime($lastPaymentDate)) : '—' ?></span>
+                    <div class="info-row"><span class="k">সর্বশেষ পরিশোধ</span>
+                   <span class="v"><?= $lastPaymentDate ? bn_number(date('d/m/Y', strtotime($lastPaymentDate))) : '—' ?></span>
                     </div>
                 </div>
 
@@ -606,6 +611,9 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                     <?php endif; ?>
                     <div class="info-row"><span class="k">জমাঃ</span><span class="v mono">৳
                             <?= bn_number(number_format($paid_amount, 2)) ?></span></div>
+                             <div class="info-row"><span class="k">মোট বাকিঃ</span><span class="v mono">৳
+                            <?= bn_number(number_format($total_due, 2)) ?></span></div>
+                            
                     <div class="info-row"><span class="k">মাসিক কিস্তি</span><span class="v mono">৳
                             <?= bn_number(number_format($monthlyKisti, 2)) ?></span></div>
                     <!-- paid_amount -->
@@ -643,15 +651,18 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                         <div class="value <?= $totalFine > 0 ? 'red' : '' ?> mono">৳
                             <?= bn_number(number_format($totalFine, 2)) ?>
                         </div>
+<!-- প্রতি দিন ১০০ টাকা করে জরিমান  -->
+  <div class="label"> প্রতি দিন <strong class="mono"> ১০০</strong> টাকা করে জরিমান</div>
+
                     </div>
                     <div class="stat">
                         <div class="label">বাকি টাকা</div>
                         <?php if ($remainingAmount !== null): ?>
                         <div class="value red mono">৳ <?= bn_number(number_format($remainingAmount, 2)) ?></div>
-                        <div class="sub"><?= $hasContractTotal ? 'চুক্তি অনুযায়ী' : 'রেকর্ড অনুযায়ী' ?></div>
+                        <!-- <div class="sub"><?= $hasContractTotal ? 'চুক্তি অনুযায়ী' : 'রেকর্ড অনুযায়ী' ?></div> -->
                         <?php else: ?>
-                        <div class="value gold">নির্ধারিত নয়</div>
-                        <div class="sub">চুক্তির তথ্য পাওয়া যায়নি</div>
+                        <!-- <div class="value gold">নির্ধারিত নয়</div>
+                        <div class="sub">চুক্তির তথ্য পাওয়া যায়নি</div> -->
                         <?php endif; ?>
                     </div>
                 </div>
