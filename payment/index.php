@@ -77,6 +77,12 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
                             <td><?= htmlspecialchars($row['received_by'] ?? '—') ?></td>
                             <td class="text-center">
+<!-- view  -->
+
+ <a href="index.php?page=payment/view&id=<?= $row['id'] ?>" class="btn btn-sm btn-success">
+        View
+    </a>
+
     <a href="index.php?page=payment/edit&id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">
         সম্পাদনা
     </a>

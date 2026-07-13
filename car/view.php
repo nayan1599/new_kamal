@@ -534,8 +534,8 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
 </head>
 
 <body>
-
-    <div class="receipt">
+<button onclick="printDiv('receiptArea')" class="btn btn-success">🖨️ Print</button>
+    <div class="receipt" id="receiptArea">
         <div class="guilloche"></div>
 
         <div class="letterhead">
