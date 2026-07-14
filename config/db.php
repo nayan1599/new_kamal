@@ -2,11 +2,19 @@
 // db.php - Professional Database Connection
 
 $host     = 'localhost';
+// server 
+// $dbname   = 'oncalldr_oncalldr_kamal';
+// $username = 'oncalldr_kamal';
+// $password = '@nayan1122';
+// local 
 $dbname   = 'garage_management';
-$username = 'nayan';
-$password = '123456';
-// $username = 'root';
-// $password = '';
+// laptop 
+// $username = 'nayan';
+// $password = '123456';
+
+// pc 
+$username = 'root';
+$password = '';
 try {
     $pdo = new PDO(
         "mysql:host=$host;dbname=$dbname;charset=utf8mb4", 

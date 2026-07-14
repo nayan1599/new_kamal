@@ -74,13 +74,60 @@ $due = max(0, $monthlyKisti - $p['amount']);
 
     $totalDue_amount += $due;
 }
-
-
+ 
 
 
 $progressPct = ($hasContractTotal && $totalKistiPlanned > 0)
     ? min(100, round(($totalKistiPaid / $totalKistiPlanned) * 100))
     : null;
+// date and time  
+ 
+
+$startDate = $kistiStartDate;
+$endDate   = date('Y-m-d');
+
+$monthlyAmount = $monthlyKisti; // মাসিক কিস্তি
+
+$start = new DateTime($startDate);
+$end   = new DateTime($endDate);
+
+$diff = $start->diff($end);
+
+// মোট মাস
+$totalMonths = ($diff->y * 12) + $diff->m;
+
+// দিন
+$totalDays = $diff->d;
+
+// 👉 daily rate (৩০ দিন ধরে)
+$dailyRate = $monthlyAmount / 30;
+
+// 👉 total amount
+$totalAmount = ($totalMonths * $monthlyAmount) + ($totalDays * $dailyRate) - $totalPaid ;
+
+
+// 👉 বাকি টাকা
+$dueAmount = $totalAmount ;
+ 
+ 
+$remainingMonths = $dueAmount / $monthlyAmount;
+
+// 👉 পুরো মাস + দিন আকারে convert
+$remainingFullMonths = floor($remainingMonths);
+$remainingDays = ($remainingMonths - $remainingFullMonths) * 30;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // রিসিট নং — ইনভয়েস থাকলে সেটাই, নাহলে অটো-জেনারেট
 $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/', '', $car_number) . '-' . date('ym', strtotime($lastPaymentDate)));
@@ -540,7 +587,7 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
         <div class="letterhead">
             <div class="lh-top">
                 <div>
-                    <p class="brand-name display">জাহিরুল এন্টারপ্রাইজ</p>
+                    <p class="brand-name display">জহিরুল এন্টারপ্রাইজ</p>
                     <p class="brand-tag">গাড়ি কিস্তি বিক্রয় ও পরিষেবা</p>
                 </div>
                 <div class="doc-meta">
@@ -631,6 +678,21 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                     <?php else: ?>
                     <div class="info-row"><span class="k">চুক্তির তথ্য</span><span class="v">পাওয়া যায়নি</span></div>
                     <?php endif; ?>
+<div class="info-row">
+    <span class="k">মোট সময়</span>
+    <span class="v">
+        <?= bn_number($totalMonths) ?> মাস <?= bn_number($totalDays) ?> দিন
+    </span>
+</div>
+
+<div class="info-row">
+    <span class="k">বাকি সময়</span>
+    <span class="v">
+        <?= bn_number($remainingFullMonths) ?> মাস <?= bn_number(round($remainingDays)) ?> দিন
+    </span>
+</div>
+
+                    
                 </div>
             </div>
 
@@ -654,7 +716,7 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                             <?= bn_number(number_format($totalFine, 2)) ?>
                         </div>
 <!-- প্রতি দিন ১০০ টাকা করে জরিমান  -->
-  <div class="label"> প্রতি দিন <strong class="mono"> ১০০</strong> টাকা করে জরিমান</div>
+               <div class="label"> প্রতি দিন <strong class="mono"> ১০০</strong> টাকা করে জরিমান</div>
 
                     </div>
                     <div class="stat">
@@ -667,8 +729,7 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                         <div class="sub">চুক্তির তথ্য পাওয়া যায়নি</div> -->
                         <?php endif; ?>
                         <div class="label text-danger mb-0"> মোট বকেয়া</div>
-<div class="value text-warning mono">
-                            <?= bn_number(number_format($totalDue_amount, 2)) ?></div>
+                       <div class="value text-warning mono"><?= bn_number(number_format($totalAmount, 2)) ?></div>
 
                     </div>
                 </div>
@@ -704,21 +765,11 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                    <?php 
 $i = 0;
 
-// total variable
-$totalMonthly = 0;
-$totalPaid = 0;
-$totalDue = 0;
-$totalFine = 0;
 
 foreach ($payments as $row):
 
     $due = max(0, $monthlyKisti - $row['amount']);
 
-    // add totals
-    $totalMonthly += $monthlyKisti;
-    $totalPaid += $row['amount'];
-    $totalDue += $due;
-    $totalFine += $row['fine_amount'];
 ?>
                    <tr>
     <td><?= ++$i ?></td>
@@ -735,16 +786,7 @@ foreach ($payments as $row):
 </tr>
 <?php endforeach; ?>
                 </tbody>
-                <tfoot>
-    <tr style="font-weight:bold; background:#f5f5f5;">
-        <td colspan="3" class="text-end">মোট</td>
-        <td><?= bn_number($totalMonthly) ?></td>
-        <td><?= bn_number($totalPaid) ?></td>
-        <td><?= bn_number($totalDue) ?></td>
-        <td><?= bn_number(number_format($totalFine, 2)) ?></td>
-        <td colspan="2">—</td>
-    </tr>
-</tfoot>
+
             </table>
 
             <div class="signatures">

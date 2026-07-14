@@ -1,5 +1,9 @@
 <?php 
-$stmt = $pdo->query("SELECT * FROM rents ORDER BY created_at DESC LIMIT 100");
+$today = date('Y-m-d');
+
+// শুধু আজকের ডাটা আনো
+$stmt = $pdo->prepare("SELECT * FROM rents WHERE DATE(created_at) = ? ORDER BY created_at DESC");
+$stmt->execute([$today]);
 $rents = $stmt->fetchAll();
 ?>
 
