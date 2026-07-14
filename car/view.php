@@ -47,7 +47,7 @@ foreach ($payments as $p) {
     }
 }
 
-$maxKisti = $totalKistiPaid - $totalKistiPlanned;
+
 
 // চুক্তির তথ্য — customer_records টেবিল থেকে (থাকলে)
 $hasContractTotal = !empty($record) && floatval($record['total_price']) > 0;
@@ -59,7 +59,10 @@ $monthlyKisti = $hasContractTotal ? floatval($record['monthly_kisti']) : null;
 $paid_amount = $hasContractTotal ? floatval($record['paid_amount'] ?? 0) : null;
 $nextDueDate = $record['next_due_date'] ?? null;
 $kistiStartDate = $record['kisti_start_date'] ?? null;
+$maxKisti = $totalKistiPaid - $totalKistiPlanned;
 
+$expectedPaid = $monthlyKisti * $maxKisti; // যত কিস্তি হওয়ার কথা
+$due_amount = $expectedPaid - $totalPaid;
 
 
 // বাকি টাকা — রেকর্ডে due_amount থাকলে সেটাই ব্যবহার হবে (সবচেয়ে নির্ভরযোগ্য),
@@ -534,7 +537,10 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
 </head>
 
 <body>
+    <div class="text-end py-2">
 <button onclick="printDiv('receiptArea')" class="btn btn-success">🖨️ Print</button>
+
+    </div>
     <div class="receipt" id="receiptArea">
         <div class="guilloche"></div>
 
@@ -682,26 +688,35 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
             <table class="ledger">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>তারিখ</th>
                         <th>কিস্তি নং</th>
-                        <th class="num">মূল টাকা</th>
+                        <th class="num">মাসিক কিস্তি</th>
+                        <th class="num">জমা</th>
+                        <th class="num">বাকি</th>
                         <th class="num">জরিমানা</th>
-                        <th class="num">মোট</th>
+                      
                         <th>মেথড</th>
                         <th>প্রাপক</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($payments as $row): ?>
+                    <?php 
+                    $i=0;
+                    foreach ($payments as $row):
+                     ?>
                     <tr>
+                   <td><?= ++$i ?></td>
                         <td><?= bn_number(date('d/m/Y', strtotime($row['payment_date']))) ?></td>
                         <td><span class="kisti-badge"><?= bn_number($row['kisti_number']) ?></span></td>
-                        <td class="num amt"><?= bn_number(number_format($row['amount'], 2)) ?></td>
+ <td><?= bn_number($monthlyKisti) ?></td>
+  <td><?= bn_number($row['amount']) ?></td>
+
+                        <td class="num amt">  <?= bn_number(max(0, $monthlyKisti - $row['amount'])) ?></td>
                         <td class="num amt">
                             <?= $row['fine_amount'] ? bn_number(number_format($row['fine_amount'], 2)) : '—' ?>
                         </td>
-                        <td class="num amt" style="font-weight:700;">
-                            <?= bn_number(number_format($row['amount'] + ($row['fine_amount'] ?? 0), 2)) ?></td>
+                        
                         <td><?= strtoupper(htmlspecialchars($row['payment_method'])) ?></td>
                         <td><?= htmlspecialchars($row['received_by'] ?? '—') ?></td>
                     </tr>

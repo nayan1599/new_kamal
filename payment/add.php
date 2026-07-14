@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <!-- কিস্তি নম্বর (শুধু কিস্তি হলে দেখাবে) -->
                             <div class="col-md-6" id="kistiNumberField">
                                 <label class="form-label">কিস্তি নম্বর <span class="text-danger">*</span></label>
-                                <input type="number" name="kisti_number" class="form-control" placeholder="১, ২, ৩..." required>
+                                <input type="number" name="kisti_number" value="1" class="form-control" placeholder="১, ২, ৩..." required>
                             </div>
 
                 
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             <div class="col-md-6">
                                 <label class="form-label">প্রাপক</label>
-                                <input type="text" name="received_by" class="form-control" value="Admin">
+                                <input type="text" name="received_by" class="form-control" value="জহিরুল">
                             </div>
 
                             <div class="col-12">

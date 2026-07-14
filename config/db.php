@@ -3,10 +3,10 @@
 
 $host     = 'localhost';
 $dbname   = 'garage_management';
-$username = 'nayan';
-$password = '123456';
-// $username = 'root';
-// $password = '';
+// $username = 'nayan';
+// $password = '123456';
+$username = 'root';
+$password = '';
 try {
     $pdo = new PDO(
         "mysql:host=$host;dbname=$dbname;charset=utf8mb4", 
