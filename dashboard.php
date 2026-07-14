@@ -1,35 +1,86 @@
 <?php
-// ================== DATA ==================
+$today = date('Y-m-d');
+
+// ================== FILTER ==================
+$from = $_GET['from'] ?? $today;
+$to   = $_GET['to'] ?? $today;
+
+$where = "";
+$params = [];
+
+if(!empty($from) && !empty($to)){
+    $where = "WHERE DATE(created_at) BETWEEN ? AND ?";
+    $params = [$from, $to];
+}
+
+// ================== SUMMARY ==================
 
 // মোট গাড়ি
-$totalCar = $pdo->query("SELECT COUNT(*) as total FROM customer_records")->fetch()['total'] ?? 0;
+$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM customer_records WHERE 1=1 ".(!empty($from) ? "AND DATE(created_at) BETWEEN ? AND ?" : ""));
+$stmt->execute(!empty($from) ? [$from,$to] : []);
+$totalCar = $stmt->fetch()['total'] ?? 0;
 
 // মোট কিস্তি
-$totalKisti = $pdo->query("SELECT SUM(total_received) as total FROM kisti_payments")->fetch()['total'] ?? 0;
+$stmt = $pdo->prepare("
+    SELECT SUM(total_received) as total 
+    FROM kisti_payments
+    ".(!empty($from) ? "WHERE DATE(payment_date) BETWEEN ? AND ?" : "")
+);
+$stmt->execute(!empty($from) ? [$from,$to] : []);
+$totalKisti = $stmt->fetch()['total'] ?? 0;
 
 // Accounting
-$totalIn = $pdo->query("SELECT SUM(taka_in) as total FROM transactions")->fetch()['total'] ?? 0;
-$totalOut = $pdo->query("SELECT SUM(taka_out) as total FROM transactions")->fetch()['total'] ?? 0;
+$stmt = $pdo->prepare("SELECT SUM(taka_in) as total FROM transactions $where");
+$stmt->execute($params);
+$totalIn = $stmt->fetch()['total'] ?? 0;
+
+$stmt = $pdo->prepare("SELECT SUM(taka_out) as total FROM transactions $where");
+$stmt->execute($params);
+$totalOut = $stmt->fetch()['total'] ?? 0;
 
 $balance = $totalIn - $totalOut;
 
 // আজকের হিসাব
 $today = date('Y-m-d');
-$todayData = $pdo->prepare("
+
+$stmt = $pdo->prepare("
     SELECT 
         SUM(taka_in) as in_total,
         SUM(taka_out) as out_total
     FROM transactions
-    WHERE date = ?
+    WHERE DATE(created_at) = ?
 ");
-$todayData->execute([$today]);
-$todayRow = $todayData->fetch();
+$stmt->execute([$today]);
+$todayRow = $stmt->fetch();
 
+// ================== RECENT DATA ==================
 
-// Recent Data
-$cars = $pdo->query("SELECT * FROM customer_records ORDER BY id DESC LIMIT 5")->fetchAll();
-$kisti = $pdo->query("SELECT * FROM kisti_payments ORDER BY id DESC LIMIT 5")->fetchAll();
-$transactions = $pdo->query("SELECT * FROM transactions ORDER BY id DESC LIMIT 5")->fetchAll();
+// Cars
+$stmt = $pdo->prepare("
+    SELECT * FROM customer_records 
+    ".(!empty($from) ? "WHERE DATE(created_at) BETWEEN ? AND ?" : "")."
+    ORDER BY id DESC LIMIT 5
+");
+$stmt->execute(!empty($from) ? [$from,$to] : []);
+$cars = $stmt->fetchAll();
+
+// Kisti
+$stmt = $pdo->prepare("
+    SELECT * FROM kisti_payments 
+    ".(!empty($from) ? "WHERE DATE(payment_date) BETWEEN ? AND ?" : "")."
+    ORDER BY id DESC LIMIT 5
+");
+$stmt->execute(!empty($from) ? [$from,$to] : []);
+$kisti = $stmt->fetchAll();
+
+// Transactions
+$stmt = $pdo->prepare("
+    SELECT * FROM transactions 
+    $where
+    ORDER BY id DESC LIMIT 5
+");
+$stmt->execute($params);
+$transactions = $stmt->fetchAll();
 
 ?>
 
@@ -37,7 +88,30 @@ $transactions = $pdo->query("SELECT * FROM transactions ORDER BY id DESC LIMIT 5
 
 <h3 class="mb-4">📊 ড্যাশবোর্ড - জাহিরুল এন্টারপ্রাইজ</h3>
 
-<!-- SUMMARY -->
+<!-- ================= FILTER ================= -->
+<form method="GET" class="row g-2 mb-4">
+
+    <input type="hidden" name="page" value="dashboard">
+
+    <div class="col-md-3">
+        <input type="date" name="from" value="<?= $from ?>" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <input type="date" name="to" value="<?= $to ?>" class="form-control">
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100">🔍 Filter</button>
+    </div>
+
+    <div class="col-md-2">
+        <a href="index.php?page=dashboard" class="btn btn-secondary w-100">Reset</a>
+    </div>
+
+</form>
+
+<!-- ================= SUMMARY ================= -->
 <div class="row">
 
     <div class="col-md-2 my-2">
@@ -56,7 +130,7 @@ $transactions = $pdo->query("SELECT * FROM transactions ORDER BY id DESC LIMIT 5
 
     <div class="col-md-2 my-2">
         <div class="card bg-primary text-white p-3">
-            <h6>মোট আয়</h6>
+            <h6>মোট আয়</h6>
             <h4>৳ <?= number_format($totalIn,2) ?></h4>
         </div>
     </div>
@@ -84,7 +158,7 @@ $transactions = $pdo->query("SELECT * FROM transactions ORDER BY id DESC LIMIT 5
 
 </div>
 
-<!-- ROW 1 -->
+<!-- ================= TABLES ================= -->
 <div class="row mt-4">
 
     <!-- CAR -->
@@ -95,12 +169,10 @@ $transactions = $pdo->query("SELECT * FROM transactions ORDER BY id DESC LIMIT 5
                 <table class="table table-sm">
                     <tr><th>নাম</th><th>গাড়ি</th></tr>
                     <?php foreach($cars as $c): ?>
-                        
                     <tr onclick="window.location='index.php?page=car/receipt&id=<?= $c['id'] ?>'" style="cursor:pointer;">
-    <td><?= $c['customer_name'] ?></td>
-    <td><?= $c['car_number'] ?></td>
-</tr>
-                 
+                        <td><?= $c['customer_name'] ?></td>
+                        <td><?= $c['car_number'] ?></td>
+                    </tr>
                     <?php endforeach; ?>
                 </table>
             </div>
@@ -113,9 +185,9 @@ $transactions = $pdo->query("SELECT * FROM transactions ORDER BY id DESC LIMIT 5
             <div class="card-header bg-success text-white">💳 কিস্তি</div>
             <div class="card-body table-responsive">
                 <table class="table table-sm">
-                    <tr><th>নাম</th><th>টাকা</th></tr>
+                    <tr><th>গাড়ি</th><th>টাকা</th></tr>
                     <?php foreach($kisti as $k): ?>
-                    <tr  onclick="window.location='index.php?page=payment/view&id=<?= $k['id'] ?>'" style="cursor:pointer;">
+                    <tr onclick="window.location='index.php?page=payment/view&id=<?= $k['id'] ?>'" style="cursor:pointer;">
                         <td><?= $k['car_number'] ?></td>
                         <td>৳ <?= number_format($k['total_received'],2) ?></td>
                     </tr>

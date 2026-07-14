@@ -45,8 +45,25 @@ href="#paymentMenu"> <span><i class="bi bi-cash-coin"></i> কিস্তি �
         <a class="nav-link" href="index.php?page=payment/due">বকেয়া তালিকা</a>
     </div>
 </div>
-<!-- call story  -->
+
+
+<!-- Rent / ভাড়া -->
+
 <a class="nav-link d-flex justify-content-between align-items-center" 
+data-bs-toggle="collapse" 
+href="#rentMenu"> <span><i class="bi bi-house-door"></i> ভাড়া ব্যবস্থাপনা</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
+
+<div class="collapse" id="rentMenu">
+    <div class="submenu">
+        <a class="nav-link" href="index.php?page=rent/index">সকল ভাড়া</a>
+        <a class="nav-link" href="index.php?page=rent/collection">ভাড়া গ্রহণ</a>
+        <a class="nav-link" href="index.php?page=rent/due">বকেয়া ভাড়া</a>
+        <a class="nav-link" href="index.php?page=rent/report">ভাড়া রিপোর্ট</a>
+    </div>
+</div>
+
+<!-- call story  -->
+<!-- <a class="nav-link d-flex justify-content-between align-items-center" 
    data-bs-toggle="collapse" 
    href="#callStoryMenu"> 
    
@@ -64,7 +81,7 @@ href="#paymentMenu"> <span><i class="bi bi-cash-coin"></i> কিস্তি �
         <a class="nav-link" href="index.php?page=call_story/report">  📊 রিপোর্ট </a>
 
     </div>
-</div>
+</div> -->
 
 
 <!-- Accounting -->
@@ -82,20 +99,6 @@ href="#accountingMenu"> <span><i class="bi bi-calculator"></i> হিসাব �
 </div>
 
 
-<!-- Rent / ভাড়া -->
-
-<a class="nav-link d-flex justify-content-between align-items-center" 
-data-bs-toggle="collapse" 
-href="#rentMenu"> <span><i class="bi bi-house-door"></i> ভাড়া ব্যবস্থাপনা</span> <i class="bi bi-chevron-down toggle-icon"></i> </a>
-
-<div class="collapse" id="rentMenu">
-    <div class="submenu">
-        <a class="nav-link" href="index.php?page=rent/index">সকল ভাড়া</a>
-        <a class="nav-link" href="index.php?page=rent/collection">ভাড়া গ্রহণ</a>
-        <a class="nav-link" href="index.php?page=rent/due">বকেয়া ভাড়া</a>
-        <a class="nav-link" href="index.php?page=rent/report">ভাড়া রিপোর্ট</a>
-    </div>
-</div>
 
 
 
@@ -123,16 +126,13 @@ href="#settingsMenu"> <span><i class="bi bi-gear"></i> সেটিংস</span>
 
 <div class="collapse" id="settingsMenu">
     <div class="submenu">
-        <a class="nav-link" href="index.php?page=profile">প্রোফাইল</a>
-        <a class="nav-link" href="index.php?page=profile/settings">অ্যাকাউন্ট সেটিংস</a>
-        <a class="nav-link text-danger" href="index.php?page=profile/logout">লগআউট</a>
+            <a class="nav-link" href="index.php?page=profile/settings">অ্যাকাউন্ট সেটিংস</a>
+            <a class="nav-link" href="index.php?page=head/add">নতুন হেড</a>
+ 
     </div>
 </div>
-
 </nav>
-
-
-       
+     
  
     </aside>
 

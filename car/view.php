@@ -27,6 +27,7 @@ $customer_phone = $record['customer_phone'] ?? $payments[0]['customer_phone'];
 $customer_email = $record['customer_email'] ?? null;
 $customer_nid = $record['nid'] ?? null;
 $customer_addr = $record['address'] ?? null;
+$customer_kisti_amount = $record['monthly_kisti'] ?? null;
 
 // সামারি ক্যালকুলেশন (পেমেন্ট হিস্ট্রি থেকে)
 $totalPaid = 0;
@@ -45,6 +46,7 @@ foreach ($payments as $p) {
     if ($lastPaymentDate === null || strtotime($p['payment_date']) > strtotime($lastPaymentDate)) {
         $lastPaymentDate = $p['payment_date'];
     }
+
 }
 
 
@@ -60,29 +62,20 @@ $paid_amount = $hasContractTotal ? floatval($record['paid_amount'] ?? 0) : null;
 $nextDueDate = $record['next_due_date'] ?? null;
 $kistiStartDate = $record['kisti_start_date'] ?? null;
 $maxKisti = $totalKistiPaid - $totalKistiPlanned;
-
-$expectedPaid = $monthlyKisti * $maxKisti; // যত কিস্তি হওয়ার কথা
-$due_amount = $expectedPaid - $totalPaid;
-
-
-// বাকি টাকা — রেকর্ডে due_amount থাকলে সেটাই ব্যবহার হবে (সবচেয়ে নির্ভরযোগ্য),
-// নাহলে চুক্তির টাকা থেকে হিসাব করা হবে
-// if (!empty($record) && isset($record['due_amount'])) {
-//     $remainingAmount = floatval($record['due_amount']);
-// } elseif ($hasContractTotal) {
-//     $remainingAmount = max($netPayable - $totalPaid, 0);
-// } else {
-//     $remainingAmount = null;
-// }
-
-
-
-
+ 
 $remainingAmount = 0;
-
 $remainingAmount = $totalPrice - ($paid_amount + $discountAmount + $totalPaid);
-
 $total_due = $remainingAmount + $totalPaid;
+
+$totalDue_amount = 0;
+
+foreach ($payments as $p) {
+$due = max(0, $monthlyKisti - $p['amount']);
+
+    $totalDue_amount += $due;
+}
+
+
 
 
 $progressPct = ($hasContractTotal && $totalKistiPlanned > 0)
@@ -622,8 +615,11 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                             
                     <div class="info-row"><span class="k">মাসিক কিস্তি</span><span class="v mono">৳
                             <?= bn_number(number_format($monthlyKisti, 2)) ?></span></div>
-                    <!-- paid_amount -->
 
+  
+                            
+                    <!-- paid_amount -->
+ 
 
 
                     <div class="info-row"><span class="k">মোট কিস্তি সংখ্যা</span><span
@@ -662,7 +658,7 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
 
                     </div>
                     <div class="stat">
-                        <div class="label">বাকি টাকা</div>
+                        <div class="label mb-0">বাকি টাকা</div>
                         <?php if ($remainingAmount !== null): ?>
                         <div class="value red mono">৳ <?= bn_number(number_format($remainingAmount, 2)) ?></div>
                         <!-- <div class="sub"><?= $hasContractTotal ? 'চুক্তি অনুযায়ী' : 'রেকর্ড অনুযায়ী' ?></div> -->
@@ -670,6 +666,10 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                         <!-- <div class="value gold">নির্ধারিত নয়</div>
                         <div class="sub">চুক্তির তথ্য পাওয়া যায়নি</div> -->
                         <?php endif; ?>
+                        <div class="label text-danger mb-0"> মোট বকেয়া</div>
+<div class="value text-warning mono">
+                            <?= bn_number(number_format($totalDue_amount, 2)) ?></div>
+
                     </div>
                 </div>
 
@@ -701,27 +701,50 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
                     </tr>
                 </thead>
                 <tbody>
-                    <?php 
-                    $i=0;
-                    foreach ($payments as $row):
-                     ?>
-                    <tr>
-                   <td><?= ++$i ?></td>
-                        <td><?= bn_number(date('d/m/Y', strtotime($row['payment_date']))) ?></td>
-                        <td><span class="kisti-badge"><?= bn_number($row['kisti_number']) ?></span></td>
- <td><?= bn_number($monthlyKisti) ?></td>
-  <td><?= bn_number($row['amount']) ?></td>
+                   <?php 
+$i = 0;
 
-                        <td class="num amt">  <?= bn_number(max(0, $monthlyKisti - $row['amount'])) ?></td>
-                        <td class="num amt">
-                            <?= $row['fine_amount'] ? bn_number(number_format($row['fine_amount'], 2)) : '—' ?>
-                        </td>
-                        
-                        <td><?= strtoupper(htmlspecialchars($row['payment_method'])) ?></td>
-                        <td><?= htmlspecialchars($row['received_by'] ?? '—') ?></td>
-                    </tr>
-                    <?php endforeach; ?>
+// total variable
+$totalMonthly = 0;
+$totalPaid = 0;
+$totalDue = 0;
+$totalFine = 0;
+
+foreach ($payments as $row):
+
+    $due = max(0, $monthlyKisti - $row['amount']);
+
+    // add totals
+    $totalMonthly += $monthlyKisti;
+    $totalPaid += $row['amount'];
+    $totalDue += $due;
+    $totalFine += $row['fine_amount'];
+?>
+                   <tr>
+    <td><?= ++$i ?></td>
+    <td><?= bn_number(date('d/m/Y', strtotime($row['payment_date']))) ?></td>
+    <td><span class="kisti-badge"><?= bn_number($row['kisti_number']) ?></span></td>
+    <td><?= bn_number($monthlyKisti) ?></td>
+    <td><?= bn_number($row['amount']) ?></td>
+    <td class="num amt"><?= bn_number($due) ?></td>
+    <td class="num amt">
+        <?= $row['fine_amount'] ? bn_number(number_format($row['fine_amount'], 2)) : '—' ?>
+    </td>
+    <td><?= strtoupper(htmlspecialchars($row['payment_method'])) ?></td>
+    <td><?= htmlspecialchars($row['received_by'] ?? '—') ?></td>
+</tr>
+<?php endforeach; ?>
                 </tbody>
+                <tfoot>
+    <tr style="font-weight:bold; background:#f5f5f5;">
+        <td colspan="3" class="text-end">মোট</td>
+        <td><?= bn_number($totalMonthly) ?></td>
+        <td><?= bn_number($totalPaid) ?></td>
+        <td><?= bn_number($totalDue) ?></td>
+        <td><?= bn_number(number_format($totalFine, 2)) ?></td>
+        <td colspan="2">—</td>
+    </tr>
+</tfoot>
             </table>
 
             <div class="signatures">
