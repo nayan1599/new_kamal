@@ -109,16 +109,28 @@ $totalAmount = ($totalMonths * $monthlyAmount) + ($totalDays * $dailyRate) - $to
 // 👉 বাকি টাকা
 $dueAmount = $totalAmount ;
  
+  
+$totalKistiPlanned = $totalKistiPlanned; // মোট প্ল্যান মাস (যেমন: 24)
  
-$remainingMonths = $dueAmount / $monthlyAmount;
 
-// 👉 পুরো মাস + দিন আকারে convert
+// 👉 কেটে যাওয়া সময়
+$passedMonths = ($diff->y * 12) + $diff->m;
+$passedDays   = $diff->d;
+
+// 👉 total passed in decimal month
+$passedTotalMonths = $passedMonths + ($passedDays / 30);
+
+// 👉 বাকি মাস
+$remainingMonths = $totalKistiPlanned - $passedTotalMonths;
+
+// 👉 যদি negative হয় (মানে শেষ হয়ে গেছে)
+$remainingMonths = max(0, $remainingMonths);
+
+// 👉 মাস + দিন আলাদা করে
 $remainingFullMonths = floor($remainingMonths);
-$remainingDays = ($remainingMonths - $remainingFullMonths) * 30;
+$remainingDays = round(($remainingMonths - $remainingFullMonths) * 30);
 
-
-
-
+// ✅ Output
 
 
 
