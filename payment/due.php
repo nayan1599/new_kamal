@@ -1,5 +1,7 @@
 <?php
- $stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC ");
+// kisti_payments
+
+$stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC ");
 $rows = $stmt->fetchAll();
  
 

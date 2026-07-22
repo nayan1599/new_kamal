@@ -2,7 +2,7 @@
  
  
 // সব রেকর্ড
-$stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC LIMIT 100");
+$stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC");
 $records = $stmt->fetchAll();
  
 ?>

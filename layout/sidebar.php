@@ -29,6 +29,8 @@ href="#carMenu"> <span><i class="bi bi-car-front"></i> গাড়ি ও গ্�
     <div class="submenu">
         <a class="nav-link" href="index.php?page=car/index">সকল গাড়ি</a>
         <a class="nav-link" href="index.php?page=car/add">নতুন গাড়ি যোগ</a>
+        <!-- report  -->
+        <a class="nav-link" href="index.php?page=car/report">গাড়ি রিপোর্ট</a>
     </div>
 </div>
 
@@ -63,25 +65,23 @@ href="#rentMenu"> <span><i class="bi bi-house-door"></i> ভাড়া ব্য�
 </div>
 
 <!-- call story  -->
-<!-- <a class="nav-link d-flex justify-content-between align-items-center" 
+<a class="nav-link d-flex justify-content-between align-items-center" 
    data-bs-toggle="collapse" 
    href="#callStoryMenu"> 
    
-   <span><i class="bi bi-telephone-forward"></i> কল স্টোরি</span> 
+   <span><i class="bi bi-telephone-forward me-2"></i>দিন / সময়</span> 
    <i class="bi bi-chevron-down toggle-icon"></i> 
 </a>
 
 <div class="collapse" id="callStoryMenu">
     <div class="submenu">
-        <a class="nav-link" href="index.php?page=call_story/index"> 📋 সকল কল তালিকা  </a>
-        <a class="nav-link" href="index.php?page=call_story/add">  ➕ নতুন কল এন্ট্রি  </a>
-        <a class="nav-link" href="index.php?page=call_story/followup"> 🔔 ফলোআপ তালিকা  </a>
-        <a class="nav-link" href="index.php?page=call_story/promise">  📅 প্রমিজ ডেট </a>
-        <a class="nav-link" href="index.php?page=call_story/due_calls">  ⚠️ বকেয়া কল  </a>
-        <a class="nav-link" href="index.php?page=call_story/report">  📊 রিপোর্ট </a>
+        
+        <a class="nav-link" href="index.php?page=day/index">
+            ⏳ সময়ের হিসাব
+        </a>
 
     </div>
-</div> -->
+</div>
 
 
 <!-- Accounting -->
