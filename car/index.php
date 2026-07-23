@@ -136,7 +136,7 @@ const searchInput = document.getElementById("searchInput");
 // 👉 default: last 10 show
 function showDefault() {
     rows.forEach((row, index) => {
-        row.style.display = (index < 10) ? "" : "none";
+        row.style.display = (index < 30) ? "" : "none";
     });
 }
 

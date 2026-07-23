@@ -26,7 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $description
     ]);
 
-    header("Location: index.php?page=rent/index");
-    exit();
+
+  // ================== ERROR SHOW ==================
+    if (!empty($errors)) {
+        $_SESSION['error'] = implode('<br>', $errors);
+        header("Location:index.php?page=accounting/index");
+        exit();
+    }
+ 
 }
 ?>

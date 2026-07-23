@@ -1,7 +1,7 @@
 <div class="container mt-4">
     <h3 class="mb-4">নতুন লেনদেন যোগ করুন</h3>
 
-    <form method="POST" action="index.php?page=sql/transactions_add">
+    <form class="needs-validation" novalidate method="POST" action="index.php?page=sql/transactions_add">
         <div class="row">
 
             <!-- তারিখ -->
