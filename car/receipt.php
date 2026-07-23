@@ -59,7 +59,7 @@ $totalPaid = $paid_amount;
                 <tr>
                     <td><b>রিসিট নং:</b> <?= $record['invoice_no'] ?></td>
                     <td style="text-align:right;">
-                        <b>তারিখ:</b> <?= date('d-m-Y', strtotime($record['kisti_start_date'])) ?>
+                        <b>তারিখ:</b> <?= bn_number(date('d-m-Y', strtotime($record['kisti_start_date']))) ?>
                     </td>
                 </tr>
             </table>
