@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $monthly_kisti     = (float)($_POST['monthly_kisti'] ?? 0);
     $kisti_start_date  = $_POST['kisti_start_date'] ?? null;
     $note              = trim($_POST['note'] ?? '');
+    $status            = trim($_POST['status'] ?? '');
 
     try {
 
@@ -36,7 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 total_kisti = ?,
                 monthly_kisti = ?,
                 kisti_start_date = ?,
-                note = ?
+                note = ?,
+                status=?
             WHERE id = ?
         ");
 
@@ -51,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $monthly_kisti,
             $kisti_start_date,
             $note,
+            $status,
             $id
         ]);
 

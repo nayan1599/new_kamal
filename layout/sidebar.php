@@ -31,6 +31,8 @@ href="#carMenu"> <span><i class="bi bi-car-front"></i> গাড়ি ও গ্�
         <a class="nav-link" href="index.php?page=car/add">নতুন গাড়ি যোগ</a>
         <!-- report  -->
         <a class="nav-link" href="index.php?page=car/report">গাড়ি রিপোর্ট</a>
+          <!-- report  -->
+        <a class="nav-link" href="index.php?page=car/completed">গাড়ি সম্পন্ন</a>
     </div>
 </div>
 

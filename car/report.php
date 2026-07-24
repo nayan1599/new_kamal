@@ -1,6 +1,6 @@
 <?php
 // সব রেকর্ড load (JS দিয়ে filter/limit হবে)
-$stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC");
+$stmt = $pdo->query("SELECT * FROM customer_records WHERE status != 'completed' ORDER BY created_at DESC ");
 $records = $stmt->fetchAll();
 ?>
 
@@ -41,7 +41,7 @@ $records = $stmt->fetchAll();
                 <select id="statusFilter" class="form-select form-select-sm">
                     <option value="">সব স্ট্যাটাস</option>
                     <option value="running">চলমান</option>
-                    <option value="completed">সম্পন্ন</option>
+                    <option value="completed">সময় শেষ</option>
                 </select>
 
              
@@ -137,8 +137,8 @@ $records = $stmt->fetchAll();
                         </td>
 
                         <td data-status="<?= $status ?>">
-                            <span class="badge bg-<?= ($status == 'completed') ? 'success' : 'warning' ?>">
-                                <?= ($status == 'completed') ? 'সম্পন্ন' : 'চলমান' ?>
+                            <span class="badge bg-<?= ($status == 'completed') ? 'danger' : 'warning' ?>">
+                                <?= ($status == 'completed') ? 'সময় শেষ' : 'চলমান' ?>
                             </span>
                         </td>
 

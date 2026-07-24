@@ -1,6 +1,6 @@
 <?php
-// সব রেকর্ড (সব load হবে, কিন্তু JS দিয়ে 10টা দেখাবো)
-$stmt = $pdo->query("SELECT * FROM customer_records ORDER BY created_at DESC");
+$stmt = $pdo->query("SELECT * FROM customer_records WHERE status != 'completed' ORDER BY created_at DESC ");
+
 $records = $stmt->fetchAll();
 ?>
 
@@ -104,8 +104,8 @@ $records = $stmt->fetchAll();
                         </td>
 
                         <td>
-                            <span class="badge bg-<?= ($remainingMonths <= 0) ? 'success' : 'warning' ?>">
-                                <?= ($remainingMonths <= 0) ? 'সম্পন্ন' : 'চলমান' ?>
+                            <span class="badge bg-<?= ($remainingMonths <= 0) ? 'danger' : 'warning' ?>">
+                                <?= ($remainingMonths <= 0) ? 'সময় শেষ' : 'চলমান' ?>
                             </span>
                         </td>
 

@@ -1,101 +1,106 @@
 <?php
  
- 
-// সব রেকর্ড
+
+// ================== FETCH TRANSACTIONS ==================
 $stmt = $pdo->query("SELECT * FROM transactions ORDER BY created_at DESC LIMIT 100");
 $transactions = $stmt->fetchAll();
+
+// ================== HEAD SUMMARY ==================
+$summaryStmt = $pdo->query("
+    SELECT 
+        head_name,
+        SUM(taka_in) as total_in,
+        SUM(taka_out) as total_out
+    FROM transactions
+    GROUP BY head_name
+");
+$head_summaries = $summaryStmt->fetchAll();
+
  
+
 ?>
 
-<div class="container-fluid px-3 px-lg-4 py-4">
+<div class="container-fluid p-4">
 
-    <!-- Page Heading -->
+    <!-- ================= HEADER ================= -->
     <div class="page-heading">
-        <div class="page-heading-copy">
-            <span class="page-icon"><i class="bi bi-car-front"></i></span>
-            <div>
-                <p class="eyebrow mb-1">রেকর্ডস</p>
-                <h1 class="h3 mb-1">কাস্টমার রেকর্ডস</h1>
-                <p class="text-muted mb-0">সকল লেনদেন ও কাস্টমার তথ্য</p>
-            </div>
+        <div>
+            <h1>📊 কাস্টমার একাউন্টিং</h1>
+            <p class="text-muted">সকল লেনদেনের হিসাব</p>
         </div>
 
-        <!-- report button  -->
-        
-        <a href="index.php?page=accounting/add" class="btn btn-success"> <i class="bi bi-plus-circle"></i> নতুন এন্ট্রি </a>
+        <a href="index.php?page=accounting/add" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> নতুন এন্ট্রি
+        </a>
     </div>
 
 
 
-    <!-- সব রেকর্ড -->
-    <section class="panel">
-        <div class="panel-header">
-            <div>
-                <h2 class="h5 mb-1 section-title">
-                    <i class="bi bi-car-front"></i>
-                    <span>সকল রেকর্ড</span>
-                </h2>
-            </div>
+    <!-- ================= SEARCH ================= -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 সার্চ করুন (নাম / ফোন / হেড)...">
+    </div>
 
-            <div class="d-flex align-items-center gap-2">
-
-                <input class="form-control form-control-sm table-search" type="search" id="searchInput"
-                    placeholder="🔍 নাম, ফোন বা গাড়ির নম্বর সার্চ করুন..." aria-label="Search">
-            </div>
-        </div>
-
+    <!-- ================= TABLE ================= -->
+    <div class="card">
         <div class="table-responsive">
-            <table class="table align-middle mb-0" id="dataTable">
-                <thead>
+            <table class="table table-hover mb-0" id="dataTable">
+                <thead class="table-dark text-white">
                     <tr>
-                        <th>তারিখ</th>
-                        <th>IN</th>
-                         <th>Out</th>
-                        <th>Type</th>
-                        <th>Description</th>
+                        <th>হেড</th>
+                        <th>জমা (IN)</th>
+                        <th>খরচ (OUT)</th>
+                        <th>ব্যালেন্স</th>
                         <th class="text-end">অ্যাকশন</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <?php foreach($transactions as $row): ?>
+                    <?php foreach($head_summaries as $row): 
+            $balance = ($row['total_in'] ?? 0) - ($row['total_out'] ?? 0);
+        ?>
                     <tr>
-                        <td><?= bn_number (date('d-m-Y', strtotime($row['date']))) ?></td>
- 
-                        <td class="text-primary fw-semibold">
-                            ৳ <?= bn_number(number_format($row['taka_in'] ?? 0, 2)) ?>
-                        </td>
-                        <td class=" text-success fw-semibold">
-                            ৳ <?= bn_number(number_format($row['taka_out'] ?? 0, 2)) ?>
-                        </td>
-                        <td class=" text-danger fw-semibold">
-                            ৳ <?=  ($row['head_name'] ?? "") ?>
-                        </td>
-
+                        <!-- Head Name -->
                         <td>
-                                 <?= strtoupper($row['description'] ?? "") ?>
-                         </td>
+                            <strong><?= $row['head_name'] ?? 'N/A' ?></strong>
+                        </td>
 
+                        <!-- IN -->
+                        <td class="text-primary fw-semibold">
+                            ৳ <?= bn_number(number_format($row['total_in'] ?? 0, 2)) ?>
+                        </td>
+
+                        <!-- OUT -->
+                        <td class="text-danger fw-semibold">
+                            ৳ <?= bn_number(number_format($row['total_out'] ?? 0, 2)) ?>
+                        </td>
+
+                        <!-- Balance -->
+                        <td>
+                            <span class="badge <?= $balance >= 0 ? 'bg-success' : 'bg-danger' ?>">
+                                ৳ <?= bn_number(number_format($balance, 2)) ?>
+                            </span>
+                        </td>
+
+                        <!-- Action -->
                         <td class="text-end">
-    <a href="index.php?page=accounting/view&transactions_id=<?= urlencode($row['id'] ?? '') ?>"
-        class="btn btn-info btn-sm text-white">দেখুন</a>
- 
- 
- 
-
-</td>
-
+                            <a href="index.php?page=accounting/sammery&head_name=<?= $row['head_name'] ?? 'N/A' ?>" class="btn btn-sm btn-outline-secondary" >
+                                Summary
+                    </a>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
-    </section>
+    </div>
+
 </div>
 
-<!-- Search Script -->
+<!-- ================= SEARCH SCRIPT ================= -->
 <script>
 document.getElementById("searchInput").addEventListener("keyup", function() {
-    let value = this.value.toLowerCase().trim();
+    let value = this.value.toLowerCase();
     let rows = document.querySelectorAll("#dataTable tbody tr");
 
     rows.forEach(row => {
