@@ -134,17 +134,12 @@ $remainingDays = round(($remainingMonths - $remainingFullMonths) * 30);
 
 
 
-
-
-
-
-
-
-
 // রিসিট নং — ইনভয়েস থাকলে সেটাই, নাহলে অটো-জেনারেট
 $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/', '', $car_number) . '-' . date('ym', strtotime($lastPaymentDate)));
 ?>
-<div style="text-align:right;padding:8px 0;max-width:900px;margin:0 auto;">
+
+<div class="container-fluid">
+<div style="text-align:right;padding:8px 0;margin:0 auto;">
     <button onclick="printDiv('receiptArea')"
         style="background:#198754;color:#fff;border:none;border-radius:6px;padding:10px 18px;font-size:.9rem;font-weight:600;cursor:pointer;">🖨️
         Print</button>
@@ -152,7 +147,7 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
 
 <div class="receipt" id="receiptArea"
     style="-webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;position:relative;max-width:900px;margin:0 auto;background:#faf6ec;border-radius:4px;box-shadow:0 25px 60px -15px rgba(8,21,39,0.35), 0 0 0 1px rgba(13,35,64,0.06);overflow:hidden;">
+        print-color-adjust: exact !important;position:relative;margin:0 auto;background:#faf6ec;border-radius:4px;box-shadow:0 25px 60px -15px rgba(8,21,39,0.35), 0 0 0 1px rgba(13,35,64,0.06);overflow:hidden;">
 
     <div
         style="print-color-adjust: exact !important;height:14px; background-color:#0d2340;background-image:repeating-linear-gradient(115deg, transparent 0 6px, rgba(184,134,60,0.55) 6px 7px, transparent 7px 13px), repeating-linear-gradient(65deg, transparent 0 6px, rgba(228,201,141,0.35) 6px 7px, transparent 7px 13px);">
@@ -181,7 +176,7 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
         </div>
     </div>
 
-    <div style="padding:34px 40px 10px;position:relative;">
+    <div style="padding:10px;position:relative;">
         <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:18px;margin-bottom:30px;">
             <div style="border:1px solid #e7ddc7;border-radius:6px;padding:18px 20px;background:#fffdf7;">
                 <h6
@@ -400,6 +395,7 @@ $receiptSerial = $record['invoice_no'] ?? ('JE-' . preg_replace('/[^A-Za-z0-9]/'
             <span>কিস্তির বিস্তারিত তথ্য</span>
             <div style="flex:1;height:1px;background:#e7ddc7;print-color-adjust: exact !important;"></div>
         </div>
+        <div class="table-responsive">
         <table style="width:100%;border-collapse:collapse;margin-bottom:6px;print-color-adjust: exact !important;">
             <thead>
                 <tr>
@@ -467,7 +463,7 @@ foreach ($payments as $row):
                 <?php endforeach; ?>
             </tbody>
         </table>
-
+</div>
         <div
             style="print-color-adjust: exact !important;display:grid;grid-template-columns:1fr 1fr;gap:40px;margin:38px 0 8px;print-color-adjust: exact !important;">
             <div
@@ -492,11 +488,10 @@ foreach ($payments as $row):
     </div>
 </div>
 
-<div style="max-width:900px;margin:18px auto 0;display:flex;justify-content:space-between;gap:12px;print-color-adjust: exact !important;">
+<div style="margin:18px auto 0;display:flex;justify-content:space-between;gap:12px;print-color-adjust: exact !important;">
     <a href="index.php?page=car/index"
         style="border:1px solid #e7ddc7;border-radius:6px;padding:12px 22px;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0d2340;">←
         লিস্টে ফিরুন</a>
-    <button onclick="window.print()"
-        style="border:none;border-radius:6px;padding:12px 22px;font-size:.9rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:#0d2340;color:#f4efe1;">প্রিন্ট
-        করুন</button>
+ 
+</div>
 </div>

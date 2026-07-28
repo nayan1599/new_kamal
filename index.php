@@ -15,7 +15,20 @@ include './layout/top.php';
 
 
 <?php
-$page = $_GET['page'] ?? 'dashboard';
+//  moderator
+
+ 
+
+if($_SESSION['user_role']=='user'){
+$page = $_GET['page'] ?? 'rent/index';
+} 
+ else{
+    $page = $_GET['page'] ?? 'dashboard';
+ }
+ 
+
+
+
 
 // নিরাপত্তার জন্য শুধুমাত্র অক্ষর, সংখ্যা, / এবং .php অনুমোদন
 $page = preg_replace('/[^a-zA-Z0-9\/_-]/', '', $page);

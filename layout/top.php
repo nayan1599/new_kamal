@@ -15,7 +15,7 @@
  
             <div class="dropdown">
               <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar.jpg" alt="<?php echo $_SESSION['user_name']; ?>">
+              
                 <span class="profile-name d-none d-sm-inline"><?php echo $_SESSION['user_name']; ?></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">

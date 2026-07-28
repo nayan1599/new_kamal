@@ -108,7 +108,9 @@ $transactions = $stmt->fetchAll();
     <div class="col-md-2">
         <a href="index.php?page=dashboard" class="btn btn-secondary w-100">Reset</a>
     </div>
-
+  <div class="col-md-2">
+        <a href="index.php?page=car/index" class="btn btn-info w-100">সকল গাড়ি</a>
+    </div>
 </form>
 
 <!-- ================= SUMMARY ================= -->
