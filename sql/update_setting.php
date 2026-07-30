@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $name     = trim($_POST['name']);
     $phone    = trim($_POST['phone']);
+    $role     = trim($_POST['role']);
     $password = $_POST['password'];
     $confirm  = $_POST['confirm_password'];
 
@@ -31,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt = $pdo->prepare("
                 UPDATE users 
-                SET name = ?, phone = ?, password = ?
+                SET name = ?, phone = ?, password = ?, role = ?,
                 WHERE id = ?
             ");
 
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // password change না করলে
             $stmt = $pdo->prepare("
                 UPDATE users 
-                SET name = ?, phone = ?
+                SET name = ?, phone = ? role = ?,
                 WHERE id = ?
             ");
 
