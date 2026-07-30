@@ -90,7 +90,7 @@ if (!$data) {
                     <option value="">-- নির্বাচন করুন --</option>
 
                     <option value="running"
-                        <?= (isset($data['status']) && $data['status']=='running') ? 'selected' : '' ?>>
+                        <?= (isset($data['status']) && $data['status']=='active') ? 'selected' : '' ?>>
                         চলমান
                     </option>
 
