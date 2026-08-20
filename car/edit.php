@@ -103,6 +103,10 @@ if (!$data) {
                         <?= (isset($data['status']) && $data['status']=='overdue') ? 'selected' : '' ?>>
                         বকেয়া
                     </option>
+                     <option value="cancelled"
+                        <?= (isset($data['status']) && $data['status']=='cancelled') ? 'selected' : '' ?>>
+                        ফেরত
+                    </option>
                 </select>
             </div>
             <div class="col-12">

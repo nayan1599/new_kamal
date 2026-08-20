@@ -1,6 +1,6 @@
 <?php
-include './config/db.php';
 
+ 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $name     = trim($_POST['name']);
@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email    = trim($_POST['email']);
     $phone    = trim($_POST['phone']);
     $password = $_POST['password'];
+    $role      = trim($_POST['role']);
     $confirm_password = $_POST['confirm_password'];
 
     $errors = [];
@@ -32,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // নতুন টেবিল অনুসারে INSERT
                 $sql = "INSERT INTO users 
-                        (username, name, email, phone, password, role, status) 
-                        VALUES (?, ?, ?, ?, ?, 'user', 'active')";
+                        (username, name, email, phone, password, role, status, role) 
+                        VALUES (?, ?, ?, ?, ?, 'user', 'active', ?)";
 
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$username, $name, $email, $phone, $hashed_password]);
@@ -49,25 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নতুন অ্যাকাউন্ট তৈরি করুন</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 450px; margin: 40px auto; padding: 20px; }
-        input { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; cursor: pointer; }
-        .error { color: red; }
-        .success { color: green; }
-    </style>
-</head>
-<body>
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="col-md-6">
+        <div class="card shadow-lg p-4">
 
-<h2>নতুন অ্যাকাউন্ট তৈরি করুন</h2>
+            <h3 class="text-center mb-4">নতুন অ্যাকাউন্ট তৈরি করুন</h3>
 
-<?php
+            <?php
 if (isset($_SESSION['success'])) {
     echo "<p class='success'>" . $_SESSION['success'] . "</p>";
     unset($_SESSION['success']);
@@ -80,29 +69,41 @@ if (!empty($errors)) {
 }
 ?>
 
-<form method="POST" action="">
-    <label>পুরো নাম:</label>
-    <input type="text" name="name" required>
-    
-    <label>ইউজারনেম:</label>
-    <input type="text" name="username" required>
-    
-    <label>ইমেইল:</label>
-    <input type="email" name="email" required>
-    
-    <label>ফোন নম্বর:</label>
-    <input type="text" name="phone">
-    
-    <label>পাসওয়ার্ড:</label>
-    <input type="password" name="password" required>
-    
-    <label>পাসওয়ার্ড আবার:</label>
-    <input type="password" name="confirm_password" required>
-    
-    <button type="submit">রেজিস্টার করুন</button>
-</form>
+            <form method="POST" action="">
+                <label class="form-label">পুরো নাম:</label>
+                <input class="form-control" type="text" name="name" required>
 
-<p style="text-align:center;">ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="login.php">লগইন করুন</a></p>
+                <label class="form-label">ইউজারনেম:</label>
+                <input class="form-control" type="text" name="username" required>
 
-</body>
-</html>
+                <label class="form-label">ইমেইল:</label>
+                <input class="form-control" type="email" name="email" required>
+
+                <label class="form-label">ফোন নম্বর:</label>
+                <input class="form-control" type="text" name="phone">
+
+                <label class="form-label">পাসওয়ার্ড:</label>
+                <input class="form-control" type="password" name="password" required>
+
+                <label class="form-label">পাসওয়ার্ড আবার:</label>
+                <input class="form-control" type="password" name="confirm_password" required>
+
+                <label>User Role</label>
+                <select name="role" id="role" class="form-select" required>
+                    <option value="">নির্বাচন করুন</option>
+                    <option value="user">user</option>
+                    <option value="admin">Admin</option>
+                    <option value="supper_admin">Supper Admin</option>
+
+                </select>
+
+                <div class="py-3">
+                    <button class="btn btn-success" type="submit">রেজিস্টার করুন</button>
+                </div>
+
+            </form>
+
+            <p style="text-align:center;">ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="login.php">লগইন করুন</a></p>
+        </div>
+    </div>
+</div>

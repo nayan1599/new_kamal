@@ -22,43 +22,47 @@ if (ini_get("session.use_cookies")) {
 <!DOCTYPE html>
 
 <html lang="bn">
+
 <head>
     <meta charset="UTF-8">
     <title>Logout</title>
 
- 
-<!-- Bootstrap (optional সুন্দর করার জন্য) -->
-<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
 
-<style>
+    <!-- Bootstrap (optional সুন্দর করার জন্য) -->
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
     body {
         background: #f8f9fa;
     }
+
     .box {
         margin-top: 120px;
         text-align: center;
     }
-</style>
- 
+    </style>
+
 
 </head>
+
 <body>
 
-<div class="container box">
-    <div class="alert alert-success">
-        <h4>✅ Logout সফল হয়েছে</h4>
-        <p>২ সেকেন্ড পরে Login page এ নিয়ে যাওয়া হবে...</p>
+    <div class="container box">
+        <div class="alert alert-success">
+            <h4>✅ Logout সফল হয়েছে</h4>
+            <p>২ সেকেন্ড পরে Login page এ নিয়ে যাওয়া হবে...</p>
+        </div>
     </div>
-</div>
 
-<script>
-// 2 second পরে redirect
-setTimeout(function() {
-    window.location.href = "index.php?page=login";
-}, 20);
-</script>
+    <script>
+    // 2 second পরে redirect
+    setTimeout(function() {
+        window.location.href = "index.php?page=login";
+    }, 20);
+    </script>
 
 </body>
+
 </html>
 
 <?php
