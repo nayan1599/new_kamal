@@ -16,7 +16,9 @@ $records = $stmt->fetchAll();
                 <p class="text-muted mb-0">সকল লেনদেন ও কাস্টমার তথ্য</p>
             </div>
         </div>
-
+        <div class="col-md-2">
+            <a href="index.php?page=car/report" class="btn btn-warning w-100">গাড়ি তালিকা</a>
+        </div>
         <a href="index.php?page=car/add" class="btn btn-success">
             <i class="bi bi-plus-circle"></i> নতুন এন্ট্রি
         </a>
@@ -29,8 +31,7 @@ $records = $stmt->fetchAll();
                 <i class="bi bi-car-front"></i> সকল রেকর্ড
             </h2>
 
-            <input class="form-control form-control-sm table-search" type="search"
-                id="searchInput"
+            <input class="form-control form-control-sm table-search" type="search" id="searchInput"
                 placeholder="🔍 নাম, ফোন বা গাড়ির নম্বর সার্চ করুন...">
         </div>
 
@@ -51,7 +52,7 @@ $records = $stmt->fetchAll();
                 </thead>
 
                 <tbody id="tableBody">
-                <?php
+                    <?php
                 $i=0;
                 foreach($records as $row):
 
@@ -120,7 +121,7 @@ $records = $stmt->fetchAll();
                                 class="btn btn-success btn-sm">রসিদ</a>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </tbody>
 
             </table>
@@ -141,7 +142,7 @@ function showDefault() {
 }
 
 // 👉 search
-searchInput.addEventListener("keyup", function () {
+searchInput.addEventListener("keyup", function() {
     let value = this.value.toLowerCase().trim();
 
     if (value === "") {

@@ -1,4 +1,11 @@
 <?php
+$car_number = $_GET['car_number'] ?? '';
+
+ 
+
+
+
+
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -53,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             <div class="col-md-6">
                                 <label class="form-label">গাড়ির নাম্বার</label>
-                                <input type="text" name="car_number" class="form-control" placeholder="ঢাকা মেট্রো-গ-১২৩৪">
+                                <input type="text" name="car_number" value="<?= htmlspecialchars($car_number) ?>" class="form-control" placeholder="ঢাকা মেট্রো-গ-১২৩৪">
                             </div>
 
                             <!-- কিস্তি নম্বর (শুধু কিস্তি হলে দেখাবে) -->

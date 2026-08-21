@@ -57,14 +57,8 @@ $records = $stmt->fetchAll();
         ================================================== -->
         <div class="col-md-2 col-sm-12">
 
-            <input
-                type="search"
-                id="searchInput"
-                class="form-control form-control-sm"
-                placeholder="🔍 তারিখের দিন..."
-                inputmode="numeric"
-                autocomplete="off"
-            >
+            <input type="search" id="searchInput" class="form-control form-control-sm" placeholder="🔍 তারিখের দিন..."
+                inputmode="numeric" autocomplete="off">
 
         </div>
 
@@ -72,11 +66,7 @@ $records = $stmt->fetchAll();
         <!-- From Date -->
         <div class="col-md-2 col-sm-12">
 
-            <input
-                type="date"
-                id="fromDate"
-                class="form-control form-control-sm"
-            >
+            <input type="date" id="fromDate" class="form-control form-control-sm">
 
         </div>
 
@@ -84,11 +74,7 @@ $records = $stmt->fetchAll();
         <!-- To Date -->
         <div class="col-md-2 col-sm-12">
 
-            <input
-                type="date"
-                id="toDate"
-                class="form-control form-control-sm"
-            >
+            <input type="date" id="toDate" class="form-control form-control-sm">
 
         </div>
 
@@ -96,10 +82,7 @@ $records = $stmt->fetchAll();
         <!-- Status -->
         <div class="col-md-2 col-sm-12">
 
-            <select
-                id="statusFilter"
-                class="form-select form-select-sm"
-            >
+            <select id="statusFilter" class="form-select form-select-sm">
 
                 <option value="">
                     সব স্ট্যাটাস
@@ -127,19 +110,11 @@ $records = $stmt->fetchAll();
 
             <div class="d-flex gap-2 flex-wrap">
 
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    onclick="applyFilter()"
-                >
+                <button type="button" class="btn btn-primary btn-sm" onclick="applyFilter()">
                     ফিল্টার
                 </button>
 
-                <button
-                    type="button"
-                    class="btn btn-secondary btn-sm"
-                    onclick="resetFilter()"
-                >
+                <button type="button" class="btn btn-secondary btn-sm" onclick="resetFilter()">
                     রিসেট
                 </button>
 
@@ -153,11 +128,7 @@ $records = $stmt->fetchAll();
     <!-- ==================================================
          Search Information
     ================================================== -->
-    <div
-        id="searchInfo"
-        class="small text-muted mb-2"
-        style="display:none;"
-    ></div>
+    <div id="searchInfo" class="small text-muted mb-2" style="display:none;"></div>
 
 
     <!-- ==================================================
@@ -173,9 +144,7 @@ $records = $stmt->fetchAll();
 
                     <tr>
 
-                        <th style="min-width:40px">
-                            #
-                        </th>
+
 
                         <th>
                             তারিখ
@@ -215,10 +184,10 @@ $records = $stmt->fetchAll();
 
 
                 <tbody id="tableBody">
+             
+                    <?php
 
-                <?php
-
-                $i = 0;
+             
 
                 foreach ($records as $row):
 
@@ -373,18 +342,7 @@ $records = $stmt->fetchAll();
 
                 ?>
 
-                    <tr
-                        data-day="<?= $dayNumber ?>"
-                        data-date="<?= $dataDate ?>"
-                        data-status="<?= $status ?>"
-                    >
-
-                        <!-- ==================================================
-                             Serial
-                        ================================================== -->
-                        <td>
-                            <?= ++$i ?>
-                        </td>
+                    <tr data-day="<?= $dayNumber ?>" data-date="<?= $dataDate ?>" data-status="<?= $status ?>">
 
 
                         <!-- ==================================================
@@ -488,38 +446,36 @@ $records = $stmt->fetchAll();
                         <td class="text-end">
 
                             <!-- View -->
-                            <a
-                                href="index.php?page=car/view&car_number=<?= urlencode(
+                            <a href="index.php?page=car/view&car_number=<?= urlencode(
                                     $row['car_number'] ?? ''
-                                ) ?>"
-                                class="btn btn-info btn-sm text-white"
-                            >
+                                ) ?>" class="btn btn-info btn-sm text-white">
                                 দেখুন
                             </a>
 
 
                             <!-- Edit -->
-                            <a
-                                href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>"
-                                class="btn btn-warning btn-sm"
-                            >
+                            <a href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm">
                                 সম্পাদনা
                             </a>
 
 
                             <!-- Receipt -->
-                            <a
-                                href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
-                                class="btn btn-success btn-sm"
-                            >
+                            <a href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-success btn-sm">
                                 রসিদ
+                            </a>
+
+                            <!-- call story  -->
+                            <a href="index.php?page=call_story/callstory&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-primary btn-sm">
+                                কল স্টোরি
                             </a>
 
                         </td>
 
                     </tr>
 
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
 
                 </tbody>
 
@@ -537,8 +493,7 @@ $records = $stmt->fetchAll();
 ========================================================= -->
 
 <script>
-
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function() {
 
     const rows =
         document.querySelectorAll("#tableBody tr");
@@ -567,7 +522,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let visibleCount = 0;
 
-        rows.forEach(function (row) {
+        rows.forEach(function(row) {
 
             if (visibleCount < 10) {
 
@@ -591,7 +546,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Apply Filter
     // =========================================================
 
-    window.applyFilter = function () {
+    window.applyFilter = function() {
 
         /*
          * এখানে searchInput থেকে শুধু দিন নেওয়া হবে।
@@ -643,7 +598,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     inputDay > 31
                 ) {
 
-                    rows.forEach(function (row) {
+                    rows.forEach(function(row) {
 
                         row.style.display = "none";
 
@@ -659,7 +614,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             } else {
 
-                rows.forEach(function (row) {
+                rows.forEach(function(row) {
 
                     row.style.display = "none";
 
@@ -682,7 +637,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let visibleCount = 0;
 
 
-        rows.forEach(function (row) {
+        rows.forEach(function(row) {
 
             // -------------------------------------------------
             // Row Data
@@ -824,7 +779,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Reset Filter
     // =========================================================
 
-    window.resetFilter = function () {
+    window.resetFilter = function() {
 
         searchInput.value = "";
 
@@ -845,7 +800,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     searchInput.addEventListener(
         "input",
-        function () {
+        function() {
 
             /*
              * এখানে সরাসরি filter হবে।
@@ -867,7 +822,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fromDate.addEventListener(
         "change",
-        function () {
+        function() {
 
             applyFilter();
 
@@ -881,7 +836,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     toDate.addEventListener(
         "change",
-        function () {
+        function() {
 
             applyFilter();
 
@@ -895,7 +850,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     statusFilter.addEventListener(
         "change",
-        function () {
+        function() {
 
             applyFilter();
 
@@ -910,5 +865,4 @@ document.addEventListener("DOMContentLoaded", function () {
     showDefault();
 
 });
-
 </script>

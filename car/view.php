@@ -18,8 +18,14 @@ $stmt->execute([$car_number]);
 $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (empty($payments)) {
-    die("<h3 class='text-center mt-5 text-danger'>এই গাড়ির কোনো কিস্তি পাওয়া যায়নি!</h3>");
-}
+
+    die("
+        <h3 class='text-center mt-5 text-danger'>
+            এই গাড়ির কোনো কিস্তি পাওয়া যায়নি!
+        </h3>
+    ");
+
+} 
 
 // গ্রাহকের তথ্য — রেকর্ড থাকলে সেখান থেকে, না থাকলে পেমেন্ট থেকে
 $customer_name = $record['customer_name'] ?? $payments[0]['customer_name'];

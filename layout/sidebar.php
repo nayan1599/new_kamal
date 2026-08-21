@@ -61,7 +61,7 @@
                     <a class="nav-link" href="index.php?page=payment/index">সকল কিস্তি</a>
                     <a class="nav-link" href="index.php?page=payment/add">কিস্তি গ্রহণ</a>
                     <a class="nav-link" href="index.php?page=payment/due">বকেয়া তালিকা</a>
-                      <a class="nav-link" href="index.php?page=payment/report">কিস্তি বকেয়া</a>
+                      <a class="nav-link" href="index.php?page=payment/report">কিস্তি রিপোর্ট</a>
                 </div>
             </div>
 
