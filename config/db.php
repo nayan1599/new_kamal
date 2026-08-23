@@ -9,12 +9,12 @@ $host     = 'localhost';
 // local 
 $dbname   = 'garage_management';
 // laptop 
-$username = 'nayan';
-$password = '123456';
+// $username = 'nayan';
+// $password = '123456';
 
 // pc 
-// $username = 'root';
-// $password = '';
+$username = 'root';
+$password = '';
 try {
     $pdo = new PDO(
         "mysql:host=$host;dbname=$dbname;charset=utf8mb4", 
