@@ -60,8 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // সফল হলে redirect
       $_SESSION['success'] = "✅ রেকর্ড সফলভাবে আপডেট হয়েছে!";
 
-         header("Location:index.php?page=car/index");
-            exit();
+         
 
     } catch (PDOException $e) {
         echo "Update Failed: " . $e->getMessage();

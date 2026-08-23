@@ -82,24 +82,141 @@
             </div>
 
             <!-- call story  -->
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#callStoryMenu">
+<!-- =====================================================
+     CALL STORY MENU
+====================================================== -->
 
-                <span><i class="bi bi-telephone-forward me-2"></i>দিন / সময়</span>
-                <i class="bi bi-chevron-down toggle-icon"></i>
-            </a>
+<a
+    class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="collapse"
+    href="#callStoryMenu"
+    role="button"
+    aria-expanded="false"
+    aria-controls="callStoryMenu"
+>
 
-            <div class="collapse" id="callStoryMenu">
-                <div class="submenu">
+    <span>
+        <i class="bi bi-telephone-forward me-2"></i>
+        কল স্টোরি
+    </span>
 
-                    <a class="nav-link" href="index.php?page=day/index">
-                        ⏳ সময়ের হিসাব
-                    </a>
+    <i class="bi bi-chevron-down toggle-icon"></i>
 
-                </div>
-            </div>
+</a>
 
 
+<div class="collapse" id="callStoryMenu">
+
+    <div class="submenu">
+ 
+
+
+        <!-- আজকের Follow-up -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=call_story/today_followup"
+        >
+
+            <i class="bi bi-calendar-event me-2"></i>
+            আজকের Follow-up
+
+        </a>
+
+
+
+
+
+        <!-- Promise -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=call_story/promise"
+        >
+
+            <i class="bi bi-hand-thumbs-up me-2"></i>
+            Promise তালিকা
+
+        </a>
+
+
+
+        <!-- Call Report -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=call_story/call_report"
+        >
+
+            <i class="bi bi-bar-chart-line me-2"></i>
+            কল রিপোর্ট
+
+        </a>
+
+ 
+
+
+    </div>
+
+</div>
+            <!-- ==============================
+     GARAGE ACCOUNTING MENU
+============================== -->
+
+<a
+    class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="collapse"
+    href="#garageAccountingMenu"
+    role="button"
+    aria-expanded="false"
+    aria-controls="garageAccountingMenu"
+>
+    <span>
+        <i class="bi bi-building me-2"></i>
+        গ্যারেজের হিসাব
+    </span>
+
+    <i class="bi bi-chevron-down toggle-icon"></i>
+</a>
+
+
+<div class="collapse" id="garageAccountingMenu">
+
+    <div class="submenu">
+
+        <!-- Dashboard / হিসাব -->
+        <a
+            class="nav-link"
+            href="index.php?page=garage/index"
+        >
+            <i class="bi bi-speedometer2 me-2"></i>
+            গ্যারেজের হিসাব
+        </a>
+
+
+        <!-- নতুন আয় / ব্যয় -->
+        <a
+            class="nav-link"
+            href="index.php?page=garage/add"
+        >
+            <i class="bi bi-plus-circle me-2"></i>
+            নতুন আয় / ব্যয়
+        </a>
+
+
+        <!-- রিপোর্ট -->
+        <a
+            class="nav-link"
+            href="index.php?page=garage/report"
+        >
+            <i class="bi bi-bar-chart-line me-2"></i>
+            গ্যারেজ রিপোর্ট
+        </a>
+
+
+    </div>
+
+</div>
             <!-- Accounting -->
 
             <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"

@@ -10,8 +10,10 @@ $stmt = $pdo->prepare("
     ORDER BY next_followup_date ASC
 ");
 $stmt->execute();
-
 $result = $stmt->fetchAll();
+
+print_r($result);
+
 ?>
 
 <div class="container-fluid mt-4">
@@ -38,6 +40,8 @@ $result = $stmt->fetchAll();
                         <th>মোবাইল</th>
                         <th>বকেয়া</th>
                         <th>ফলোআপ তারিখ</th>
+                        <th>জাবিনের নাম</th>
+                        <th>জাবিনের ফোন</th>
                         <th>স্ট্যাটাস</th>
                         <th>অ্যাকশন</th>
                     </tr>

@@ -1,6 +1,6 @@
 <!-- account head add  -->
 <?php
-session_start();   
+ 
  
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include 'sql/head_add.php';

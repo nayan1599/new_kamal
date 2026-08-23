@@ -59,9 +59,13 @@ $records = $stmt->fetchAll();
                         </td>
 
                         <td>
-                            <span class="badge bg-<?= ($remainingMonths <= 0) ? 'success' : 'warning' ?>">
-                                <?= ($remainingMonths <= 0) ? 'সম্পন্ন' : 'চলমান' ?>
-                            </span>
+
+
+ 
+
+<span class="badge bg-<?= ($row['status'] === 'completed') ? 'success' : 'warning' ?>">
+    <?= ($row['status'] === 'completed') ? 'সম্পন্ন' : 'চলমান' ?>
+</span>
                         </td>
 
                         <td class="text-end">

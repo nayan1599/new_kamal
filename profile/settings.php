@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once 'config/db.php';
+ 
 
 // login check
 if (!isset($_SESSION['user_id'])) {
