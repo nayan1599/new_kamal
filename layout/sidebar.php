@@ -217,6 +217,132 @@
     </div>
 
 </div>
+
+<!-- মেট্রো গাড়ি হিসাব -->
+<a
+    class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="collapse"
+    href="#metroMenu"
+    role="button"
+    aria-expanded="false"
+    aria-controls="metroMenu"
+>
+    <span>
+        <i class="bi bi-car-front-fill"></i>
+        মেট্রো গাড়ির হিসাব
+    </span>
+
+    <i class="bi bi-chevron-down toggle-icon"></i>
+</a>
+
+
+<div class="collapse" id="metroMenu">
+
+    <div class="submenu">
+
+        <!-- গাড়ির তালিকা -->
+        <a
+            class="nav-link"
+            href="index.php?page=metro/index"
+        >
+            <i class="bi bi-list-ul me-1"></i>
+            গাড়ির তালিকা
+        </a>
+
+
+        <!-- নতুন গাড়ি -->
+        <a
+            class="nav-link"
+            href="index.php?page=metro/add"
+        >
+            <i class="bi bi-plus-circle me-1"></i>
+            নতুন গাড়ি যোগ
+        </a>
+
+
+        <!-- জমার তালিকা -->
+        <a
+            class="nav-link"
+            href="index.php?page=metro/payments"
+        >
+            <i class="bi bi-cash-stack me-1"></i>
+            জমার তালিকা
+        </a>
+
+
+        <!-- বকেয়া -->
+        <a
+            class="nav-link"
+            href="index.php?page=metro/due"
+        >
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            বকেয়া
+        </a>
+
+
+        <!-- রিপোর্ট -->
+        <a
+            class="nav-link"
+            href="index.php?page=metro/report"
+        >
+            <i class="bi bi-bar-chart-line me-1"></i>
+            রিপোর্ট
+        </a>
+
+    </div>
+
+</div>
+<a class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="collapse"
+    href="#salaryMenu">
+
+    <span>
+        <i class="bi bi-cash-stack"></i>
+        বেতন ব্যবস্থাপনা
+    </span>
+
+    <i class="bi bi-chevron-down toggle-icon"></i>
+
+</a>
+
+
+<div class="collapse" id="salaryMenu">
+
+    <div class="submenu">
+
+        <a class="nav-link"
+            href="index.php?page=employee/list">
+            কর্মচারী তালিকা
+        </a>
+
+        <a class="nav-link"
+            href="index.php?page=employee/add">
+            নতুন কর্মচারী
+        </a>
+
+        <a class="nav-link"
+            href="index.php?page=salary/payment">
+            বেতন প্রদান
+        </a>
+
+        <a class="nav-link"
+            href="index.php?page=salary/due">
+            বেতন বকেয়া
+        </a>
+
+        <a class="nav-link"
+            href="index.php?page=salary/history">
+            বেতন হিস্টোরি
+        </a>
+
+        <a class="nav-link"
+            href="index.php?page=salary/report">
+            বেতন রিপোর্ট
+        </a>
+
+    </div>
+
+</div>
             <!-- Accounting -->
 
             <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
