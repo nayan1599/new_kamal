@@ -310,15 +310,7 @@
 
     <div class="submenu">
 
-        <a class="nav-link"
-            href="index.php?page=employee/list">
-            কর্মচারী তালিকা
-        </a>
-
-        <a class="nav-link"
-            href="index.php?page=employee/add">
-            নতুন কর্মচারী
-        </a>
+ 
 
         <a class="nav-link"
             href="index.php?page=salary/payment">
@@ -338,6 +330,57 @@
         <a class="nav-link"
             href="index.php?page=salary/report">
             বেতন রিপোর্ট
+        </a>
+
+    </div>
+
+</div>
+
+<a class="nav-link d-flex justify-content-between align-items-center"
+   data-bs-toggle="collapse"
+   href="#employeeMenu">
+
+    <span>
+        <i class="bi bi-people"></i>
+        কর্মচারী ব্যবস্থাপনা
+    </span>
+
+    <i class="bi bi-chevron-down toggle-icon"></i>
+
+</a>
+
+<div class="collapse" id="employeeMenu">
+
+    <div class="submenu">
+
+        <a class="nav-link"
+           href="index.php?page=employee/index">
+            <i class="bi bi-person-lines-fill"></i>
+            কর্মচারীর তালিকা
+        </a>
+
+        <a class="nav-link"
+           href="index.php?page=employee/add">
+            <i class="bi bi-person-plus"></i>
+            নতুন কর্মচারী
+        </a>
+
+        <a class="nav-link"
+           href="index.php?page=employee/attendance">
+            <i class="bi bi-calendar-check"></i>
+            উপস্থিতি
+        </a>
+
+        <a class="nav-link"
+           href="index.php?page=employee/attendance_add">
+            <i class="bi bi-calendar-plus"></i>
+            উপস্থিতি যোগ করুন
+        </a>
+
+        <a class="nav-link"
+           href="index.php?page=employee/attendance_report">
+            <i class="bi bi-file-earmark-bar-graph"></i>
+            উপস্থিতি রিপোর্ট
         </a>
 
     </div>

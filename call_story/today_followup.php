@@ -91,7 +91,7 @@ foreach ($followups as $row) {
         <div class="mt-3 mt-md-0">
 
             <a
-                href="index.php?page=car/followup"
+                href="index.php?page=call_story/followup"
                 class="btn btn-outline-primary"
             >
 

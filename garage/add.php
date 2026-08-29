@@ -26,10 +26,7 @@ $garages = $garageStmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="card-body">
 
-            <form
-                method="POST"
-                action="index.php?page=sql/garage_save"
-            >
+            <form method="POST" action="index.php?page=sql/garage_save">
 
                 <div class="row g-3">
 

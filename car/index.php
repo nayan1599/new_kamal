@@ -83,6 +83,8 @@ $records = $stmt->fetchAll();
                     $remMonths = floor($remainingMonths);
                     $remDays   = round(($remainingMonths - $remMonths) * 30);
 
+
+                    
                     $remainingDuration = $remMonths . " মাস " . $remDays . " দিন";
                 ?>
                     <tr>
@@ -101,13 +103,64 @@ $records = $stmt->fetchAll();
                         </td>
 
                         <td class="text-danger fw-semibold">
-                            <?= bn_number($remainingDuration) ?>
+
+
+
+<?php if ($remainingMonths <= 0): ?>
+    <span class="badge bg-danger">সময় শেষ</span>
+<?php else: ?>
+  
+    <span class="text-danger fw-semibold">
+        <?= bn_number($remainingDuration) ?>
+    </span>
+<?php endif; ?>
                         </td>
 
                         <td>
-                            <span class="badge bg-<?= ($remainingMonths <= 0) ? 'danger' : 'warning' ?>">
-                                <?= ($remainingMonths <= 0) ? 'সময় শেষ' : 'চলমান' ?>
-                            </span>
+<?php
+$status = $row['status'] ?? '';
+
+$statusData = [
+    'active' => [
+        'text' => 'চলমান',
+        'class' => 'success'
+    ],
+    'hold' => [
+        'text' => 'গাড়ি ধরে রাখা',
+        'class' => 'warning'
+    ],
+    'default' => [
+        'text' => 'কিস্তি বকেয়া',
+        'class' => 'danger'
+    ],
+    'returned' => [
+        'text' => 'গাড়ি ফেরত',
+        'class' => 'info'
+    ],
+    'completed' => [
+        'text' => 'কিস্তি সম্পন্ন',
+        'class' => 'primary'
+    ],
+    'cancelled' => [
+        'text' => 'চুক্তি বাতিল',
+        'class' => 'secondary'
+    ],
+    'repossessed' => [
+        'text' => 'গাড়ি পুনরুদ্ধার',
+        'class' => 'danger'
+    ]
+];
+
+$data = $statusData[$status] ?? [
+    'text' => $status ?: 'অজানা',
+    'class' => 'secondary'
+];
+?>
+
+<span class="badge bg-<?= $data['class'] ?>">
+    <?= htmlspecialchars($data['text']) ?>
+</span>
+
                         </td>
 
                         <td class="text-end">

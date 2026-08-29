@@ -3,8 +3,7 @@
 // সকল রেকর্ড Load
 // ======================================================
 // এখানে completed বাদ দেওয়া হয়নি,
-// কারণ নিচের Status Filter দিয়ে running/completed দুটোই
-// filter করা হবে।
+// কারণ নিচের Status Filter দিয়ে সব status filter করা হবে।
 
 $stmt = $pdo->query("
     SELECT *
@@ -52,13 +51,17 @@ $records = $stmt->fetchAll();
         <!-- ==================================================
              Day Search
              এখানে শুধু 1 থেকে 31 পর্যন্ত দিন লিখবেন
-             যেমন: 1, 2, 15, 30
-             মাস/বছর ধরা হবে না
         ================================================== -->
         <div class="col-md-2 col-sm-12">
 
-            <input type="search" id="searchInput" class="form-control form-control-sm" placeholder="🔍 তারিখের দিন..."
-                inputmode="numeric" autocomplete="off">
+            <input
+                type="search"
+                id="searchInput"
+                class="form-control form-control-sm"
+                placeholder="🔍 তারিখের দিন..."
+                inputmode="numeric"
+                autocomplete="off"
+            >
 
         </div>
 
@@ -66,7 +69,11 @@ $records = $stmt->fetchAll();
         <!-- From Date -->
         <div class="col-md-2 col-sm-12">
 
-            <input type="date" id="fromDate" class="form-control form-control-sm">
+            <input
+                type="date"
+                id="fromDate"
+                class="form-control form-control-sm"
+            >
 
         </div>
 
@@ -74,12 +81,18 @@ $records = $stmt->fetchAll();
         <!-- To Date -->
         <div class="col-md-2 col-sm-12">
 
-            <input type="date" id="toDate" class="form-control form-control-sm">
+            <input
+                type="date"
+                id="toDate"
+                class="form-control form-control-sm"
+            >
 
         </div>
 
 
-        <!-- Status -->
+        <!-- ==================================================
+             Status Filter
+        ================================================== -->
         <div class="col-md-2 col-sm-12">
 
             <select id="statusFilter" class="form-select form-select-sm">
@@ -88,16 +101,32 @@ $records = $stmt->fetchAll();
                     সব স্ট্যাটাস
                 </option>
 
-                <option value="running">
-                    চলমান
+                <option value="active">
+                    🟢 চলমান
+                </option>
+
+                <option value="hold">
+                    🟡 গাড়ি ধরে রাখা
+                </option>
+
+                <option value="default">
+                    🔴 কিস্তি বকেয়া
+                </option>
+
+                <option value="returned">
+                    🔵 গাড়ি ফেরত
                 </option>
 
                 <option value="completed">
-                    সময় শেষ
+                    ✅ কিস্তি সম্পন্ন
                 </option>
 
                 <option value="cancelled">
-                    ফেরত
+                    ⚫ চুক্তি বাতিল
+                </option>
+
+                <option value="repossessed">
+                    🔴 গাড়ি পুনরুদ্ধার
                 </option>
 
             </select>
@@ -110,11 +139,19 @@ $records = $stmt->fetchAll();
 
             <div class="d-flex gap-2 flex-wrap">
 
-                <button type="button" class="btn btn-primary btn-sm" onclick="applyFilter()">
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    onclick="applyFilter()"
+                >
                     ফিল্টার
                 </button>
 
-                <button type="button" class="btn btn-secondary btn-sm" onclick="resetFilter()">
+                <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    onclick="resetFilter()"
+                >
                     রিসেট
                 </button>
 
@@ -128,7 +165,11 @@ $records = $stmt->fetchAll();
     <!-- ==================================================
          Search Information
     ================================================== -->
-    <div id="searchInfo" class="small text-muted mb-2" style="display:none;"></div>
+    <div
+        id="searchInfo"
+        class="small text-muted mb-2"
+        style="display:none;"
+    ></div>
 
 
     <!-- ==================================================
@@ -143,8 +184,6 @@ $records = $stmt->fetchAll();
                 <thead class="table-light">
 
                     <tr>
-
-
 
                         <th>
                             তারিখ
@@ -184,18 +223,16 @@ $records = $stmt->fetchAll();
 
 
                 <tbody id="tableBody">
-             
+
+                    <?php foreach ($records as $row): ?>
+
                     <?php
-
-             
-
-                foreach ($records as $row):
 
                     // ==================================================
                     // Database Data
                     // ==================================================
 
-                    $startDate = $row['kisti_start_date'];
+                    $startDate = $row['kisti_start_date'] ?? '';
 
                     $monthlyAmount =
                         $row['monthly_kisti'] ?? 0;
@@ -204,7 +241,7 @@ $records = $stmt->fetchAll();
                         $row['paid_amount'] ?? 0;
 
                     $totalPlanMonth =
-                        $row['total_kisti'] ?? 0;
+                        (int)($row['total_kisti'] ?? 0);
 
 
                     // ==================================================
@@ -220,8 +257,17 @@ $records = $stmt->fetchAll();
 
                     try {
 
-                        $start = new DateTime($startDate);
-                        $end   = new DateTime($today);
+                        if (!empty($startDate)) {
+
+                            $start = new DateTime($startDate);
+
+                        } else {
+
+                            $start = new DateTime($today);
+
+                        }
+
+                        $end = new DateTime($today);
 
                         $diff = $start->diff($end);
 
@@ -246,7 +292,10 @@ $records = $stmt->fetchAll();
                         $diff->d;
 
 
+                    // ==================================================
                     // 30 দিন = 1 মাস হিসেবে হিসাব
+                    // ==================================================
+
                     $passedTotalMonths =
                         $passedMonths + ($passedDays / 30);
 
@@ -295,69 +344,148 @@ $records = $stmt->fetchAll();
 
 
                     // ==================================================
-                    // Status
+                    // STATUS
                     // ==================================================
+                    // Database-এর status সরাসরি ব্যবহার করা হবে।
 
-                    // ==================================================
-                    // Status
-                    // ==================================================
-                    // Database-এ cancelled থাকলে সেটি "ফেরত" হিসেবে থাকবে।
-                    // অন্যথায় remaining duration অনুযায়ী completed/running হবে।
+                    $status = trim($row['status'] ?? '');
 
-                    $status =
-                        (($row['status'] ?? '') === 'cancelled')
-                            ? 'cancelled'
-                            : (($remainingMonths <= 0)
+
+                    // পুরোনো running status থাকলে active হিসেবে ধরা হবে
+                    if ($status === 'running') {
+
+                        $status = 'active';
+
+                    }
+
+
+                    // Status খালি থাকলে duration অনুযায়ী
+                    // fallback status দেওয়া হবে।
+
+                    if ($status === '') {
+
+                        $status =
+                            ($remainingMonths <= 0)
                                 ? 'completed'
-                                : 'running');
+                                : 'active';
+
+                    }
 
 
                     // ==================================================
                     // Date
                     // ==================================================
 
-                    $formattedDate =
-                        date(
-                            'd-m-Y',
-                            strtotime($startDate)
-                        );
+                    if (!empty($startDate)) {
 
+                        $formattedDate =
+                            date(
+                                'd-m-Y',
+                                strtotime($startDate)
+                            );
 
-                    $dataDate =
-                        date(
-                            'Y-m-d',
-                            strtotime($startDate)
-                        );
+                        $dataDate =
+                            date(
+                                'Y-m-d',
+                                strtotime($startDate)
+                            );
+
+                        $dayNumber =
+                            (int) date(
+                                'd',
+                                strtotime($startDate)
+                            );
+
+                    } else {
+
+                        $formattedDate = '-';
+                        $dataDate = '';
+                        $dayNumber = 0;
+
+                    }
 
 
                     // ==================================================
-                    // Day Only
+                    // Status Display
                     // ==================================================
 
-                    $dayNumber =
-                        (int) date(
-                            'd',
-                            strtotime($startDate)
-                        );
+                    $statusData = [
 
-                ?>
+                        'active' => [
+                            'text'  => 'চলমান',
+                            'class' => 'success',
+                            'icon'  => '🟢'
+                        ],
 
-                    <tr data-day="<?= $dayNumber ?>" data-date="<?= $dataDate ?>" data-status="<?= $status ?>">
+                        'hold' => [
+                            'text'  => 'গাড়ি ধরে রাখা',
+                            'class' => 'warning text-dark',
+                            'icon'  => '🟡'
+                        ],
+
+                        'default' => [
+                            'text'  => 'কিস্তি বকেয়া',
+                            'class' => 'danger',
+                            'icon'  => '🔴'
+                        ],
+
+                        'returned' => [
+                            'text'  => 'গাড়ি ফেরত',
+                            'class' => 'info',
+                            'icon'  => '🔵'
+                        ],
+
+                        'completed' => [
+                            'text'  => 'কিস্তি সম্পন্ন',
+                            'class' => 'primary',
+                            'icon'  => '✅'
+                        ],
+
+                        'cancelled' => [
+                            'text'  => 'চুক্তি বাতিল',
+                            'class' => 'secondary',
+                            'icon'  => '⚫'
+                        ],
+
+                        'repossessed' => [
+                            'text'  => 'গাড়ি পুনরুদ্ধার',
+                            'class' => 'danger',
+                            'icon'  => '🔴'
+                        ]
+
+                    ];
 
 
-                        <!-- ==================================================
-                             Date
-                        ================================================== -->
-                        <td data-date="<?= $dataDate ?>">
+                    $currentStatus =
+                        $statusData[$status]
+                        ?? [
+                            'text'  => 'অজানা',
+                            'class' => 'secondary',
+                            'icon'  => '⚪'
+                        ];
+
+                    ?>
+
+                    <!-- ==================================================
+                         TABLE ROW
+                    ================================================== -->
+
+                    <tr
+                        data-day="<?= $dayNumber ?>"
+                        data-date="<?= htmlspecialchars($dataDate) ?>"
+                        data-status="<?= htmlspecialchars($status) ?>"
+                    >
+
+
+                        <!-- Date -->
+                        <td data-date="<?= htmlspecialchars($dataDate) ?>">
 
                             <?= bn_number($formattedDate) ?>
 
                         </td>
 
 
-                        <!-- ==================================================
-                             Customer
-                        ================================================== -->
+                        <!-- Customer -->
                         <td>
 
                             <?= htmlspecialchars(
@@ -367,9 +495,7 @@ $records = $stmt->fetchAll();
                         </td>
 
 
-                        <!-- ==================================================
-                             Phone
-                        ================================================== -->
+                        <!-- Phone -->
                         <td>
 
                             <?= bn_number(
@@ -381,9 +507,7 @@ $records = $stmt->fetchAll();
                         </td>
 
 
-                        <!-- ==================================================
-                             Car
-                        ================================================== -->
+                        <!-- Car -->
                         <td>
 
                             <?= htmlspecialchars(
@@ -393,9 +517,7 @@ $records = $stmt->fetchAll();
                         </td>
 
 
-                        <!-- ==================================================
-                             Total Duration
-                        ================================================== -->
+                        <!-- Total Duration -->
                         <td class="text-success fw-semibold">
 
                             <?= bn_number(
@@ -405,69 +527,93 @@ $records = $stmt->fetchAll();
                         </td>
 
 
-                        <!-- ==================================================
-                             Remaining Duration
-                        ================================================== -->
+                        <!-- Remaining Duration -->
                         <td class="text-danger fw-semibold">
 
-                            <?= bn_number(
-                                $remainingDuration
-                            ) ?>
+                            <?php if ($status === 'completed'): ?>
+
+                                <span class="text-primary">
+                                    সম্পন্ন
+                                </span>
+
+                            <?php elseif (
+                                $status === 'returned' ||
+                                $status === 'cancelled' ||
+                                $status === 'repossessed'
+                            ): ?>
+
+                                <span class="text-muted">
+                                    —
+                                </span>
+
+                            <?php else: ?>
+
+                                <?= bn_number(
+                                    $remainingDuration
+                                ) ?>
+
+                            <?php endif; ?>
 
                         </td>
 
 
-                        <!-- ==================================================
-                             Status
-                        ================================================== -->
+                        <!-- Status -->
                         <td>
 
-                            <span class="badge bg-<?=
-                                ($status == 'completed')
-                                    ? 'danger'
-                                    : (($status == 'cancelled')
-                                        ? 'secondary'
-                                        : 'warning')
-                            ?>">
-                                <?= ($status == 'completed')
-                                    ? 'সময় শেষ'
-                                    : (($status == 'cancelled')
-                                        ? 'ফেরত'
-                                        : 'চলমান')
-                                ?>
+                            <span
+                                class="badge bg-<?= htmlspecialchars(
+                                    $currentStatus['class']
+                                ) ?>"
+                            >
+
+                                <?= $currentStatus['icon'] ?>
+
+                                <?= htmlspecialchars(
+                                    $currentStatus['text']
+                                ) ?>
+
                             </span>
 
                         </td>
 
 
-                        <!-- ==================================================
-                             Actions
-                        ================================================== -->
+                        <!-- Actions -->
                         <td class="text-end">
 
                             <!-- View -->
-                            <a href="index.php?page=car/view&car_number=<?= urlencode(
+                            <a
+                                href="index.php?page=car/view&car_number=<?= urlencode(
                                     $row['car_number'] ?? ''
-                                ) ?>" class="btn btn-info btn-sm text-white">
+                                ) ?>"
+                                class="btn btn-info btn-sm text-white"
+                            >
                                 দেখুন
                             </a>
 
 
                             <!-- Edit -->
-                            <a href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm">
+                            <a
+                                href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-warning btn-sm"
+                            >
                                 সম্পাদনা
                             </a>
 
 
                             <!-- Receipt -->
-                            <a href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
-                                class="btn btn-success btn-sm">
+                            <a
+                                href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-success btn-sm"
+                            >
                                 রসিদ
                             </a>
 
-                            <!-- call story  -->
-                            <a href="index.php?page=call_story/callstory&id=<?= (int)$row['id'] ?>"
-                                class="btn btn-primary btn-sm">
+
+                            <!-- Call Story -->
+                            <a
+                                href="index.php?page=call_story/callstory&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-primary btn-sm"
+                            >
                                 কল স্টোরি
                             </a>
 
@@ -493,22 +639,28 @@ $records = $stmt->fetchAll();
 ========================================================= -->
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function() {
 
     const rows =
         document.querySelectorAll("#tableBody tr");
 
+
     const searchInput =
         document.getElementById("searchInput");
+
 
     const fromDate =
         document.getElementById("fromDate");
 
+
     const toDate =
         document.getElementById("toDate");
 
+
     const statusFilter =
         document.getElementById("statusFilter");
+
 
     const searchInfo =
         document.getElementById("searchInfo");
@@ -521,6 +673,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function showDefault() {
 
         let visibleCount = 0;
+
 
         rows.forEach(function(row) {
 
@@ -538,7 +691,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         });
 
+
         searchInfo.style.display = "none";
+
     }
 
 
@@ -549,15 +704,11 @@ document.addEventListener("DOMContentLoaded", function() {
     window.applyFilter = function() {
 
         /*
-         * এখানে searchInput থেকে শুধু দিন নেওয়া হবে।
-         *
-         * উদাহরণ:
+         * searchInput থেকে শুধু দিন নেওয়া হবে।
          *
          * 1  = 01 তারিখ
          * 2  = 02 তারিখ
          * 15 = 15 তারিখ
-         *
-         * মাস এবং বছর কোনোভাবেই বিবেচনা করা হবে না।
          */
 
         let searchDay =
@@ -592,7 +743,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     parseInt(searchDay, 10);
 
 
-                // 1 থেকে 31 এর বাইরে হলে কিছু দেখাবে না
+                // 1 থেকে 31
                 if (
                     inputDay < 1 ||
                     inputDay > 31
@@ -604,12 +755,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
                     });
 
+
                     searchInfo.style.display = "";
+
 
                     searchInfo.innerHTML =
                         "⚠️ ১ থেকে ৩১ এর মধ্যে দিন লিখুন।";
 
+
                     return;
+
                 }
 
             } else {
@@ -620,13 +775,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 });
 
+
                 searchInfo.style.display = "";
+
 
                 searchInfo.innerHTML =
                     "⚠️ শুধু তারিখের দিন লিখুন। যেমন: 1, 2, 15";
 
+
                 return;
+
             }
+
         }
 
 
@@ -639,9 +799,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         rows.forEach(function(row) {
 
-            // -------------------------------------------------
             // Row Data
-            // -------------------------------------------------
 
             let date =
                 row.getAttribute("data-date");
@@ -680,14 +838,20 @@ document.addEventListener("DOMContentLoaded", function() {
             let matchDate = true;
 
 
-            if (from !== "" && date < from) {
+            if (
+                from !== "" &&
+                (date === "" || date < from)
+            ) {
 
                 matchDate = false;
 
             }
 
 
-            if (to !== "" && date > to) {
+            if (
+                to !== "" &&
+                (date === "" || date > to)
+            ) {
 
                 matchDate = false;
 
@@ -747,6 +911,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             searchInfo.style.display = "";
 
+
             let message =
                 "মোট পাওয়া গেছে: " +
                 visibleCount +
@@ -801,14 +966,6 @@ document.addEventListener("DOMContentLoaded", function() {
     searchInput.addEventListener(
         "input",
         function() {
-
-            /*
-             * এখানে সরাসরি filter হবে।
-             *
-             * 1 লিখলেই ১ তারিখ
-             * 2 লিখলেই ২ তারিখ
-             * 15 লিখলেই ১৫ তারিখ
-             */
 
             applyFilter();
 
@@ -865,4 +1022,5 @@ document.addEventListener("DOMContentLoaded", function() {
     showDefault();
 
 });
+
 </script>

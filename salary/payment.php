@@ -572,7 +572,7 @@ $previewDue =
                         method="POST"
                         action=""
                         id="salaryForm"
-                        autocomplete="off"
+                        autocomplete="off" action=""
                     >
 
 

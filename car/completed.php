@@ -60,11 +60,48 @@ $records = $stmt->fetchAll();
 
                         <td>
 
+<?php
+$status = $row['status'] ?? '';
 
- 
+$statusData = [
+    'active' => [
+        'text' => 'চলমান',
+        'class' => 'success'
+    ],
+    'hold' => [
+        'text' => 'গাড়ি ধরে রাখা',
+        'class' => 'warning'
+    ],
+    'default' => [
+        'text' => 'কিস্তি বকেয়া',
+        'class' => 'danger'
+    ],
+    'returned' => [
+        'text' => 'গাড়ি ফেরত',
+        'class' => 'info'
+    ],
+    'completed' => [
+        'text' => 'কিস্তি সম্পন্ন',
+        'class' => 'primary'
+    ],
+    'cancelled' => [
+        'text' => 'চুক্তি বাতিল',
+        'class' => 'secondary'
+    ],
+    'repossessed' => [
+        'text' => 'গাড়ি পুনরুদ্ধার',
+        'class' => 'danger'
+    ]
+];
 
-<span class="badge bg-<?= ($row['status'] === 'completed') ? 'success' : 'warning' ?>">
-    <?= ($row['status'] === 'completed') ? 'সম্পন্ন' : 'চলমান' ?>
+$data = $statusData[$status] ?? [
+    'text' => $status ?: 'অজানা',
+    'class' => 'secondary'
+];
+?>
+
+<span class="badge bg-<?= $data['class'] ?>">
+    <?= htmlspecialchars($data['text']) ?>
 </span>
                         </td>
 

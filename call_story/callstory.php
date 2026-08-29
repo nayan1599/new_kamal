@@ -52,42 +52,25 @@ if (!$transactions) {
 // DEFAULT CUSTOMER INFORMATION
 // =====================================================
 
-$customer_name =
-    $transactions['customer_name'] ?? '';
-
-$default_phone =
-    $transactions['customer_phone'] ?? '';
-
-$default_car_number =
-    $transactions['car_number'] ?? '';
-
-$default_chassis =
-    $transactions['chassis_number'] ?? '';
-
-
+$customer_name =  $transactions['customer_name'] ?? '';
+$default_phone =  $transactions['customer_phone'] ?? '';
+$default_car_number = $transactions['car_number'] ?? '';
+$default_chassis =  $transactions['chassis_number'] ?? '';
 // =====================================================
 // INSTALLMENT INFORMATION
 // =====================================================
 
-$total_kisti =
-    $transactions['total_kisti'] ?? '';
-
-$kisti_amount =
-    $transactions['monthly_kisti'] ?? '';
-
-$due_amount =
-    $transactions['due_amount'] ?? '';
-
-$kisti_start_date =
-    $transactions['kisti_start_date'] ?? '';
+$total_kisti = $transactions['total_kisti'] ?? '';
+$kisti_amount =  $transactions['monthly_kisti'] ?? '';
+$due_amount = $transactions['due_amount'] ?? '';
+$kisti_start_date = $transactions['kisti_start_date'] ?? '';
 
 
 // =====================================================
 // DEFAULT NOTE
 // =====================================================
 
-$default_note =
-    $transactions['note'] ?? '';
+$default_note =  $transactions['note'] ?? '';
 
 
 // =====================================================

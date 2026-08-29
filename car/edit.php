@@ -86,6 +86,46 @@ if (!$data) {
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-bold">📌 স্ট্যাটাস</label>
+<select name="status" class="form-select">
+
+    <option value="active"
+        <?= ($row['status'] ?? '') === 'active' ? 'selected' : '' ?>>
+        🟢 চলমান
+    </option>
+
+    <option value="hold"
+        <?= ($row['status'] ?? '') === 'hold' ? 'selected' : '' ?>>
+        🟡 গাড়ি ধরে রাখা
+    </option>
+
+    <option value="default"
+        <?= ($row['status'] ?? '') === 'default' ? 'selected' : '' ?>>
+        🔴 কিস্তি বকেয়া
+    </option>
+
+    <option value="returned"
+        <?= ($row['status'] ?? '') === 'returned' ? 'selected' : '' ?>>
+        🔵 গাড়ি ফেরত
+    </option>
+
+    <option value="completed"
+        <?= ($row['status'] ?? '') === 'completed' ? 'selected' : '' ?>>
+        ✅ কিস্তি সম্পন্ন
+    </option>
+
+    <option value="cancelled"
+        <?= ($row['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>
+        ⚫ চুক্তি বাতিল
+    </option>
+
+    <option value="repossessed"
+        <?= ($row['status'] ?? '') === 'repossessed' ? 'selected' : '' ?>>
+        🔴 গাড়ি পুনরুদ্ধার
+    </option>
+
+</select>
+
+<!-- 
                 <select name="status" class="form-select" required>
                     <option value="">-- নির্বাচন করুন --</option>
 
@@ -100,14 +140,9 @@ if (!$data) {
                     </option>
 
                     <option value="overdue"
-                        <?= (isset($data['status']) && $data['status']=='overdue') ? 'selected' : '' ?>>
-                        বকেয়া
-                    </option>
-                     <option value="cancelled"
-                        <?= (isset($data['status']) && $data['status']=='cancelled') ? 'selected' : '' ?>>
-                        ফেরত
-                    </option>
-                </select>
+                        <?= (isset($data['status']) && $data['status']=='overdue') ? 'selected' : '' ?>> বকেয়া </option>
+                     <option value="cancelled"  <?= (isset($data['status']) && $data['status']=='cancelled') ? 'selected' : '' ?>>ফেরত  </option>
+                </select> -->
             </div>
             <div class="col-12">
                 <label>নোট</label>
