@@ -29,7 +29,7 @@ $customer = $stmt->fetch();
 </div>
  <div id="receiptArea">
     <h1 class="title text-center font-weight-bold">জাহিরুল এন্টারপ্রাইজ</h1>
-    <p class="text-center mb-1">প্রোঃ মোঃ জহিরুল ইসলাম (রাসেল)</p>
+    <p class="text-center mb-1">প্রোঃ মোঃ জহিরুল ইসলাম</p>
     <p class="text-center small">রূপগঞ্জ, নারায়ণগঞ্জ</p>
 
     <div class="line"></div>

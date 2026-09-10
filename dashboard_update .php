@@ -252,28 +252,11 @@ $salaryPaid = (float)($stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
 
 // $salaryPaid       = $salaryPaid ?? 0;
 $salaryDue        = $salaryDue ?? 0;
-
-
-$hourNow = (int)date('H');
-if ($hourNow < 12) {
-    $greeting = "শুভ সকাল";
-    $greetIcon = "🌅";
-} elseif ($hourNow < 16) {
-    $greeting = "শুভ দুপুর";
-    $greetIcon = "☀️";
-} elseif ($hourNow < 19) {
-    $greeting = "শুভ বিকাল";
-    $greetIcon = "🌇";
-} else {
-    $greeting = "শুভ সন্ধ্যা";
-    $greetIcon = "🌙";
-}
 ?>
 
 
-
-
 <style>
+
 /* =====================================================
    DASHBOARD
 ===================================================== */
@@ -314,7 +297,7 @@ if ($hourNow < 12) {
     padding: 9px 14px;
     border-radius: 10px;
     font-size: 14px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, .04);
+    box-shadow: 0 3px 12px rgba(0,0,0,.04);
 }
 
 
@@ -334,7 +317,7 @@ if ($hourNow < 12) {
     border-radius: 14px;
     padding: 18px;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 5px 18px rgba(15, 23, 42, .05);
+    box-shadow: 0 5px 18px rgba(15,23,42,.05);
     position: relative;
     overflow: hidden;
 }
@@ -347,7 +330,7 @@ if ($hourNow < 12) {
     border-radius: 50%;
     right: -30px;
     top: -30px;
-    background: rgba(255, 255, 255, .20);
+    background: rgba(255,255,255,.20);
 }
 
 .stat-top {
@@ -395,22 +378,22 @@ if ($hourNow < 12) {
 /* COLORS */
 
 .stat-blue {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    background: linear-gradient(135deg,#2563eb,#3b82f6);
     color: #fff;
 }
 
 .stat-green {
-    background: linear-gradient(135deg, #059669, #10b981);
+    background: linear-gradient(135deg,#059669,#10b981);
     color: #fff;
 }
 
 .stat-orange {
-    background: linear-gradient(135deg, #ea580c, #f97316);
+    background: linear-gradient(135deg,#ea580c,#f97316);
     color: #fff;
 }
 
 .stat-red {
-    background: linear-gradient(135deg, #dc2626, #ef4444);
+    background: linear-gradient(135deg,#dc2626,#ef4444);
     color: #fff;
 }
 
@@ -431,13 +414,13 @@ if ($hourNow < 12) {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     padding: 18px;
-    box-shadow: 0 5px 18px rgba(15, 23, 42, .05);
+    box-shadow: 0 5px 18px rgba(15,23,42,.05);
     transition: .2s;
 }
 
 .module-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(15, 23, 42, .10);
+    box-shadow: 0 10px 25px rgba(15,23,42,.10);
 }
 
 .module-head {
@@ -499,7 +482,7 @@ if ($hourNow < 12) {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 5px 18px rgba(15, 23, 42, .05);
+    box-shadow: 0 5px 18px rgba(15,23,42,.05);
 }
 
 .box-header {
@@ -691,6 +674,7 @@ if ($hourNow < 12) {
     }
 
 }
+
 </style>
 
 
@@ -754,7 +738,10 @@ if ($hourNow < 12) {
                 <?= bn_number($totalCars) ?>
             </div>
 
-            <a href="index.php?page=car/index" class="stat-link">
+            <a
+                href="index.php?page=car/index"
+                class="stat-link"
+            >
                 গাড়ির তালিকা →
             </a>
 
@@ -785,7 +772,10 @@ if ($hourNow < 12) {
                 ৳ <?= number_format($todayKisti,2) ?>
             </div>
 
-            <a href="index.php?page=payment/index" class="stat-link">
+            <a
+                href="index.php?page=payment/index"
+                class="stat-link"
+            >
                 কিস্তি দেখুন →
             </a>
 
@@ -816,7 +806,10 @@ if ($hourNow < 12) {
                 ৳ <?= number_format($totalIncome,2) ?>
             </div>
 
-            <a href="index.php?page=garage/report" class="stat-link">
+            <a
+                href="index.php?page=garage/report"
+                class="stat-link"
+            >
                 হিসাব দেখুন →
             </a>
 
@@ -847,7 +840,10 @@ if ($hourNow < 12) {
                 ৳ <?= number_format($totalExpense,2) ?>
             </div>
 
-            <a href="index.php?page=garage/report" class="stat-link">
+            <a
+                href="index.php?page=garage/report"
+                class="stat-link"
+            >
                 রিপোর্ট দেখুন →
             </a>
 
@@ -871,7 +867,10 @@ if ($hourNow < 12) {
 
                 <div class="module-title">
 
-                    <div class="module-icon" style="background:#dbeafe;color:#2563eb;">
+                    <div
+                        class="module-icon"
+                        style="background:#dbeafe;color:#2563eb;"
+                    >
                         🚗
                     </div>
 
@@ -879,7 +878,10 @@ if ($hourNow < 12) {
 
                 </div>
 
-                <a href="index.php?page=car/index" class="module-menu">
+                <a
+                    href="index.php?page=car/index"
+                    class="module-menu"
+                >
                     দেখুন
                 </a>
 
@@ -897,7 +899,7 @@ if ($hourNow < 12) {
                 <?= bn_number($activeCars) ?>
 
                 |
-
+                
                 সম্পন্ন:
                 <?= bn_number($completedCars) ?>
 
@@ -914,7 +916,10 @@ if ($hourNow < 12) {
 
                 <div class="module-title">
 
-                    <div class="module-icon" style="background:#dcfce7;color:#059669;">
+                    <div
+                        class="module-icon"
+                        style="background:#dcfce7;color:#059669;"
+                    >
                         💳
                     </div>
 
@@ -922,7 +927,10 @@ if ($hourNow < 12) {
 
                 </div>
 
-                <a href="index.php?page=payment/index" class="module-menu">
+                <a
+                    href="index.php?page=payment/index"
+                    class="module-menu"
+                >
                     দেখুন
                 </a>
 
@@ -954,7 +962,10 @@ if ($hourNow < 12) {
 
                 <div class="module-title">
 
-                    <div class="module-icon" style="background:#fef3c7;color:#d97706;">
+                    <div
+                        class="module-icon"
+                        style="background:#fef3c7;color:#d97706;"
+                    >
                         🏠
                     </div>
 
@@ -962,7 +973,10 @@ if ($hourNow < 12) {
 
                 </div>
 
-                <a href="index.php?page=rent/index" class="module-menu">
+                <a
+                    href="index.php?page=rent/index"
+                    class="module-menu"
+                >
                     দেখুন
                 </a>
 
@@ -980,7 +994,7 @@ if ($hourNow < 12) {
                 ৳ <?= number_format($todayRent,2) ?>
 
                 |
-
+                
                 বকেয়া:
                 ৳ <?= number_format($dueRent,2) ?>
 
@@ -997,7 +1011,10 @@ if ($hourNow < 12) {
 
                 <div class="module-title">
 
-                    <div class="module-icon" style="background:#ede9fe;color:#7c3aed;">
+                    <div
+                        class="module-icon"
+                        style="background:#ede9fe;color:#7c3aed;"
+                    >
                         📞
                     </div>
 
@@ -1005,7 +1022,10 @@ if ($hourNow < 12) {
 
                 </div>
 
-                <a href="index.php?page=call_story/call_report" class="module-menu">
+                <a
+                    href="index.php?page=call_story/call_report"
+                    class="module-menu"
+                >
                     রিপোর্ট
                 </a>
 
@@ -1039,7 +1059,10 @@ if ($hourNow < 12) {
 
                 <div class="module-title">
 
-                    <div class="module-icon" style="background:#cffafe;color:#0891b2;">
+                    <div
+                        class="module-icon"
+                        style="background:#cffafe;color:#0891b2;"
+                    >
                         🚕
                     </div>
 
@@ -1047,7 +1070,10 @@ if ($hourNow < 12) {
 
                 </div>
 
-                <a href="index.php?page=metro/index" class="module-menu">
+                <a
+                    href="index.php?page=metro/index"
+                    class="module-menu"
+                >
                     দেখুন
                 </a>
 
@@ -1082,7 +1108,10 @@ if ($hourNow < 12) {
 
                 <div class="module-title">
 
-                    <div class="module-icon" style="background:#fce7f3;color:#db2777;">
+                    <div
+                        class="module-icon"
+                        style="background:#fce7f3;color:#db2777;"
+                    >
                         👥
                     </div>
 
@@ -1090,7 +1119,10 @@ if ($hourNow < 12) {
 
                 </div>
 
-                <a href="index.php?page=employee/index" class="module-menu">
+                <a
+                    href="index.php?page=employee/index"
+                    class="module-menu"
+                >
                     দেখুন
                 </a>
 
@@ -1129,7 +1161,10 @@ if ($hourNow < 12) {
 
                 <div class="module-title">
 
-                    <div class="module-icon" style="background:#e0f2fe;color:#0284c7;">
+                    <div
+                        class="module-icon"
+                        style="background:#e0f2fe;color:#0284c7;"
+                    >
                         💵
                     </div>
 
@@ -1137,7 +1172,10 @@ if ($hourNow < 12) {
 
                 </div>
 
-                <a href="index.php?page=salary/report" class="module-menu">
+                <a
+                    href="index.php?page=salary/report"
+                    class="module-menu"
+                >
                     রিপোর্ট
                 </a>
 
@@ -1189,49 +1227,73 @@ if ($hourNow < 12) {
                 <div class="quick-grid">
 
 
-                    <a href="index.php?page=car/add" class="quick-action">
+                    <a
+                        href="index.php?page=car/add"
+                        class="quick-action"
+                    >
                         <i>🚗</i>
                         <span>নতুন গাড়ি</span>
                     </a>
 
 
-                    <a href="index.php?page=payment/add" class="quick-action">
+                    <a
+                        href="index.php?page=payment/add"
+                        class="quick-action"
+                    >
                         <i>💰</i>
                         <span>কিস্তি গ্রহণ</span>
                     </a>
 
 
-                    <a href="index.php?page=rent/collection" class="quick-action">
+                    <a
+                        href="index.php?page=rent/collection"
+                        class="quick-action"
+                    >
                         <i>🏠</i>
                         <span>ভাড়া গ্রহণ</span>
                     </a>
 
 
-                    <a href="index.php?page=garage/add" class="quick-action">
+                    <a
+                        href="index.php?page=garage/add"
+                        class="quick-action"
+                    >
                         <i>➕</i>
                         <span>নতুন আয়/ব্যয়</span>
                     </a>
 
 
-                    <a href="index.php?page=metro/add" class="quick-action">
+                    <a
+                        href="index.php?page=metro/add"
+                        class="quick-action"
+                    >
                         <i>🚕</i>
                         <span>মেট্রো গাড়ি</span>
                     </a>
 
 
-                    <a href="index.php?page=employee/add" class="quick-action">
+                    <a
+                        href="index.php?page=employee/add"
+                        class="quick-action"
+                    >
                         <i>👤</i>
                         <span>নতুন কর্মচারী</span>
                     </a>
 
 
-                    <a href="index.php?page=salary/payment" class="quick-action">
+                    <a
+                        href="index.php?page=salary/payment"
+                        class="quick-action"
+                    >
                         <i>💵</i>
                         <span>বেতন প্রদান</span>
                     </a>
 
 
-                    <a href="index.php?page=accounting/add" class="quick-action">
+                    <a
+                        href="index.php?page=accounting/add"
+                        class="quick-action"
+                    >
                         <i>🧾</i>
                         <span>নতুন হিসাব</span>
                     </a>
@@ -1255,7 +1317,9 @@ if ($hourNow < 12) {
                     💰 আজকের হিসাব
                 </h5>
 
-                <a href="index.php?page=garage/report">
+                <a
+                    href="index.php?page=garage/report"
+                >
                     বিস্তারিত
                 </a>
 
@@ -1340,7 +1404,9 @@ if ($hourNow < 12) {
                     📞 আজকের Follow-up
                 </h5>
 
-                <a href="index.php?page=call_story/today_followup">
+                <a
+                    href="index.php?page=call_story/today_followup"
+                >
                     সব দেখুন
                 </a>
 
@@ -1456,25 +1522,37 @@ if ($hourNow < 12) {
             <div class="box-body">
 
 
-                <a href="index.php?page=car/report" class="quick-action d-flex align-items-center gap-2 mb-2">
+                <a
+                    href="index.php?page=car/report"
+                    class="quick-action d-flex align-items-center gap-2 mb-2"
+                >
                     🚗
                     <span>গাড়ি রিপোর্ট</span>
                 </a>
 
 
-                <a href="index.php?page=payment/report" class="quick-action d-flex align-items-center gap-2 mb-2">
+                <a
+                    href="index.php?page=payment/report"
+                    class="quick-action d-flex align-items-center gap-2 mb-2"
+                >
                     💰
                     <span>কিস্তি রিপোর্ট</span>
                 </a>
 
 
-                <a href="index.php?page=garage/report" class="quick-action d-flex align-items-center gap-2 mb-2">
+                <a
+                    href="index.php?page=garage/report"
+                    class="quick-action d-flex align-items-center gap-2 mb-2"
+                >
                     🏢
                     <span>গ্যারেজ রিপোর্ট</span>
                 </a>
 
 
-                <a href="index.php?page=salary/report" class="quick-action d-flex align-items-center gap-2">
+                <a
+                    href="index.php?page=salary/report"
+                    class="quick-action d-flex align-items-center gap-2"
+                >
                     💵
                     <span>বেতন রিপোর্ট</span>
                 </a>

@@ -402,6 +402,7 @@ foreach ($followups as $row) {
                                 <th>জাবিনের ফোন</th>
                                 <th>Follow-up </th>
                                 <th>কল স্ট্যাটাস </th>
+                                <th>নোট</th>
                                 <th class="text-end pe-3">  Action </th>
                             </tr>
 
@@ -607,6 +608,9 @@ foreach ($followups as $row) {
 
                                 </td>
 
+                                <td>
+                               <?= htmlspecialchars(  $row['note'] ?? 'N/A' ) ?>
+                                </td>
 
 
                                 <!-- ACTION -->
@@ -618,11 +622,11 @@ foreach ($followups as $row) {
 
                                         <!-- CALL -->
 
-                                        <?php if (!empty($row['customer_phone'])): ?>
+                                        <?php if (!empty($row['mobile'])): ?>
 
                                             <a
                                                 href="tel:<?= htmlspecialchars(
-                                                    $row['customer_phone']
+                                                    $row['mobile']
                                                 ) ?>"
                                                 class="btn btn-sm btn-success"
                                                 title="কল করুন"
@@ -638,7 +642,7 @@ foreach ($followups as $row) {
 
                                         <!-- CALL STORY -->
 
-                                        <a href="index.php?page=car/callstory&id=<?= (int)($row['id'] ?? $row['id'] ?? 0 ) ?>"
+                                        <a href="index.php?page=call_story/edit&id=<?= (int)($row['id'] ?? $row['id'] ?? 0 ) ?>"
                                             class="btn btn-sm btn-primary"
                                             title="Call Story"
                                         >

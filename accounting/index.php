@@ -1,691 +1,275 @@
 <?php
-
-// =====================================================
-// DATE FILTER
-// DEFAULT = TODAY
-// =====================================================
-
-$today = date('Y-m-d');
-
-$from_date = $_GET['from_date'] ?? $today;
-$to_date   = $_GET['to_date'] ?? $today;
-
-
-// =====================================================
-// VALIDATE DATE
-// =====================================================
-
-if (empty($from_date)) {
-    $from_date = $today;
-}
-
-if (empty($to_date)) {
-    $to_date = $today;
-}
-
-
-// =====================================================
-// IF FROM DATE > TO DATE
-// =====================================================
-
-if ($from_date > $to_date) {
-
-    $temp = $from_date;
-
-    $from_date = $to_date;
-
-    $to_date = $temp;
-}
-
-
-// =====================================================
-// FETCH TRANSACTIONS
-// =====================================================
+ 
 
 $stmt = $pdo->query("
-    SELECT *
-    FROM transactions
-    ORDER BY created_at DESC
-    LIMIT 100
+    SELECT 
+        at.*,
+        ah.head_name
+    FROM accounting_transactions at
+    LEFT JOIN account_heads ah ON ah.id = at.head_id
+    ORDER BY at.transaction_date DESC, at.id DESC
 ");
 
 $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$totalIncome = 0;
+$totalExpense = 0;
 
-// =====================================================
-// HEAD SUMMARY
-// DATE WISE
-// =====================================================
+foreach ($transactions as $row) {
+    if ($row['transaction_type'] === 'income') {
+        $totalIncome += (float)$row['amount'];
+    }
 
-$sql = "
-    SELECT
-        head_name,
-        COALESCE(SUM(taka_in), 0) AS total_in,
-        COALESCE(SUM(taka_out), 0) AS total_out
-    FROM transactions
-    WHERE created_at >= :from_date
-      AND created_at < :to_date
-";
-
-
-// =====================================================
-// DATE PARAMETERS
-// =====================================================
-
-$params = [];
-
-
-// FROM DATE = 00:00:00
-
-$params[':from_date'] =
-    $from_date . ' 00:00:00';
-
-
-// TO DATE
-// NEXT DAY 00:00:00
-// যাতে পুরো শেষ দিনের হিসাব আসে
-
-$next_date = date(
-    'Y-m-d',
-    strtotime($to_date . ' +1 day')
-);
-
-$params[':to_date'] =
-    $next_date . ' 00:00:00';
-
-
-// =====================================================
-// GROUP BY HEAD
-// =====================================================
-
-$sql .= "
-    GROUP BY head_name
-    ORDER BY head_name ASC
-";
-
-
-// =====================================================
-// EXECUTE QUERY
-// =====================================================
-
-$summaryStmt = $pdo->prepare($sql);
-
-$summaryStmt->execute($params);
-
-$head_summaries =
-    $summaryStmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-// =====================================================
-// GRAND TOTAL
-// =====================================================
-
-$grand_in = 0;
-$grand_out = 0;
-
-
-foreach ($head_summaries as $row) {
-
-    $grand_in += (float)($row['total_in'] ?? 0);
-
-    $grand_out += (float)($row['total_out'] ?? 0);
+    if ($row['transaction_type'] === 'expense') {
+        $totalExpense += (float)$row['amount'];
+    }
 }
 
-
-$grand_balance =
-    $grand_in - $grand_out;
-
+$balance = $totalIncome - $totalExpense;
 ?>
 
 
 
-<div class="container-fluid p-4">
+<div class="container-fluid py-4">
 
-
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
-    <div class="page-heading d-flex justify-content-between align-items-center mb-4">
-
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
+            <h3 class="mb-1">হিসাবের তালিকা</h3>
+            <p class="text-muted mb-0">সকল আয় ও ব্যয়ের হিসাব</p>
+        </div>
 
-            <h3>📊 কাস্টমার একাউন্টিং</h3>
+        <a href="index.php?page=accounting/add" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            নতুন হিসাব
+        </a>
+    </div>
 
-            <small class="text-muted">
-                তারিখ অনুযায়ী সকল লেনদেনের হিসাব
-            </small>
 
+    <!-- Summary -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted">মোট আয়</div>
+
+                    <h3 class="text-success mb-0">
+                        ৳ <?= number_format($totalIncome, 2) ?>
+                    </h3>
+                </div>
+            </div>
         </div>
 
 
-        <a
-            href="index.php?page=accounting/add"
-            class="btn btn-success"
-        >
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted">মোট খরচ</div>
 
-            <i class="bi bi-plus-circle"></i>
+                    <h3 class="text-danger mb-0">
+                        ৳ <?= number_format($totalExpense, 2) ?>
+                    </h3>
+                </div>
+            </div>
+        </div>
 
-            নতুন এন্ট্রি
 
-        </a>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted">বর্তমান ব্যালেন্স</div>
+
+                    <h3 class="<?= $balance >= 0 ? 'text-primary' : 'text-danger' ?> mb-0">
+                        ৳ <?= number_format($balance, 2) ?>
+                    </h3>
+                </div>
+            </div>
+        </div>
 
     </div>
 
 
+    <!-- Table -->
 
-    <!-- =====================================================
-         DATE FILTER
-    ====================================================== -->
-
-    <div class="card shadow-sm mb-4">
+    <div class="card border-0 shadow-sm">
 
         <div class="card-body">
 
-            <form
-                method="GET" action="index.php"  >
- 
-                <input  type="hidden"  name="page"  value="accounting/index" >
+            <div class="table-responsive">
 
+                <table class="table table-hover align-middle">
 
-                <div class="row g-3 align-items-end">
-
-
-                    <!-- FROM DATE -->
-
-                    <div class="col-md-4">
-
-                        <label class="form-label fw-semibold">
-
-                            শুরু তারিখ
-
-                        </label>
-
-                        <input
-                            type="date"
-                            name="from_date"
-                            class="form-control"
-                            value="<?= htmlspecialchars($from_date) ?>"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- TO DATE -->
-
-                    <div class="col-md-4">
-
-                        <label class="form-label fw-semibold">
-
-                            শেষ তারিখ
-
-                        </label>
-
-                        <input
-                            type="date"
-                            name="to_date"
-                            class="form-control"
-                            value="<?= htmlspecialchars($to_date) ?>"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- BUTTON -->
-
-                    <div class="col-md-4">
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                        >
-
-                            🔍 হিসাব দেখুন
-
-                        </button>
-
-
-                        <a
-                            href="index.php?page=accounting/index"
-                            class="btn btn-secondary"
-                        >
-
-                            আজ
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =====================================================
-         CURRENT FILTER
-    ====================================================== -->
-
-    <div class="alert alert-info">
-
-        <strong>📅 হিসাবের সময়:</strong>
-
-        <?= bn_number(
-            date(
-                'd-m-Y',
-                strtotime($from_date)
-            )
-        ) ?>
-
-        থেকে
-
-        <?= bn_number(
-            date(
-                'd-m-Y',
-                strtotime($to_date)
-            )
-        ) ?>
-
-    </div>
-
-
-
-    <!-- =====================================================
-         GRAND SUMMARY
-    ====================================================== -->
-
-    <div class="row mb-4">
-
-
-        <!-- =================================================
-             TOTAL IN
-        ================================================== -->
-
-        <div class="col-md-4">
-
-            <div class="card bg-success text-white shadow">
-
-                <div class="card-body">
-
-                    <h6>
-                        মোট জমা (IN)
-                    </h6>
-
-                    <h4 class="mb-0">
-
-                        ৳
-
-                        <?= bn_number(
-                            number_format(
-                                $grand_in,
-                                2
-                            )
-                        ) ?>
-
-                    </h4>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =================================================
-             TOTAL OUT
-        ================================================== -->
-
-        <div class="col-md-4">
-
-            <div class="card bg-danger text-white shadow">
-
-                <div class="card-body">
-
-                    <h6>
-                        মোট খরচ (OUT)
-                    </h6>
-
-                    <h4 class="mb-0">
-
-                        ৳
-
-                        <?= bn_number(
-                            number_format(
-                                $grand_out,
-                                2
-                            )
-                        ) ?>
-
-                    </h4>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =================================================
-             BALANCE
-        ================================================== -->
-
-        <div class="col-md-4">
-
-            <div
-                class="card
-                <?= $grand_balance >= 0
-                    ? 'bg-primary'
-                    : 'bg-warning'
-                ?>
-                text-white shadow"
-            >
-
-                <div class="card-body">
-
-                    <h6>
-                        মোট ব্যালেন্স
-                    </h6>
-
-                    <h4 class="mb-0">
-
-                        ৳
-
-                        <?= bn_number(
-                            number_format(
-                                $grand_balance,
-                                2
-                            )
-                        ) ?>
-
-                    </h4>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-
-
-    <!-- =====================================================
-         SEARCH
-    ====================================================== -->
-
-    <div class="mb-3">
-
-        <input
-            type="text"
-            id="searchInput"
-            class="form-control"
-            placeholder="🔍 সার্চ করুন (হেড)..."
-        >
-
-    </div>
-
-
-
-    <!-- =====================================================
-         TABLE
-    ====================================================== -->
-
-    <div class="card shadow">
-
-        <div class="table-responsive">
-
-            <table
-                class="table table-hover mb-0"
-                id="dataTable"
-            >
-
-
-                <!-- TABLE HEADER -->
-
-                <thead class="table-dark text-white">
+                    <thead class="table-light">
 
                     <tr>
-
-                        <th>
-                            হেড
-                        </th>
-
-                        <th>
-                            জমা (IN)
-                        </th>
-
-                        <th>
-                            খরচ (OUT)
-                        </th>
-
-                        <th>
-                            ব্যালেন্স
-                        </th>
-
-                        <th class="text-end">
-                            অ্যাকশন
-                        </th>
-
+                        <th>#</th>
+                        <th>তারিখ</th>
+                        <th>হিসাবের Head</th>
+                        <th>ধরন</th>
+                        <th>পরিমাণ</th>
+                        <th>পেমেন্ট</th>
+                        <th>বিবরণ</th>
+                        <th class="text-center">Action</th>
                     </tr>
 
-                </thead>
+                    </thead>
 
+                    <tbody>
 
-
-                <!-- TABLE BODY -->
-
-                <tbody>
-
-
-                <?php if (!empty($head_summaries)): ?>
-
-
-                    <?php foreach ($head_summaries as $row): ?>
-
-
-                        <?php
-
-                        $total_in =
-                            (float)($row['total_in'] ?? 0);
-
-                        $total_out =
-                            (float)($row['total_out'] ?? 0);
-
-                        $balance =
-                            $total_in - $total_out;
-
-                        ?>
-
+                    <?php if (!$transactions): ?>
 
                         <tr>
-
-
-                            <!-- HEAD -->
-
-                            <td>
-
-                                <strong>
-
-                                    <?= htmlspecialchars(
-                                        $row['head_name']
-                                        ?? 'N/A'
-                                    ) ?>
-
-                                </strong>
-
+                            <td colspan="8"
+                                class="text-center text-muted py-4">
+                                কোনো হিসাব পাওয়া যায়নি
                             </td>
-
-
-
-                            <!-- IN -->
-
-                            <td class="text-primary fw-semibold">
-
-                                ৳
-
-                                <?= bn_number(
-                                    number_format(
-                                        $total_in,
-                                        2
-                                    )
-                                ) ?>
-
-                            </td>
-
-
-
-                            <!-- OUT -->
-
-                            <td class="text-danger fw-semibold">
-
-                                ৳
-
-                                <?= bn_number(
-                                    number_format(
-                                        $total_out,
-                                        2
-                                    )
-                                ) ?>
-
-                            </td>
-
-
-
-                            <!-- BALANCE -->
-
-                            <td>
-
-                                <span
-                                    class="badge
-                                    <?= $balance >= 0
-                                        ? 'bg-success'
-                                        : 'bg-danger'
-                                    ?>"
-                                >
-
-                                    ৳
-
-                                    <?= bn_number(
-                                        number_format(
-                                            $balance,
-                                            2
-                                        )
-                                    ) ?>
-
-                                </span>
-
-                            </td>
-
-
-
-                            <!-- ACTION -->
-
-                            <td class="text-end">
-
-
-                                <a
-                                    href="index.php?page=accounting/sammery&head_name=<?= urlencode($row['head_name']) ?>&from_date=<?= urlencode($from_date) ?>&to_date=<?= urlencode($to_date) ?>"
-                                    class="btn btn-sm btn-outline-secondary"
-                                >
-
-                                    Summary
-
-                                </a>
-
-
-                            </td>
-
-
                         </tr>
 
+                    <?php else: ?>
 
-                    <?php endforeach; ?>
+                        <?php foreach ($transactions as $key => $row): ?>
 
+                            <tr>
 
-                <?php else: ?>
+                                <td>
+                                    <?= $key + 1 ?>
+                                </td>
 
+                                <td>
+                                    <?= htmlspecialchars($row['transaction_date']) ?>
+                                </td>
 
-                    <!-- NO DATA -->
-
-                    <tr>
-
-                        <td
-                            colspan="5"
-                            class="text-center py-4"
-                        >
-
-                            <div class="text-muted">
-
-                                📭 এই তারিখে কোনো লেনদেন পাওয়া যায়নি।
-
-                            </div>
-
-                        </td>
-
-                    </tr>
+                                <td>
+                                    <strong>
+                                        <?= htmlspecialchars($row['head_name'] ?? 'N/A') ?>
+                                    </strong>
+                                </td>
 
 
-                <?php endif; ?>
+                                <td>
+
+                                    <?php if ($row['transaction_type'] === 'income'): ?>
+
+                                        <span class="badge bg-success-subtle text-success">
+                                            আয়
+                                        </span>
+
+                                    <?php elseif ($row['transaction_type'] === 'expense'): ?>
+
+                                        <span class="badge bg-danger-subtle text-danger">
+                                            খরচ
+                                        </span>
+
+                                    <?php elseif ($row['transaction_type'] === 'deposit'): ?>
+
+                                        <span class="badge bg-primary-subtle text-primary">
+                                            জমা
+                                        </span>
+
+                                    <?php elseif ($row['transaction_type'] === 'withdraw'): ?>
+
+                                        <span class="badge bg-warning-subtle text-warning">
+                                            উত্তোলন
+                                        </span>
+
+                                    <?php else: ?>
+
+                                        <span class="badge bg-secondary-subtle text-secondary">
+                                            Transfer
+                                        </span>
+
+                                    <?php endif; ?>
+
+                                </td>
 
 
-                </tbody>
+                                <td>
+
+                                    <?php if (
+                                        in_array(
+                                            $row['transaction_type'],
+                                            ['income', 'deposit']
+                                        )
+                                    ): ?>
+
+                                        <span class="text-success fw-bold">
+                                            + ৳ <?= number_format($row['amount'], 2) ?>
+                                        </span>
+
+                                    <?php else: ?>
+
+                                        <span class="text-danger fw-bold">
+                                            - ৳ <?= number_format($row['amount'], 2) ?>
+                                        </span>
+
+                                    <?php endif; ?>
+
+                                </td>
 
 
-            </table>
+                                <td>
+                                    <?= ucfirst(htmlspecialchars($row['payment_method'])) ?>
+                                </td>
+
+
+                                <td>
+                                    <?= htmlspecialchars(
+                                        $row['description'] ?? ''
+                                    ) ?>
+                                </td>
+
+
+                                <td class="text-center">
+
+                                    <div class="btn-group">
+
+                                        <a href="index.php?page=accounting/view&id=<?= $row['id'] ?>"
+                                           class="btn btn-sm btn-outline-info"
+                                           title="View">
+
+                                            <i class="bi bi-eye"></i>
+
+                                        </a>
+
+
+                                        <a href="index.php?page=accounting/edit?id=<?= $row['id'] ?>"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Edit">
+
+                                            <i class="bi bi-pencil"></i>
+
+                                        </a>
+
+
+                                        <a href="index.php?page=accounting/delete?id=<?= $row['id'] ?>"
+                                           class="btn btn-sm btn-outline-danger"
+                                           title="Delete"
+                                           onclick="return confirm('এই হিসাবটি কি Delete করতে চান?');">
+
+                                            <i class="bi bi-trash"></i>
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        <?php endforeach; ?>
+
+                    <?php endif; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
     </div>
-
 
 </div>
 
-
-
-<!-- =====================================================
-     SEARCH SCRIPT
-====================================================== -->
-
-<script>
-
-document
-    .getElementById("searchInput")
-    .addEventListener("keyup", function () {
-
-        let value =
-            this.value.toLowerCase();
-
-
-        let rows =
-            document.querySelectorAll(
-                "#dataTable tbody tr"
-            );
-
-
-        rows.forEach(function (row) {
-
-            let text =
-                row.innerText.toLowerCase();
-
-
-            row.style.display =
-                text.includes(value)
-                    ? ""
-                    : "none";
-
-        });
-
-    });
-
-</script>

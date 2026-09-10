@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================== ERROR SHOW ==================
     if (!empty($errors)) {
         $_SESSION['error'] = implode('<br>', $errors);
-        header("Location:index.php?page=car/add");
+        header("Location:index.php?page=car/index");
         exit();
     }
 }

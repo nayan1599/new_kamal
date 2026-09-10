@@ -22,27 +22,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="card-body p-4">
-                    
+
                     <?php if (!empty($errors)): ?>
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                <?php foreach($errors as $err): ?>
-                                    <li><?= $err ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            <?php foreach($errors as $err): ?>
+                            <li><?= $err ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                     <?php endif; ?>
 
                     <?php if (isset($_SESSION['success'])): ?>
-                        <div class="alert alert-success alert-dismissible fade show">
-                            <?= $_SESSION['success']; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                        <?php unset($_SESSION['success']); ?>
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <?= $_SESSION['success']; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['success']); ?>
                     <?php endif; ?>
 
                     <form class="needs-validation" novalidate method="POST" action="">
-                        
+
                         <div class="row g-3">
                             <!-- গ্রাহকের তথ্য -->
                             <div class="col-12">
@@ -60,22 +60,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             <div class="col-md-6">
                                 <label class="form-label">গাড়ির নাম্বার</label>
-                                <input type="text" name="car_number" value="<?= htmlspecialchars($car_number) ?>" class="form-control" placeholder="ঢাকা মেট্রো-গ-১২৩৪">
+                                <input type="text" name="car_number" value="<?= htmlspecialchars($car_number) ?>"
+                                    class="form-control" placeholder="ঢাকা মেট্রো-গ-১২৩৪">
                             </div>
 
                             <!-- কিস্তি নম্বর (শুধু কিস্তি হলে দেখাবে) -->
                             <div class="col-md-6" id="kistiNumberField">
                                 <label class="form-label">কিস্তি নম্বর <span class="text-danger">*</span></label>
-                                <input type="number" name="kisti_number" value="1" class="form-control" placeholder="১, ২, ৩..." required>
+                                <input type="number" name="kisti_number" value="1" class="form-control"
+                                    placeholder="১, ২, ৩..." required>
                             </div>
 
-                
+
 
                             <div class="col-md-6">
                                 <label class="form-label">টাকার পরিমাণ <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text">৳</span>
-                                    <input type="number" step="0.01" name="amount" class="form-control" placeholder="০.০০" required>
+                                    <input type="number" step="0.01" name="amount" class="form-control"
+                                        placeholder="০.০০" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -88,7 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             <div class="col-md-6">
                                 <label class="form-label">পেমেন্ট তারিখ <span class="text-danger">*</span></label>
-                                <input type="date" name="payment_date" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                                <input type="date" name="payment_date" class="form-control" value="<?= date('Y-m-d') ?>"
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">পেমেন্ট মেথড <span class="text-danger">*</span></label>
@@ -111,23 +115,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
 
                             <!-- ট্রানজেকশন ফিল্ড -->
-                            <div class="col-12 mt-3" id="transactionFields" style="display:none;">
-                                <h6 class="text-muted">ট্রানজেকশন বিবরণ</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label>ট্রানজেকশন আইডি</label>
-                                        <input type="text" name="transaction_id" class="form-control">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label>ব্যাংকের নাম</label>
-                                        <input type="text" name="bank_name" class="form-control">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label>চেক নম্বর</label>
-                                        <input type="text" name="cheque_no" class="form-control">
-                                    </div>
-                                </div>
+                            <div class="col-md-6 mt-3" id="transactionFields" style="display:none;">
+
+
+
+                                <label>ব্যাংকের নাম</label>
+
+
+                                <select name="bank_name" class="form-control">
+                                    <option value="">-- ব্যাংক নির্বাচন করুন --</option>
+                                    <option value="Dutch-Bangla Bank">ডাচ্-বাংলা ব্যাংক</option>
+                                    <option value="BRAC Bank">ব্র্যাক ব্যাংক</option>
+
+                                </select>
+
                             </div>
+
+
 
                             <div class="col-md-6">
                                 <label class="form-label">স্ট্যাটাস</label>
@@ -163,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
 // পেমেন্ট টাইপ অনুযায়ী কিস্তি নম্বর শো/হাইড
-document.getElementById('payment_type').addEventListener('change', function () {
+document.getElementById('payment_type').addEventListener('change', function() {
     const kistiField = document.getElementById('kistiNumberField');
     if (this.value === 'kisti') {
         kistiField.style.display = 'block';
@@ -175,7 +179,7 @@ document.getElementById('payment_type').addEventListener('change', function () {
 });
 
 // ট্রানজেকশন ফিল্ড শো/হাইড (আগের মতো)
-document.getElementById('payment_method').addEventListener('change', function () {
+document.getElementById('payment_method').addEventListener('change', function() {
     const fields = document.getElementById('transactionFields');
     fields.style.display = (this.value === 'bank_transfer') ? 'block' : 'none';
 });

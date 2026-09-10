@@ -252,13 +252,13 @@ if ($total_calls > 0) {
 
             <form
                 method="GET"
-                action="index.php"
+                
             >
 
                 <input
                     type="hidden"
                     name="page"
-                    value="car/call_report"
+                    value="call_story/call_report"
                 >
 
 

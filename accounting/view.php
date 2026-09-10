@@ -1,95 +1,212 @@
-<?php 
+<?php
+ 
 
-if (!isset($_GET['transactions_id']) || empty($_GET['transactions_id'])) {
-    die("<h3 class='text-center mt-5 text-danger'>❌ ট্রানজেকশন আইডি পাওয়া যায়নি!</h3>");
+$id = (int)($_GET['id'] ?? 0);
+
+if ($id <= 0) {
+    die('Invalid ID');
 }
 
-$transactions_id = trim($_GET['transactions_id']);
 
-$stmt = $pdo->prepare("SELECT * FROM transactions WHERE id = ? LIMIT 1");
-$stmt->execute([$transactions_id]);
-$transactions = $stmt->fetch();
+$stmt = $pdo->prepare("
+    SELECT
+        at.*,
+        ah.head_name,
+        ca.account_name AS cash_account_name,
+        ba.bank_name,
+        ba.account_name AS bank_account_name,
+        ba.account_number
+    FROM accounting_transactions at
 
-if (!$transactions) {
-    die("<h3 class='text-center mt-5 text-danger'>❌ কোন ডাটা পাওয়া যায়নি!</h3>");
+    LEFT JOIN account_heads ah
+        ON ah.id = at.head_id
+
+    LEFT JOIN cash_accounts ca
+        ON ca.id = at.cash_account_id
+
+    LEFT JOIN bank_accounts ba
+        ON ba.id = at.bank_account_id
+
+    WHERE at.id = ?
+");
+
+$stmt->execute([$id]);
+
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+if (!$row) {
+    die('হিসাব পাওয়া যায়নি।');
 }
 ?>
+ 
+<div class="container py-4">
 
-<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
 
-    <div class="card shadow-lg border-0">
-        
-        <!-- Header -->
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">📄 ট্রানজেকশন বিস্তারিত</h5>
-            <a href="index.php?page=transactions/list" class="btn btn-sm btn-light">⬅ ফিরে যান</a>
+        <h3>হিসাবের বিস্তারিত</h3>
+
+        <div>
+
+            <a href="edit.php?id=<?= $row['id'] ?>"
+               class="btn btn-primary">
+                Edit
+            </a>
+
+            <a href="index.php"
+               class="btn btn-secondary">
+                Back
+            </a>
+
         </div>
 
-        <!-- Body -->
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
         <div class="card-body">
 
-            <div class="row g-3">
+            <div class="row g-4">
+
 
                 <div class="col-md-6">
-                    <label class="text-muted">📅 তারিখ</label>
-                    <h6><?= htmlspecialchars($transactions['created_at']) ?></h6>
+
+                    <strong>তারিখ</strong>
+
+                    <div>
+                        <?= htmlspecialchars($row['transaction_date']) ?>
+                    </div>
+
                 </div>
 
-              
-
-                <div class="col-md-4">
-                    <label class="text-muted">💰 টাকা</label>
-                    <h5 class="text-primary">৳ <?= number_format($transactions['taka_in'], 2) ?></h5>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="text-muted">⚠️ জরিমানা</label>
-                    <h5 class="text-warning">৳ <?= number_format($transactions['taka_out'], 2) ?></h5>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="text-muted">🧾 মোট প্রাপ্ত</label>
-                    <h5 class="text-success">৳ <?= number_format($transactions['total_received'], 2) ?></h5>
-                </div>
 
                 <div class="col-md-6">
-                    <label class="text-muted">💳 পেমেন্ট মাধ্যম</label>
-                    <h6>
-                        <span class="badge bg-info">
-                            <?= strtoupper($transactions['payment_method']) ?>
-                        </span>
-                    </h6>
+
+                    <strong>Account Head</strong>
+
+                    <div>
+                        <?= htmlspecialchars($row['head_name'] ?? '') ?>
+                    </div>
+
                 </div>
 
+
                 <div class="col-md-6">
-                    <label class="text-muted">🔢 ট্রানজেকশন আইডি</label>
-                    <h6><?= htmlspecialchars($transactions['transaction_id'] ?? 'N/A') ?></h6>
+
+                    <strong>হিসাবের ধরন</strong>
+
+                    <div>
+                        <?= htmlspecialchars($row['transaction_type']) ?>
+                    </div>
+
                 </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>পরিমাণ</strong>
+
+                    <div class="fs-4 fw-bold">
+                        ৳ <?= number_format($row['amount'], 2) ?>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>Payment Method</strong>
+
+                    <div>
+                        <?= htmlspecialchars($row['payment_method']) ?>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>Cash Account</strong>
+
+                    <div>
+                        <?= htmlspecialchars(
+                            $row['cash_account_name'] ?? '-'
+                        ) ?>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>Bank Account</strong>
+
+                    <div>
+
+                        <?php if (!empty($row['bank_name'])): ?>
+
+                            <?= htmlspecialchars($row['bank_name']) ?>
+
+                            -
+
+                            <?= htmlspecialchars(
+                                $row['bank_account_name'] ?? ''
+                            ) ?>
+
+                            <?php if (!empty($row['account_number'])): ?>
+
+                                (<?= htmlspecialchars(
+                                    $row['account_number']
+                                ) ?>)
+
+                            <?php endif; ?>
+
+                        <?php else: ?>
+
+                            -
+
+                        <?php endif; ?>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>Reference</strong>
+
+                    <div>
+                        <?= htmlspecialchars(
+                            $row['reference'] ?? '-'
+                        ) ?>
+                    </div>
+
+                </div>
+
 
                 <div class="col-12">
-                    <label class="text-muted">📝 নোট</label>
-                    <p class="border p-2 rounded bg-light">
-                        <?= htmlspecialchars($transactions['note'] ?? 'কোন নোট নেই') ?>
-                    </p>
+
+                    <strong>বিবরণ</strong>
+
+                    <div class="border rounded p-3 mt-2">
+
+                        <?= nl2br(
+                            htmlspecialchars(
+                                $row['description'] ?? ''
+                            )
+                        ) ?>
+
+                    </div>
+
                 </div>
 
             </div>
 
         </div>
 
-        <!-- Footer -->
-        <div class="card-footer text-end">
-            <button onclick="window.print()" class="btn btn-dark btn-sm">🖨️ প্রিন্ট</button>
-        </div>
-
     </div>
 
 </div>
-
-<style>
-@media print {
-    .btn, .card-header, .card-footer {
-        display: none !important;
-    }
-}
-</style>
+ 

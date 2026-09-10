@@ -1,10 +1,18 @@
+
 <?php
+
+// =========================
+// DATE & FILTER
+// =========================
 
 $today = date('Y-m-d');
 
 $from_date = $_GET['from_date'] ?? $today;
 $to_date   = $_GET['to_date'] ?? $today;
+
 $garage_id = $_GET['garage_id'] ?? '';
+$type      = $_GET['type'] ?? '';
+$search    = trim($_GET['search'] ?? '');
 
 
 // =========================
@@ -22,11 +30,24 @@ $garages = $garageStmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 // =========================
-// SUMMARY QUERY
+// PAGINATION
+// =========================
+
+$limit = 10;
+
+$page = isset($_GET['p'])
+    ? max(1, (int)$_GET['p'])
+    : 1;
+
+$offset = ($page - 1) * $limit;
+
+
+// =========================
+// WHERE
 // =========================
 
 $where = "
-    transaction_date BETWEEN :from_date AND :to_date
+    gt.transaction_date BETWEEN :from_date AND :to_date
 ";
 
 $params = [
@@ -35,116 +56,77 @@ $params = [
 ];
 
 
+// =========================
+// GARAGE FILTER
+// =========================
+
 if ($garage_id !== '') {
 
-    $where .= " AND garage_id = :garage_id";
+    $where .= " AND gt.garage_id = :garage_id";
 
     $params[':garage_id'] = $garage_id;
 }
 
 
-$stmt = $pdo->prepare("
-    SELECT
-        garage_id,
-
-        COALESCE(
-            SUM(
-                CASE
-                    WHEN type = 'income'
-                    THEN amount
-                    ELSE 0
-                END
-            ), 0
-        ) AS total_income,
-
-        COALESCE(
-            SUM(
-                CASE
-                    WHEN type = 'expense'
-                    THEN amount
-                    ELSE 0
-                END
-            ), 0
-        ) AS total_expense
-
-    FROM garage_transactions
-
-    WHERE $where
-
-    GROUP BY garage_id
-
-    ORDER BY garage_id ASC
-");
-
-$stmt->execute($params);
-
-$summaries = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
 // =========================
-// SUMMARY MAP
+// TYPE FILTER
 // =========================
 
-$garageSummary = [];
+if ($type !== '') {
 
-foreach ($summaries as $row) {
+    $where .= " AND gt.type = :type";
 
-    $income = (float)$row['total_income'];
-    $expense = (float)$row['total_expense'];
-
-    $garageSummary[$row['garage_id']] = [
-        'income' => $income,
-        'expense' => $expense,
-        'balance' => $income - $expense
-    ];
+    $params[':type'] = $type;
 }
 
 
 // =========================
-// GRAND TOTAL
+// SEARCH
 // =========================
 
-$grand_income = 0;
-$grand_expense = 0;
+if ($search !== '') {
 
-foreach ($garageSummary as $summary) {
-
-    $grand_income += $summary['income'];
-    $grand_expense += $summary['expense'];
-
-}
-
-$grand_balance =
-    $grand_income - $grand_expense;
-
-
-// =========================
-// RECENT TRANSACTIONS
-// =========================
-
-$transactionWhere = "
-    gt.transaction_date
-    BETWEEN :from_date
-    AND :to_date
-";
-
-$transactionParams = [
-    ':from_date' => $from_date,
-    ':to_date' => $to_date
-];
-
-
-if ($garage_id !== '') {
-
-    $transactionWhere .= "
-        AND gt.garage_id = :garage_id
+    $where .= "
+        AND (
+            gt.category LIKE :search
+            OR gt.description LIKE :search
+            OR g.garage_name LIKE :search
+        )
     ";
 
-    $transactionParams[':garage_id'] = $garage_id;
+    $params[':search'] = "%{$search}%";
 }
 
 
-$transactionStmt = $pdo->prepare("
+// =========================
+// TOTAL ROW COUNT
+// =========================
+
+$countStmt = $pdo->prepare("
+    SELECT COUNT(*)
+    FROM garage_transactions gt
+
+    LEFT JOIN garages g
+        ON g.id = gt.garage_id
+
+    WHERE $where
+");
+
+$countStmt->execute($params);
+
+$totalRows = (int)$countStmt->fetchColumn();
+
+$totalPages = max(
+    1,
+    ceil($totalRows / $limit)
+);
+
+
+// =========================
+// TRANSACTIONS
+// =========================
+
+$sql = "
     SELECT
         gt.*,
         g.garage_name
@@ -154,19 +136,20 @@ $transactionStmt = $pdo->prepare("
     LEFT JOIN garages g
         ON g.id = gt.garage_id
 
-    WHERE $transactionWhere
+    WHERE $where
 
     ORDER BY
         gt.transaction_date DESC,
         gt.id DESC
 
-    LIMIT 100
-");
+    LIMIT $limit OFFSET $offset
+";
 
-$transactionStmt->execute($transactionParams);
+$stmt = $pdo->prepare($sql);
 
-$transactions =
-    $transactionStmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->execute($params);
+
+$transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -181,11 +164,11 @@ $transactions =
         <div>
 
             <h3 class="fw-bold mb-1">
-                🏢 গ্যারেজ হিসাব
+                📋 গ্যারেজ লেনদেন
             </h3>
 
             <div class="text-muted">
-                দৈনিক আয় ও ব্যয়ের হিসাব
+                আয় ও ব্যয়ের লেনদেনের তালিকা
             </div>
 
         </div>
@@ -205,7 +188,7 @@ $transactions =
     </div>
 
 
-    <!-- FILTER -->
+    <!-- SEARCH / FILTER -->
 
     <div class="card shadow-sm border-0 mb-4">
 
@@ -219,10 +202,32 @@ $transactions =
                     value="garage/index"
                 >
 
+
                 <div class="row g-3 align-items-end">
 
 
+                    <!-- SEARCH -->
+
                     <div class="col-md-3">
+
+                        <label class="form-label fw-bold">
+                            🔍 সার্চ
+                        </label>
+
+                        <input
+                            type="text"
+                            name="search"
+                            value="<?= htmlspecialchars($search) ?>"
+                            class="form-control"
+                            placeholder="খাত / বিবরণ / গ্যারেজ"
+                        >
+
+                    </div>
+
+
+                    <!-- GARAGE -->
+
+                    <div class="col-md-2">
 
                         <label class="form-label fw-bold">
                             গ্যারেজ
@@ -241,7 +246,10 @@ $transactions =
 
                                 <option
                                     value="<?= $garage['id'] ?>"
-                                    <?= $garage_id == $garage['id'] ? 'selected' : '' ?>
+                                    <?= $garage_id == $garage['id']
+                                        ? 'selected'
+                                        : ''
+                                    ?>
                                 >
 
                                     <?= htmlspecialchars(
@@ -257,7 +265,51 @@ $transactions =
                     </div>
 
 
-                    <div class="col-md-3">
+                    <!-- TYPE -->
+
+                    <div class="col-md-2">
+
+                        <label class="form-label fw-bold">
+                            ধরন
+                        </label>
+
+                        <select
+                            name="type"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                সব
+                            </option>
+
+                            <option
+                                value="income"
+                                <?= $type === 'income'
+                                    ? 'selected'
+                                    : ''
+                                ?>
+                            >
+                                আয়
+                            </option>
+
+                            <option
+                                value="expense"
+                                <?= $type === 'expense'
+                                    ? 'selected'
+                                    : ''
+                                ?>
+                            >
+                                ব্যয়
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- FROM DATE -->
+
+                    <div class="col-md-2">
 
                         <label class="form-label fw-bold">
                             শুরু
@@ -273,7 +325,9 @@ $transactions =
                     </div>
 
 
-                    <div class="col-md-3">
+                    <!-- TO DATE -->
+
+                    <div class="col-md-2">
 
                         <label class="form-label fw-bold">
                             শেষ
@@ -289,13 +343,17 @@ $transactions =
                     </div>
 
 
-                    <div class="col-md-3">
+                    <!-- BUTTON -->
+
+                    <div class="col-md-1">
 
                         <button
+                            type="submit"
                             class="btn btn-dark w-100"
+                            title="সার্চ"
                         >
 
-                            🔍 হিসাব দেখুন
+                            🔍
 
                         </button>
 
@@ -310,239 +368,39 @@ $transactions =
     </div>
 
 
-    <!-- GRAND TOTAL -->
-
-    <div class="row g-3 mb-4">
-
-
-        <div class="col-md-4">
-
-            <div class="card bg-success text-white shadow-sm">
-
-                <div class="card-body">
-
-                    <div>
-                        মোট আয়
-                    </div>
-
-                    <h3 class="fw-bold">
-
-                        ৳ <?= bn_number(
-                            number_format(
-                                $grand_income,
-                                2
-                            )
-                        ) ?>
-
-                    </h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="col-md-4">
-
-            <div class="card bg-danger text-white shadow-sm">
-
-                <div class="card-body">
-
-                    <div>
-                        মোট ব্যয়
-                    </div>
-
-                    <h3 class="fw-bold">
-
-                        ৳ <?= bn_number(
-                            number_format(
-                                $grand_expense,
-                                2
-                            )
-                        ) ?>
-
-                    </h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="col-md-4">
-
-            <div class="card <?= $grand_balance >= 0
-                ? 'bg-primary'
-                : 'bg-warning'
-            ?> text-white shadow-sm">
-
-                <div class="card-body">
-
-                    <div>
-                        বর্তমান ব্যালেন্স
-                    </div>
-
-                    <h3 class="fw-bold">
-
-                        ৳ <?= bn_number(
-                            number_format(
-                                $grand_balance,
-                                2
-                            )
-                        ) ?>
-
-                    </h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- GARAGE CARDS -->
-
-    <div class="row g-3 mb-4">
-
-        <?php foreach ($garages as $garage): ?>
-
-            <?php
-
-            $gid = $garage['id'];
-
-            $income =
-                $garageSummary[$gid]['income']
-                ?? 0;
-
-            $expense =
-                $garageSummary[$gid]['expense']
-                ?? 0;
-
-            $balance =
-                $garageSummary[$gid]['balance']
-                ?? 0;
-
-            ?>
-
-            <div class="col-md-6">
-
-                <div class="card shadow-sm border-0 h-100">
-
-                    <div class="card-body">
-
-                        <h5 class="fw-bold mb-3">
-
-                            🏢
-                            <?= htmlspecialchars(
-                                $garage['garage_name']
-                            ) ?>
-
-                        </h5>
-
-
-                        <div class="row">
-
-
-                            <div class="col-4">
-
-                                <small class="text-muted">
-                                    আয়
-                                </small>
-
-                                <div class="fw-bold text-success">
-
-                                    ৳ <?= bn_number(
-                                        number_format(
-                                            $income,
-                                            2
-                                        )
-                                    ) ?>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-4">
-
-                                <small class="text-muted">
-                                    ব্যয়
-                                </small>
-
-                                <div class="fw-bold text-danger">
-
-                                    ৳ <?= bn_number(
-                                        number_format(
-                                            $expense,
-                                            2
-                                        )
-                                    ) ?>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-4">
-
-                                <small class="text-muted">
-                                    ব্যালেন্স
-                                </small>
-
-                                <div class="fw-bold <?= $balance >= 0
-                                    ? 'text-primary'
-                                    : 'text-danger'
-                                ?>">
-
-                                    ৳ <?= bn_number(
-                                        number_format(
-                                            $balance,
-                                            2
-                                        )
-                                    ) ?>
-
-                                </div>
-
-                            </div>
-
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        <?php endforeach; ?>
-
-    </div>
-
-
-    <!-- TRANSACTION TABLE -->
+    <!-- LIST -->
 
     <div class="card shadow-sm border-0">
 
-        <div class="card-header bg-white">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0 fw-bold">
                 📋 লেনদেনের তালিকা
             </h5>
+
+
+            <span class="badge bg-primary">
+
+                মোট
+                <?= bn_number(number_format($totalRows)) ?>
+                টি
+
+            </span>
 
         </div>
 
 
         <div class="table-responsive">
 
-            <table class="table table-hover mb-0">
+            <table class="table table-hover table-bordered mb-0">
 
                 <thead class="table-dark">
 
                     <tr>
+
+                        <th width="60">
+                            #
+                        </th>
 
                         <th>
                             তারিখ
@@ -561,7 +419,7 @@ $transactions =
                         </th>
 
                         <th>
-                            Amount
+                            পরিমাণ
                         </th>
 
                         <th>
@@ -575,11 +433,28 @@ $transactions =
 
                 <tbody>
 
+
                 <?php if ($transactions): ?>
 
-                    <?php foreach ($transactions as $row): ?>
+
+                    <?php foreach ($transactions as $key => $row): ?>
+
 
                         <tr>
+
+
+                            <!-- SERIAL -->
+
+                            <td>
+
+                                <?= bn_number(
+                                    $offset + $key + 1
+                                ) ?>
+
+                            </td>
+
+
+                            <!-- DATE -->
 
                             <td>
 
@@ -595,18 +470,23 @@ $transactions =
                             </td>
 
 
+                            <!-- GARAGE -->
+
                             <td>
 
                                 <strong>
 
                                     <?= htmlspecialchars(
                                         $row['garage_name']
+                                        ?? '—'
                                     ) ?>
 
                                 </strong>
 
                             </td>
 
+
+                            <!-- TYPE -->
 
                             <td>
 
@@ -629,26 +509,34 @@ $transactions =
                             </td>
 
 
+                            <!-- CATEGORY -->
+
                             <td>
 
                                 <?= htmlspecialchars(
                                     $row['category']
+                                    ?? ''
                                 ) ?>
 
                             </td>
 
 
+                            <!-- AMOUNT -->
+
                             <td class="fw-bold">
 
-                                ৳ <?= bn_number(
+                                ৳
+                                <?= bn_number(
                                     number_format(
-                                        $row['amount'],
+                                        (float)$row['amount'],
                                         2
                                     )
                                 ) ?>
 
                             </td>
 
+
+                            <!-- DESCRIPTION -->
 
                             <td>
 
@@ -659,18 +547,26 @@ $transactions =
 
                             </td>
 
+
                         </tr>
+
 
                     <?php endforeach; ?>
 
+
                 <?php else: ?>
+
 
                     <tr>
 
                         <td
-                            colspan="6"
+                            colspan="7"
                             class="text-center py-5 text-muted"
                         >
+
+                            <div class="fs-1">
+                                📭
+                            </div>
 
                             কোনো লেনদেন পাওয়া যায়নি।
 
@@ -678,7 +574,9 @@ $transactions =
 
                     </tr>
 
+
                 <?php endif; ?>
+
 
                 </tbody>
 
@@ -686,6 +584,159 @@ $transactions =
 
         </div>
 
+
+        <!-- PAGINATION -->
+
+        <?php if ($totalPages > 1): ?>
+
+
+            <div class="card-footer bg-white">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+
+                    <!-- INFO -->
+
+                    <div class="text-muted">
+
+                        পেজ
+
+                        <?= bn_number($page) ?>
+
+                        /
+
+                        <?= bn_number($totalPages) ?>
+
+                    </div>
+
+
+                    <!-- PAGINATION -->
+
+                    <nav>
+
+                        <ul class="pagination mb-0">
+
+
+                            <!-- PREVIOUS -->
+
+                            <?php if ($page > 1): ?>
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page=garage/index
+                                        &p=<?= $page - 1 ?>
+                                        &search=<?= urlencode($search) ?>
+                                        &garage_id=<?= urlencode($garage_id) ?>
+                                        &type=<?= urlencode($type) ?>
+                                        &from_date=<?= urlencode($from_date) ?>
+                                        &to_date=<?= urlencode($to_date) ?>"
+                                    >
+
+                                        ‹ পূর্বের
+
+                                    </a>
+
+                                </li>
+
+                            <?php endif; ?>
+
+
+                            <!-- PAGE NUMBERS -->
+
+                            <?php
+
+                            $startPage = max(
+                                1,
+                                $page - 2
+                            );
+
+                            $endPage = min(
+                                $totalPages,
+                                $page + 2
+                            );
+
+                            ?>
+
+
+                            <?php for (
+                                $i = $startPage;
+                                $i <= $endPage;
+                                $i++
+                            ): ?>
+
+
+                                <li
+                                    class="page-item
+                                    <?= $i == $page
+                                        ? 'active'
+                                        : ''
+                                    ?>"
+                                >
+
+                                    <a
+                                        class="page-link"
+                                        href="?page=garage/index
+                                        &p=<?= $i ?>
+                                        &search=<?= urlencode($search) ?>
+                                        &garage_id=<?= urlencode($garage_id) ?>
+                                        &type=<?= urlencode($type) ?>
+                                        &from_date=<?= urlencode($from_date) ?>
+                                        &to_date=<?= urlencode($to_date) ?>"
+                                    >
+
+                                        <?= bn_number($i) ?>
+
+                                    </a>
+
+                                </li>
+
+
+                            <?php endfor; ?>
+
+
+                            <!-- NEXT -->
+
+                            <?php if ($page < $totalPages): ?>
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page=garage/index
+                                        &p=<?= $page + 1 ?>
+                                        &search=<?= urlencode($search) ?>
+                                        &garage_id=<?= urlencode($garage_id) ?>
+                                        &type=<?= urlencode($type) ?>
+                                        &from_date=<?= urlencode($from_date) ?>
+                                        &to_date=<?= urlencode($to_date) ?>"
+                                    >
+
+                                        পরের ›
+
+                                    </a>
+
+                                </li>
+
+                            <?php endif; ?>
+
+
+                        </ul>
+
+                    </nav>
+
+
+                </div>
+
+            </div>
+
+
+        <?php endif; ?>
+
+
     </div>
 
+
 </div>
+

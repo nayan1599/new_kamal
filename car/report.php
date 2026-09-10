@@ -24,14 +24,10 @@ $records = $stmt->fetchAll();
         <h4 class="fw-bold">
             📋 রেকর্ড তালিকা
         </h4>
-
         <span class="badge bg-dark">
             মোট: <?= count($records) ?>
         </span>
-
     </div>
-
-
     <!-- ==================================================
          Filter Section
     ================================================== -->
@@ -54,14 +50,8 @@ $records = $stmt->fetchAll();
         ================================================== -->
         <div class="col-md-2 col-sm-12">
 
-            <input
-                type="search"
-                id="searchInput"
-                class="form-control form-control-sm"
-                placeholder="🔍 তারিখের দিন..."
-                inputmode="numeric"
-                autocomplete="off"
-            >
+            <input type="search" id="searchInput" class="form-control form-control-sm" placeholder="🔍 তারিখের দিন..."
+                inputmode="numeric" autocomplete="off">
 
         </div>
 
@@ -69,11 +59,7 @@ $records = $stmt->fetchAll();
         <!-- From Date -->
         <div class="col-md-2 col-sm-12">
 
-            <input
-                type="date"
-                id="fromDate"
-                class="form-control form-control-sm"
-            >
+            <input type="date" id="fromDate" class="form-control form-control-sm">
 
         </div>
 
@@ -81,11 +67,7 @@ $records = $stmt->fetchAll();
         <!-- To Date -->
         <div class="col-md-2 col-sm-12">
 
-            <input
-                type="date"
-                id="toDate"
-                class="form-control form-control-sm"
-            >
+            <input type="date" id="toDate" class="form-control form-control-sm">
 
         </div>
 
@@ -139,19 +121,11 @@ $records = $stmt->fetchAll();
 
             <div class="d-flex gap-2 flex-wrap">
 
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    onclick="applyFilter()"
-                >
+                <button type="button" class="btn btn-primary btn-sm" onclick="applyFilter()">
                     ফিল্টার
                 </button>
 
-                <button
-                    type="button"
-                    class="btn btn-secondary btn-sm"
-                    onclick="resetFilter()"
-                >
+                <button type="button" class="btn btn-secondary btn-sm" onclick="resetFilter()">
                     রিসেট
                 </button>
 
@@ -165,11 +139,7 @@ $records = $stmt->fetchAll();
     <!-- ==================================================
          Search Information
     ================================================== -->
-    <div
-        id="searchInfo"
-        class="small text-muted mb-2"
-        style="display:none;"
-    ></div>
+    <div id="searchInfo" class="small text-muted mb-2" style="display:none;"></div>
 
 
     <!-- ==================================================
@@ -470,11 +440,8 @@ $records = $stmt->fetchAll();
                          TABLE ROW
                     ================================================== -->
 
-                    <tr
-                        data-day="<?= $dayNumber ?>"
-                        data-date="<?= htmlspecialchars($dataDate) ?>"
-                        data-status="<?= htmlspecialchars($status) ?>"
-                    >
+                    <tr data-day="<?= $dayNumber ?>" data-date="<?= htmlspecialchars($dataDate) ?>"
+                        data-status="<?= htmlspecialchars($status) ?>">
 
 
                         <!-- Date -->
@@ -532,9 +499,9 @@ $records = $stmt->fetchAll();
 
                             <?php if ($status === 'completed'): ?>
 
-                                <span class="text-primary">
-                                    সম্পন্ন
-                                </span>
+                            <span class="text-primary">
+                                সম্পন্ন
+                            </span>
 
                             <?php elseif (
                                 $status === 'returned' ||
@@ -542,13 +509,13 @@ $records = $stmt->fetchAll();
                                 $status === 'repossessed'
                             ): ?>
 
-                                <span class="text-muted">
-                                    —
-                                </span>
+                            <span class="text-muted">
+                                —
+                            </span>
 
                             <?php else: ?>
 
-                                <?= bn_number(
+                            <?= bn_number(
                                     $remainingDuration
                                 ) ?>
 
@@ -560,11 +527,9 @@ $records = $stmt->fetchAll();
                         <!-- Status -->
                         <td>
 
-                            <span
-                                class="badge bg-<?= htmlspecialchars(
+                            <span class="badge bg-<?= htmlspecialchars(
                                     $currentStatus['class']
-                                ) ?>"
-                            >
+                                ) ?>">
 
                                 <?= $currentStatus['icon'] ?>
 
@@ -581,40 +546,32 @@ $records = $stmt->fetchAll();
                         <td class="text-end">
 
                             <!-- View -->
-                            <a
-                                href="index.php?page=car/view&car_number=<?= urlencode(
-                                    $row['car_number'] ?? ''
-                                ) ?>"
-                                class="btn btn-info btn-sm text-white"
-                            >
-                                দেখুন
+                            <a href="index.php?page=car/view&car_number=<?= urlencode($row['car_number'] ?? '') ?>"
+                                class="btn btn-info btn-sm text-white" title="দেখুন">
+                                <i class="bi bi-eye"></i>
                             </a>
-
 
                             <!-- Edit -->
-                            <a
-                                href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>"
-                                class="btn btn-warning btn-sm"
-                            >
-                                সম্পাদনা
+                            <a href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm"
+                                title="সম্পাদনা">
+                                <i class="bi bi-pencil-square"></i>
                             </a>
-
 
                             <!-- Receipt -->
-                            <a
-                                href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
-                                class="btn btn-success btn-sm"
-                            >
-                                রসিদ
+                            <a href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-success btn-sm" title="রসিদ">
+                                <i class="bi bi-receipt"></i>
                             </a>
 
-
                             <!-- Call Story -->
-                            <a
-                                href="index.php?page=call_story/callstory&id=<?= (int)$row['id'] ?>"
-                                class="btn btn-primary btn-sm"
-                            >
-                                কল স্টোরি
+                            <a href="index.php?page=call_story/callstory&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-primary btn-sm" title="কল স্টোরি">
+                                <i class="bi bi-telephone"></i>
+                            </a>
+                            <a href="index.php?page=car/delete&id=<?= (int)$row['id'] ?>" class="btn btn-danger btn-sm"
+                                title="ডিলিট"
+                                onclick="return confirm('আপনি কি নিশ্চিতভাবে এই গাড়িটি ডিলিট করতে চান?');">
+                                <i class="bi bi-trash"></i>
                             </a>
 
                         </td>
@@ -639,7 +596,6 @@ $records = $stmt->fetchAll();
 ========================================================= -->
 
 <script>
-
 document.addEventListener("DOMContentLoaded", function() {
 
     const rows =
@@ -1022,5 +978,4 @@ document.addEventListener("DOMContentLoaded", function() {
     showDefault();
 
 });
-
 </script>
