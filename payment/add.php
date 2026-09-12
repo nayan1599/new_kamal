@@ -142,10 +142,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </select>
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">প্রাপক</label>
-                                <input type="text" name="received_by" class="form-control" value="জহিরুল">
-                            </div>
+                     <div class="col-md-6">
+    <label class="form-label">প্রাপক</label>
+    <select name="received_by" class="form-select">
+        <option value="জহিরুল" selected>জহিরুল</option>
+        <option value="নয়ন">নয়ন</option>
+        <option value="সোহেল">সোহেল</option>
+        <option value="রাসেল">রাসেল</option>
+        <option value="মুসলিম">মুসলিম</option>
+        <option value="অন্যন">অন্যন</option>
+    </select>
+</div>
 
                             <div class="col-12">
                                 <label class="form-label">নোট / মন্তব্য</label>

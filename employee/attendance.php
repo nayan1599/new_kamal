@@ -464,7 +464,7 @@ foreach ($employees as $employee) {
                                 <!-- Serial -->
 
                                 <td class="text-center">
-                                    <?= $key + 1 ?>
+                                    <?=$key + 1 ?>
                                 </td>
 
 
@@ -477,7 +477,7 @@ foreach ($employees as $employee) {
                                         <i class="bi bi-person-circle text-primary"></i>
 
                                         <?= htmlspecialchars(
-                                            $employee['name'] ?? ''
+                                            $employee['employee_name'] ?? ''
                                         ) ?>
 
                                     </div>
@@ -494,11 +494,11 @@ foreach ($employees as $employee) {
 
                                 <td>
 
-                                    <?php if (!empty($employee['phone'])): ?>
+                                    <?php if (!empty($employee['mobile'])): ?>
 
-                                        <?= htmlspecialchars(
-                                            $employee['phone']
-                                        ) ?>
+                                        <?= bn_number(htmlspecialchars(
+                                            $employee['mobile']
+                                        )) ?>
 
                                     <?php else: ?>
 

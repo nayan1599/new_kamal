@@ -216,7 +216,7 @@ $transactions =
                 <input
                     type="hidden"
                     name="page"
-                    value="garage/index"
+                    value="garage/dashboard"
                 >
 
                 <div class="row g-3 align-items-end">
