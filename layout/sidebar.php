@@ -532,7 +532,111 @@
 
             </div>
 
+<!-- ==============================
+     CNG ব্যবস্থাপনা
+=============================== -->
 
+<a
+    class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="collapse"
+    href="#cngMenu"
+    role="button"
+    aria-expanded="false"
+    aria-controls="cngMenu"
+>
+
+    <span>
+        <i class="bi bi-fuel-pump-fill me-2"></i>
+        CNG ব্যবস্থাপনা
+    </span>
+
+    <i class="bi bi-chevron-down toggle-icon"></i>
+
+</a>
+
+
+<div class="collapse" id="cngMenu">
+
+    <div class="submenu">
+
+
+        <!-- CNG Dashboard -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=cng/dashboard"
+        >
+
+            <i class="bi bi-speedometer2 me-2"></i>
+            CNG ড্যাশবোর্ড
+
+        </a>
+
+
+        <!-- সকল CNG গাড়ি -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=cng/index"
+        >
+
+            <i class="bi bi-car-front-fill me-2"></i>
+            সকল CNG গাড়ি
+
+        </a>
+
+
+        <!-- নতুন CNG গাড়ি -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=cng/cng_add"
+        >
+
+            <i class="bi bi-plus-circle me-2"></i>
+            নতুন CNG গাড়ি
+
+        </a>
+
+
+        <!-- দৈনিক জমা -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=cng/cng_rent"
+        >
+
+            <i class="bi bi-cash-coin me-2"></i>
+            দৈনিক জমা গ্রহণ
+
+        </a>
+
+
+      
+
+        <!-- রিপোর্ট -->
+
+        <a
+            class="nav-link"
+            href="index.php?page=cng/report"
+        >
+
+            <i class="bi bi-bar-chart-line-fill me-2"></i>
+            CNG রিপোর্ট
+
+        </a>
+
+
+  
+
+ 
+
+        
+
+
+    </div>
+
+</div>
             <!-- ==============================
                  বেতন ব্যবস্থাপনা
             =============================== -->

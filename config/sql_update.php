@@ -32,3 +32,6 @@ CREATE INDEX idx_car_number ON call_stories(car_number);
 CREATE INDEX idx_date ON call_stories(date);
 CREATE INDEX idx_next_followup ON call_stories(next_followup_date);
 
+<!-- new  -->
+ ALTER TABLE `kisti_payments` ADD `due_amount` DECIMAL(10.2) NOT NULL AFTER `fine_amount`;
+ ALTER TABLE `kisti_payments` CHANGE `payment_type` `payment_type` SET('kisti','vara','service','other','due') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT 'vara';

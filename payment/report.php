@@ -1,33 +1,53 @@
- <?php
+<?php
 
-// ================= FETCH DATA =================
+// =====================================================
+// FETCH DATA
+// =====================================================
+
 $stmt = $pdo->query("
     SELECT *
     FROM kisti_payments
-    ORDER BY payment_date DESC
+    ORDER BY payment_date DESC, id DESC
 ");
 
 $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-// ================= SUMMARY =================
+// =====================================================
+// SUMMARY
+// =====================================================
+
 $total_amount = 0;
 $total_paid   = 0;
+$total_due    = 0;
+$total_fine   = 0;
+
 
 foreach ($records as $r) {
 
     $amount = (float)($r['amount'] ?? 0);
     $paid   = (float)($r['paid'] ?? 0);
+    $fine   = (float)($r['fine_amount'] ?? 0);
+    
+
+    // Due
+    $due =  (float)($r['due_amount'] ?? 0);
+
+ 
 
     $total_amount += $amount;
     $total_paid   += $paid;
+    $total_due    += $due;
+    $total_fine   += $fine;
 }
 
-$total_due = $total_amount - $total_paid;
 
+// =====================================================
+// PAYMENT METHOD
+// =====================================================
 
-// ================= PAYMENT METHOD =================
 $methodMap = [
+
     'cash'          => 'ক্যাশ',
     'bank_transfer' => 'ব্যাংক ট্রান্সফার',
     'bkash'         => 'বিকাশ',
@@ -35,478 +55,886 @@ $methodMap = [
     'rocket'        => 'রকেট',
     'cheque'        => 'চেক',
     'others'        => 'অন্যান্য'
+
 ];
 
 ?>
 
- <div class="container-fluid py-4">
+<div class="container-fluid py-4">
 
-     <!-- HEADER -->
-     <div class="d-flex justify-content-between align-items-center mb-4">
 
-         <div>
-             <h4 class="fw-bold mb-1">
-                 📊 কিস্তি রিপোর্ট
-             </h4>
+    <!-- =================================================
+         HEADER
+    ================================================== -->
 
-             <small class="text-muted">
-                 সকল কিস্তি লেনদেন ও বকেয়া হিসাব
-             </small>
-         </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-         <div class="no-print">
-             <button onclick="window.print()" class="btn btn-dark btn-sm">
-                 🖨️ প্রিন্ট
-             </button>
-         </div>
+        <div>
 
-     </div>
+            <h4 class="fw-bold mb-1">
+                📊 কিস্তি রিপোর্ট
+            </h4>
 
+            <small class="text-muted">
+                সকল কিস্তি লেনদেন, পরিশোধ, বকেয়া ও জরিমানা হিসাব
+            </small>
 
-     <!-- SUMMARY -->
-     <div class="row g-3 mb-4">
+        </div>
 
-         <!-- মোট টাকা -->
-         <div class="col-md-4">
 
-             <div class="card shadow-sm border-0 h-100">
+        <div class="no-print">
 
-                 <div class="card-body">
+            <button
+                onclick="window.print()"
+                class="btn btn-dark btn-sm">
 
-                     <div class="text-muted mb-2">
-                         মোট টাকা
-                     </div>
+                🖨️ প্রিন্ট
 
-                     <h4 class="text-primary fw-bold" id="sumAmount">
-                         ৳ <?= bn_number(number_format($total_amount, 2)) ?>
-                     </h4>
+            </button>
 
-                 </div>
+        </div>
 
-             </div>
+    </div>
 
-         </div>
 
 
-         <!-- মোট পরিশোধ -->
-         <div class="col-md-4">
+    <!-- =================================================
+         SUMMARY
+    ================================================== -->
 
-             <div class="card shadow-sm border-0 h-100">
+    <div class="row g-3 mb-4">
 
-                 <div class="card-body">
 
-                     <div class="text-muted mb-2">
-                         মোট পরিশোধ
-                     </div>
+        <!-- মোট টাকা -->
+        <div class="col-md-3">
 
-                     <h4 class="text-success fw-bold" id="sumPaid">
-                         ৳ <?= bn_number(number_format($total_paid, 2)) ?>
-                     </h4>
+            <div class="card shadow-sm border-0 h-100">
 
-                 </div>
+                <div class="card-body">
 
-             </div>
+                    <div class="text-muted mb-2">
+                        মোট টাকা
+                    </div>
 
-         </div>
+                    <h4
+                        class="text-primary fw-bold mb-0"
+                        id="sumAmount">
 
+                        ৳ <?= bn_number(number_format($total_amount, 2)) ?>
 
-         <!-- মোট বাকি -->
-         <div class="col-md-4">
+                    </h4>
 
-             <div class="card shadow-sm border-0 h-100">
+                </div>
 
-                 <div class="card-body">
+            </div>
 
-                     <div class="text-muted mb-2">
-                         মোট বাকি
-                     </div>
+        </div>
 
-                     <h4 class="text-danger fw-bold" id="sumDue">
-                         ৳ <?= bn_number(number_format($total_due, 2)) ?>
-                     </h4>
 
-                 </div>
 
-             </div>
+        <!-- মোট পরিশোধ -->
+        <!-- <div class="col-md-3">
 
-         </div>
+            <div class="card shadow-sm border-0 h-100">
 
-     </div>
+                <div class="card-body">
 
+                    <div class="text-muted mb-2">
+                        মোট পরিশোধ
+                    </div>
 
-     <!-- SEARCH + DATE FILTER -->
-     <div class="card shadow-sm border-0 mb-3 no-print">
+                    <h4
+                        class="text-success fw-bold mb-0"
+                        id="sumPaid">
 
-         <div class="card-body">
+                        ৳ <?= bn_number(number_format($total_paid, 2)) ?>
 
-             <div class="row g-2">
+                    </h4>
 
-                 <div class="col-md-5">
+                </div>
 
-                     <input type="text" id="searchInput" class="form-control"
-                         placeholder="🔍 নাম / মোবাইল / গাড়ি নম্বর সার্চ করুন...">
+            </div>
 
-                 </div>
+        </div> -->
 
 
-                 <div class="col-md-3">
 
-                     <input type="date" id="fromDate" class="form-control" title="শুরুর তারিখ">
+        <!-- মোট বাকি -->
+        <div class="col-md-3">
 
-                 </div>
+            <div class="card shadow-sm border-0 h-100">
 
+                <div class="card-body">
 
-                 <div class="col-md-3">
+                    <div class="text-muted mb-2">
+                        মোট বাকি
+                    </div>
 
-                     <input type="date" id="toDate" class="form-control" title="শেষ তারিখ">
+                    <h4
+                        class="text-danger fw-bold mb-0"
+                        id="sumDue">
 
-                 </div>
+                        ৳ <?= bn_number(number_format($total_due, 2)) ?>
 
+                    </h4>
 
-                 <div class="col-md-1">
+                </div>
 
-                     <button type="button" id="clearFilter" class="btn btn-outline-secondary w-100" title="ক্লিয়ার">
-                         ✕
-                     </button>
+            </div>
 
-                 </div>
+        </div>
 
-             </div>
 
-         </div>
 
-     </div>
+        <!-- মোট জরিমানা -->
+        <div class="col-md-3">
 
+            <div class="card shadow-sm border-0 h-100">
 
-     <!-- TABLE -->
-     <div class="card shadow-sm border-0">
+                <div class="card-body">
 
-         <div class="table-responsive">
+                    <div class="text-muted mb-2">
+                        মোট জরিমানা
+                    </div>
 
-             <table class="table table-hover align-middle mb-0" id="dataTable">
+                    <h4
+                        class="text-warning fw-bold mb-0"
+                        id="sumFine">
 
-                 <thead class="table-dark">
+                        ৳ <?= bn_number(number_format($total_fine, 2)) ?>
 
-                     <tr>
+                    </h4>
 
-                         <th class="text-center">
-                             #
-                         </th>
+                </div>
 
-                         <th>
-                             তারিখ
-                         </th>
+            </div>
 
-                         <th>
-                             গাড়ি
-                         </th>
+        </div>
 
-                         <th class="text-end">
-                             মোট টাকা
-                         </th>
+<!-- মোট আদায় -->
+<div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
 
-                         <th class="text-end">
-                             পরিশোধ
-                         </th>
+            <div class="text-muted mb-2">
+                মোট আদায়
+            </div>
 
-                         <th class="text-end">
-                             বাকি
-                         </th>
+            <h4 class="text-success fw-bold mb-0" id="sumPaid">
+                ৳ <?= bn_number(number_format($total_paid + $total_fine, 2)) ?>
+            </h4>
 
-                         <th>
-                             মেথড
-                         </th>
+        </div>
+    </div>
+</div>
 
-                         <th class="text-center">
-                             অ্যাকশন
-                         </th>
+    </div>
 
-                     </tr>
 
-                 </thead>
 
+    <!-- =================================================
+         SEARCH + DATE FILTER
+    ================================================== -->
 
+    <div class="card shadow-sm border-0 mb-3 no-print">
 
-                 <tbody>
+        <div class="card-body">
 
-                     <?php if (empty($records)): ?>
+            <div class="row g-2">
 
-                     <tr>
-                         <td colspan="8" class="text-center py-5">
-                             <div class="text-muted">
-                                 কোনো কিস্তি রেকর্ড পাওয়া যায়নি।
-                             </div>
-                         </td>
-                     </tr>
 
-                     <?php else: ?>
+                <!-- SEARCH -->
 
-                     <?php $serial = 1; ?>
+                <div class="col-md-5">
 
-                     <?php foreach ($records as $row): ?>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="form-control"
+                        placeholder="🔍 নাম / মোবাইল / গাড়ি নম্বর সার্চ করুন...">
 
-                     <?php
-        // ================= AMOUNT =================
-        $amount = (float)($row['amount'] ?? 0);
-        $paid   = (float)($row['paid'] ?? 0);
+                </div>
 
-        // ================= DUE =================
-        $due = $amount - $paid;
 
-        if ($due < 0) {
-            $due = 0;
-        }
 
-        // ================= DATE =================
-        $paymentDate = $row['payment_date'] ?? '';
+                <!-- FROM DATE -->
 
-        $isoDate = !empty($paymentDate)
-            ? date('Y-m-d', strtotime($paymentDate))
-            : '';
+                <div class="col-md-3">
 
-        $displayDate = !empty($paymentDate)
-            ? date('d-m-Y', strtotime($paymentDate))
-            : '—';
+                    <input
+                        type="date"
+                        id="fromDate"
+                        class="form-control"
+                        title="শুরুর তারিখ">
 
-        // ================= METHOD =================
-        $method = strtolower(
-            trim($row['payment_method'] ?? '')
-        );
+                </div>
 
-        $methodMap = [
-            'cash'          => 'ক্যাশ',
-            'bkash'         => 'বিকাশ',
-            'nagad'         => 'নগদ',
-            'rocket'        => 'রকেট',
-            'bank_transfer' => 'ব্যাংক ট্রান্সফার',
-            'cheque'        => 'চেক',
-            'others'        => 'অন্যান্য'
-        ];
 
-        $methodText = $methodMap[$method] ?? 'অন্যান্য';
 
-        // ================= BANK =================
-        // Bank name থাকলে যেকোনো payment method-এর সাথেই দেখাবে
-        $bankMap = [
-            'Dutch-Bangla Bank' => 'ডাচ্-বাংলা ব্যাংক',
-            'BRAC Bank'         => 'ব্র্যাক ব্যাংক'
-        ];
+                <!-- TO DATE -->
 
-        $bankName = '';
+                <div class="col-md-3">
 
-        if (!empty($row['bank_name'])) {
-            $bankName = $bankMap[$row['bank_name']]
-                ?? $row['bank_name'];
-        }
+                    <input
+                        type="date"
+                        id="toDate"
+                        class="form-control"
+                        title="শেষ তারিখ">
 
-        // ================= BADGE =================
-        $methodBadge = match ($method) {
-            'cash'          => 'success',
-            'bkash'         => 'primary',
-            'nagad'         => 'danger',
-            'rocket'        => 'info',
-            'bank_transfer' => 'info',
-            'cheque'        => 'warning',
-            'others'        => 'secondary',
-            default         => 'secondary'
-        };
+                </div>
 
-        // ================= ICON =================
-        $methodIcon = match ($method) {
-            'cash'          => 'cash',
-            'bkash'         => 'phone',
-            'nagad'         => 'wallet2',
-            'rocket'        => 'send',
-            'bank_transfer' => 'bank',
-            'cheque'        => 'file-earmark-text',
-            'others'        => 'credit-card',
-            default         => 'credit-card'
-        };
-        ?>
 
-                     <tr data-date="<?= htmlspecialchars($isoDate) ?>" data-amount="<?= htmlspecialchars($amount) ?>"
-                         data-paid="<?= htmlspecialchars($paid) ?>" data-due="<?= htmlspecialchars($due) ?>">
 
-                         <!-- SERIAL -->
-                         <td class="text-center">
-                             <?= bn_number($serial++) ?>
-                         </td>
+                <!-- CLEAR -->
 
-                         <!-- DATE -->
-                         <td>
-                             <?= bn_number($displayDate) ?>
-                         </td>
+                <div class="col-md-1">
 
-                         <!-- CAR -->
-                         <td>
-                             <strong>
-                                 <?= htmlspecialchars($row['car_number'] ?? '—') ?>
-                             </strong>
-                         </td>
+                    <button
+                        type="button"
+                        id="clearFilter"
+                        class="btn btn-outline-secondary w-100"
+                        title="ক্লিয়ার">
 
-                         <!-- TOTAL -->
-                         <td class="text-end fw-bold text-primary">
-                             ৳ <?= bn_number(number_format($amount, 2)) ?>
-                         </td>
+                        ✕
 
-                         <!-- PAID -->
-                         <td class="text-end fw-bold text-success">
-                             ৳ <?= bn_number(number_format($paid, 2)) ?>
-                         </td>
+                    </button>
 
-                         <!-- DUE -->
-                         <td class="text-end fw-bold">
+                </div>
 
-                             <?php if ($due > 0): ?>
 
-                             <span class="text-danger">
-                                 ৳ <?= bn_number(number_format($due, 2)) ?>
-                             </span>
+            </div>
 
-                             <?php else: ?>
+        </div>
 
-                             <span class="text-success">
-                                 পরিশোধিত
-                             </span>
+    </div>
 
-                             <?php endif; ?>
 
-                         </td>
 
-                         <!-- METHOD -->
-                         <td>
+    <!-- =================================================
+         TABLE
+    ================================================== -->
 
-                             <span class="badge bg-<?= $methodBadge ?>">
+    <div class="card shadow-sm border-0">
 
-                                 <i class="bi bi-<?= $methodIcon ?>"></i>
+        <div class="table-responsive">
 
-                                 <?= htmlspecialchars($methodText) ?>
+            <table
+                class="table table-hover align-middle mb-0"
+                id="dataTable">
 
-                                 <?php if (!empty($bankName)): ?>
-                                 - <?= htmlspecialchars($bankName) ?>
-                                 <?php endif; ?>
 
-                             </span>
+                <!-- TABLE HEAD -->
 
-                         </td>
+                <thead class="table-dark">
 
-                         <!-- ACTION -->
-                         <td class="text-center text-nowrap">
+                    <tr>
 
-                             <a href="index.php?page=payment/view&id=<?= (int)$row['id'] ?>"
-                                 class="btn btn-sm btn-success" title="দেখুন">
-                                 <i class="bi bi-eye"></i>
-                             </a>
+                        <th class="text-center">
+                            #
+                        </th>
 
-                             <a href="index.php?page=payment/edit&id=<?= (int)$row['id'] ?>"
-                                 class="btn btn-sm btn-warning" title="সম্পাদনা">
-                                 <i class="bi bi-pencil"></i>
-                             </a>
+                        <th>
+                            তারিখ
+                        </th>
 
-                             <a href="index.php?page=payment/delete&id=<?= (int)$row['id'] ?>"
-                                 class="btn btn-sm btn-danger" title="মুছুন"
-                                 onclick="return confirm('আপনি কি এই রেকর্ডটি মুছে ফেলতে চান?');">
-                                 <i class="bi bi-trash"></i>
-                             </a>
+                        <th>
+                            গাড়ি
+                        </th>
 
-                         </td>
+                        <th class="text-end">
+                            মোট টাকা
+                        </th>
+                   
 
-                     </tr>
+                        <th class="text-end">
+                            জরিমানা
+                        </th>
+      <th class="text-center">
+                            আগের বাকি
+                        </th>
 
-                     <?php endforeach; ?>
+                        
+                        <th>
+                            মেথড
+                        </th>
 
-                     <?php endif; ?>
+                        <th class="text-center">
+                            অ্যাকশন
+                        </th>
 
-                 </tbody>
+                    </tr>
 
+                </thead>
 
 
-             </table>
 
-         </div>
+                <!-- TABLE BODY -->
 
-     </div>
+                <tbody>
 
- </div>
 
- <script>
+                    <?php if (empty($records)): ?>
+
+
+                    <!-- NO DATA -->
+
+                    <tr>
+
+                        <td
+                            colspan="9"
+                            class="text-center py-5">
+
+                            <div class="text-muted">
+
+                                কোনো কিস্তি রেকর্ড পাওয়া যায়নি।
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <?php else: ?>
+
+
+                    <?php $serial = 1; ?>
+
+
+                    <?php foreach ($records as $row): ?>
+
+
+                    <?php
+
+                    // =================================================
+                    // AMOUNT
+                    // =================================================
+
+                    $amount = (float)($row['amount'] ?? 0);
+
+                    $paid = (float)($row['paid'] ?? 0);
+
+                    $fine = (float)($row['fine_amount'] ?? 0);
+                   $due = (float)($row['due_amount'] ?? 0);
+
+                    // =================================================
+                    // DUE
+                    // =================================================
+ 
+
+                    // =================================================
+                    // DATE
+                    // =================================================
+
+                    $paymentDate = $row['payment_date'] ?? '';
+
+
+                    $isoDate = !empty($paymentDate)
+                        ? date('Y-m-d', strtotime($paymentDate))
+                        : '';
+
+
+                    $displayDate = !empty($paymentDate)
+                        ? date('d-m-Y', strtotime($paymentDate))
+                        : '—';
+
+
+                    // =================================================
+                    // METHOD
+                    // =================================================
+
+                    $method = strtolower(
+                        trim($row['payment_method'] ?? '')
+                    );
+
+
+                    $methodMap = [
+
+                        'cash'          => 'ক্যাশ',
+                        'bkash'         => 'বিকাশ',
+                        'nagad'         => 'নগদ',
+                        'rocket'        => 'রকেট',
+                        'bank_transfer' => 'ব্যাংক ট্রান্সফার',
+                        'cheque'        => 'চেক',
+                        'others'        => 'অন্যান্য'
+
+                    ];
+
+
+                    $methodText =
+                        $methodMap[$method]
+                        ?? 'অন্যান্য';
+
+
+
+                    // =================================================
+                    // BANK
+                    // =================================================
+
+                    $bankMap = [
+
+                        'Dutch-Bangla Bank' => 'ডাচ্-বাংলা ব্যাংক',
+                        'BRAC Bank'         => 'ব্র্যাক ব্যাংক'
+
+                    ];
+
+
+                    $bankName = '';
+
+
+                    if (!empty($row['bank_name'])) {
+
+                        $bankName =
+                            $bankMap[$row['bank_name']]
+                            ?? $row['bank_name'];
+
+                    }
+
+
+
+                    // =================================================
+                    // BADGE
+                    // =================================================
+
+                    $methodBadge = match ($method) {
+
+                        'cash'          => 'success',
+                        'bkash'         => 'primary',
+                        'nagad'         => 'danger',
+                        'rocket'        => 'info',
+                        'bank_transfer' => 'info',
+                        'cheque'        => 'warning',
+                        'others'        => 'secondary',
+
+                        default => 'secondary'
+
+                    };
+
+
+
+                    // =================================================
+                    // ICON
+                    // =================================================
+
+                    $methodIcon = match ($method) {
+
+                        'cash'          => 'cash',
+                        'bkash'         => 'phone',
+                        'nagad'         => 'wallet2',
+                        'rocket'        => 'send',
+                        'bank_transfer' => 'bank',
+                        'cheque'        => 'file-earmark-text',
+                        'others'        => 'credit-card',
+
+                        default => 'credit-card'
+
+                    };
+
+                    ?>
+
+
+                    <!-- =================================================
+                         ROW
+                    ================================================== -->
+
+                    <tr
+
+                        data-date="<?= htmlspecialchars($isoDate) ?>"
+
+                        data-amount="<?= htmlspecialchars($amount) ?>"
+
+                        data-paid="<?= htmlspecialchars($paid) ?>"
+
+                        data-due="<?= htmlspecialchars($due) ?>"
+                         
+
+                        data-fine="<?= htmlspecialchars($fine) ?>"
+
+                    >
+
+
+                        <!-- SERIAL -->
+
+                        <td class="text-center">
+
+                            <?= bn_number($serial++) ?>
+
+                        </td>
+
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            <?= bn_number($displayDate) ?>
+
+                        </td>
+
+
+
+                        <!-- CAR -->
+
+                        <td>
+
+                            <strong>
+
+                                <?= htmlspecialchars(
+                                    $row['car_number'] ?? '—'
+                                ) ?>
+
+                            </strong>
+
+                        </td>
+
+
+
+                        <!-- TOTAL -->
+
+                        <td class="text-end fw-bold text-primary">
+
+                            ৳
+                            <?= bn_number(
+                                number_format($amount, 2)
+                            ) ?>
+
+                        </td>
+
+
+
+
+
+
+
+                        <!-- FINE -->
+
+                        <td class="text-end fw-bold">
+
+
+                            <?php if ($fine > 0): ?>
+
+
+                            <span class="text-warning">
+
+                                ৳
+                                <?= bn_number(
+                                    number_format($fine, 2)
+                                ) ?>
+
+                            </span>
+
+
+                            <?php else: ?>
+
+
+                            <span class="text-muted">
+
+                                ৳ ০.০০
+
+                            </span>
+
+
+                            <?php endif; ?>
+
+
+                        </td>
+          <td class="text-center fw-bold">
+
+
+                            
+
+
+                            <span class="text-red">
+
+                                ৳
+                                <?= bn_number(
+                                    number_format($row['due_amount'], 2)
+                                ) ?>
+
+                            </span>
+
+
+                            
+
+ 
+
+
+                        </td>
+
+
+                        <!-- METHOD -->
+
+                        <td>
+
+                            <span
+                                class="badge bg-<?= $methodBadge ?>">
+
+                                <i
+                                    class="bi bi-<?= $methodIcon ?>">
+                                </i>
+
+
+                                <?= htmlspecialchars(
+                                    $methodText
+                                ) ?>
+
+
+                                <?php if (!empty($bankName)): ?>
+
+                                    -
+                                    <?= htmlspecialchars(
+                                        $bankName
+                                    ) ?>
+
+                                <?php endif; ?>
+
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- ACTION -->
+
+                        <td class="text-center text-nowrap">
+
+
+                            <!-- VIEW -->
+
+                            <a
+                                href="index.php?page=payment/view&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-sm btn-success"
+                                title="দেখুন">
+
+                                <i class="bi bi-eye"></i>
+
+                            </a>
+
+
+
+                            <!-- EDIT -->
+
+                            <a
+                                href="index.php?page=payment/edit&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-sm btn-warning"
+                                title="সম্পাদনা">
+
+                                <i class="bi bi-pencil"></i>
+
+                            </a>
+
+
+
+                            <!-- DELETE -->
+
+                            <a
+                                href="index.php?page=payment/delete&id=<?= (int)$row['id'] ?>"
+                                class="btn btn-sm btn-danger"
+                                title="মুছুন"
+
+                                onclick="
+                                    return confirm(
+                                        'আপনি কি এই রেকর্ডটি মুছে ফেলতে চান?'
+                                    );
+                                ">
+
+                                <i class="bi bi-trash"></i>
+
+                            </a>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                    <?php endforeach; ?>
+
+
+                    <?php endif; ?>
+
+
+                </tbody>
+
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
 (function() {
 
-    const searchInput = document.getElementById("searchInput");
-    const fromDate = document.getElementById("fromDate");
-    const toDate = document.getElementById("toDate");
-    const clearBtn = document.getElementById("clearFilter");
 
-    const rows = document.querySelectorAll(
-        "#dataTable tbody tr[data-date]"
-    );
+    // =================================================
+    // ELEMENTS
+    // =================================================
+
+    const searchInput =
+        document.getElementById("searchInput");
 
 
-    // ================= BANGLA NUMBER =================
+    const fromDate =
+        document.getElementById("fromDate");
+
+
+    const toDate =
+        document.getElementById("toDate");
+
+
+    const clearBtn =
+        document.getElementById("clearFilter");
+
+
+    const rows =
+        document.querySelectorAll(
+            "#dataTable tbody tr[data-date]"
+        );
+
+
+
+    // =================================================
+    // BANGLA NUMBER
+    // =================================================
 
     function bnNumber(num) {
 
-        return Number(num).toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).replace(
+        return Number(num).toLocaleString(
+            'en-IN',
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        ).replace(
             /\d/g,
-            d => '০১২৩৪৫৬৭৮৯' [d]
+            d => '০১২৩৪৫৬৭৮৯'[d]
         );
 
     }
 
 
-    // ================= SUMMARY =================
+
+    // =================================================
+    // SUMMARY
+    // =================================================
 
     function updateSummary() {
 
+
         let totalAmount = 0;
+
         let totalPaid = 0;
+
         let totalDue = 0;
+
+        let totalFine = 0;
+
 
 
         rows.forEach(row => {
+
+
+            // Hidden row skip
 
             if (row.style.display === "none") {
                 return;
             }
 
 
+
+            // Amount
+
             totalAmount += parseFloat(
                 row.dataset.amount || 0
             );
 
+
+
+            // Paid
 
             totalPaid += parseFloat(
                 row.dataset.paid || 0
             );
 
 
+
+            // Due
+
             totalDue += parseFloat(
                 row.dataset.due || 0
             );
 
+
+
+            // Fine
+
+            totalFine += parseFloat(
+                row.dataset.fine || 0
+            );
+
+
         });
 
 
-        document.getElementById("sumAmount").textContent =
+
+        // TOTAL AMOUNT
+
+        document.getElementById(
+            "sumAmount"
+        ).textContent =
             "৳ " + bnNumber(totalAmount);
 
 
-        document.getElementById("sumPaid").textContent =
-            "৳ " + bnNumber(totalPaid);
+
+        // TOTAL PAID
+
+        document.getElementById(
+            "sumPaid"
+        ).textContent =
+           "৳ " + bnNumber(totalAmount + totalFine + totalDue);
 
 
-        document.getElementById("sumDue").textContent =
+
+        // TOTAL DUE
+
+        document.getElementById(
+            "sumDue"
+        ).textContent =
             "৳ " + bnNumber(totalDue);
+
+
+
+        // TOTAL FINE
+
+        document.getElementById(
+            "sumFine"
+        ).textContent =
+            "৳ " + bnNumber(totalFine);
+
 
     }
 
 
-    // ================= FILTER =================
+
+    // =================================================
+    // FILTER
+    // =================================================
 
     function filterRows() {
+
 
         const text =
             (searchInput.value || "")
@@ -514,75 +942,134 @@ $methodMap = [
             .trim();
 
 
-        const from = fromDate.value;
-        const to = toDate.value;
+        const from =
+            fromDate.value;
+
+
+        const to =
+            toDate.value;
+
 
 
         rows.forEach(row => {
 
-            const rowText =
-                row.innerText.toLowerCase();
 
+            // Row text
+
+            const rowText =
+                row.innerText
+                    .toLowerCase();
+
+
+            // Row date
 
             const rowDate =
                 row.dataset.date;
 
 
-            const textMatch = !text ||
+
+            // Search match
+
+            const textMatch =
+                !text ||
                 rowText.includes(text);
 
+
+
+            // Date match
 
             let dateMatch = true;
 
 
-            if (from && rowDate < from) {
+
+            // From date
+
+            if (
+                from &&
+                rowDate < from
+            ) {
+
                 dateMatch = false;
+
             }
 
 
-            if (to && rowDate > to) {
+
+            // To date
+
+            if (
+                to &&
+                rowDate > to
+            ) {
+
                 dateMatch = false;
+
             }
 
+
+
+            // Display
 
             row.style.display =
-                (textMatch && dateMatch) ?
-                "" :
-                "none";
+                (
+                    textMatch &&
+                    dateMatch
+                )
+                ? ""
+                : "none";
+
 
         });
 
+
+
+        // Update summary
 
         updateSummary();
 
     }
 
 
-    // ================= DEFAULT TODAY =================
+
+    // =================================================
+    // TODAY
+    // =================================================
 
     const now = new Date();
+
 
     const year =
         now.getFullYear();
 
+
     const month =
-        String(now.getMonth() + 1)
-        .padStart(2, '0');
+        String(
+            now.getMonth() + 1
+        ).padStart(2, '0');
+
 
     const day =
-        String(now.getDate())
-        .padStart(2, '0');
+        String(
+            now.getDate()
+        ).padStart(2, '0');
 
 
     const today =
         `${year}-${month}-${day}`;
 
 
+
+    // Default today
+
     fromDate.value = today;
+
     toDate.value = today;
 
 
-    // ================= EVENTS =================
+
+    // =================================================
+    // EVENTS
+    // =================================================
 
     searchInput.addEventListener(
         "input",
@@ -602,22 +1089,90 @@ $methodMap = [
     );
 
 
+
+    // =================================================
+    // CLEAR FILTER
+    // =================================================
+
     clearBtn.addEventListener(
         "click",
         function() {
 
+
             searchInput.value = "";
+
             fromDate.value = "";
+
             toDate.value = "";
 
+
             filterRows();
+
 
         }
     );
 
 
-    // Initial
+
+    // =================================================
+    // INITIAL
+    // =================================================
+
     filterRows();
 
+
 })();
- </script>
+
+</script>
+
+
+
+<!-- =====================================================
+     PRINT CSS
+====================================================== -->
+
+<style>
+
+@media print {
+
+    .no-print {
+        display: none !important;
+    }
+
+
+    body {
+        background: #fff !important;
+    }
+
+
+    .container-fluid {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+
+    .btn {
+        display: none !important;
+    }
+
+
+    table {
+        font-size: 12px;
+    }
+
+
+    th,
+    td {
+        padding: 6px !important;
+    }
+
+
+}
+
+</style>

@@ -106,6 +106,7 @@ if (!$row) {
                                         value="<?= $row['received_by'] ?? '' ?>">
                                 </div>
                             </div>
+                            
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label>নোট</label>

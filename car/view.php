@@ -27,7 +27,7 @@ $stmt->execute([$car_number]);
 
 $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
+// print_r($record);
 // =====================================================
 // ALL PAYMENTS
 // =====================================================
@@ -183,25 +183,15 @@ $totalKistiPaid = count($paidKistiNumbers);
 // REMAINING AMOUNT
 // =====================================================
 
+ 
 $remainingAmount = 0;
-
-if ($hasContractTotal) {
-
-    $remainingAmount =
-        $totalPrice
-        - $discountAmount
-        - $paid_amount
-        - $totalPaid;
-
-    $remainingAmount = max(0, $remainingAmount);
-}
-
+$remainingAmount = $totalPrice - ($paid_amount + $discountAmount + $totalPaid);
+$total_due = $remainingAmount + $totalPaid;
 
 // =====================================================
 // TOTAL DUE
 // =====================================================
-
-$total_due = $remainingAmount;
+ 
 
 
 // =====================================================
@@ -236,19 +226,7 @@ foreach ($payments as $p) {
 
 
 // =====================================================
-// MONTHLY DUE DATE FUNCTION
-//
-// উদাহরণ:
-//
-// Start Date = 22/08/2026
-//
-// Kisti 1 = 22/08/2026
-// Kisti 2 = 22/09/2026
-// Kisti 3 = 22/10/2026
-// Kisti 4 = 22/11/2026
-//
-// Due date-এর দিন পর্যন্ত Fine = 0
-// পরের দিন থেকে Fine = 100/day
+ 
 // =====================================================
 
 function getKistiDueDate(DateTime $startDate, int $kistiNo): DateTime

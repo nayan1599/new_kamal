@@ -367,6 +367,7 @@ $repossessedCount  = 0;
                         <th>মোট সময়</th>
                         <th>বাকি সময়</th>
                         <th>স্ট্যাটাস</th>
+                        <th>বাকি টাকা</th>
                         <th>অ্যাকশন</th>
                     </tr>
                 </thead>
@@ -493,27 +494,32 @@ $data = $statusData[$status] ?? [
 
                         </td>
 
+
+
+                        <td> <?= bn_number(htmlspecialchars($row['fine_amount'])) ?> </td>
+
                         <td class="text-end">
                             <a href="index.php?page=car/view&car_number=<?= urlencode($row['car_number'] ?? '') ?>"
                                 class="btn btn-info btn-sm text-white" title="দেখুন">
                                 <i class="bi bi-eye"></i>
                             </a>
-
+    
                             <a href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm"
                                 title="সম্পাদনা">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
+     
                             <a href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
                                 class="btn btn-success btn-sm" title="রসিদ">
                                 <i class="bi bi-receipt"></i>
-                            </a>
-
+                            </a> 
                             <a href="index.php?page=car/delete&id=<?= (int)$row['id'] ?>" class="btn btn-danger btn-sm"
                                 title="ডিলিট"
                                 onclick="return confirm('আপনি কি নিশ্চিতভাবে এই গাড়িটি ডিলিট করতে চান?');">
                                 <i class="bi bi-trash"></i>
                             </a>
+                     
                         </td>
                     </tr>
                     <?php endforeach; ?>

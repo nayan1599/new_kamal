@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $paid_amount      = (float)($_POST['paid_amount'] ?? 0);
     $total_kisti      = (int)($_POST['total_kisti'] ?? 0);
     $monthly_kisti    = (float)($_POST['monthly_kisti'] ?? 0);
-
+ $fine_amount    = (float)($_POST['fine_amount'] ?? 0);
     // Date
     $kisti_start_date = trim($_POST['kisti_start_date'] ?? '');
 
@@ -56,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 paid_amount = :paid_amount,
                 total_kisti = :total_kisti,
                 monthly_kisti = :monthly_kisti,
+                fine_amount = :fine_amount,
                 kisti_start_date = :kisti_start_date,
                 note = :note,
                 status = :status
@@ -74,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':total_kisti'      => $total_kisti,
             ':monthly_kisti'    => $monthly_kisti,
             ':kisti_start_date' => $kisti_start_date,
+            ':fine_amount'      => $fine_amount,
             ':note'             => $note,
             ':status'           => $status,
             ':id'               => $id

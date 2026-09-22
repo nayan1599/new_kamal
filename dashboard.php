@@ -782,7 +782,7 @@ if ($hourNow < 12) {
             </div>
 
             <div class="stat-value">
-                ৳ <?= number_format($todayKisti,2) ?>
+                ৳ <?=bn_number(number_format($todayKisti,2)) ?>
             </div>
 
             <a href="index.php?page=payment/index" class="stat-link">
@@ -813,7 +813,7 @@ if ($hourNow < 12) {
             </div>
 
             <div class="stat-value">
-                ৳ <?= number_format($totalIncome,2) ?>
+                ৳ <?= bn_number(number_format($totalIncome,2)) ?>
             </div>
 
             <a href="index.php?page=garage/report" class="stat-link">
@@ -844,7 +844,7 @@ if ($hourNow < 12) {
             </div>
 
             <div class="stat-value">
-                ৳ <?= number_format($totalExpense,2) ?>
+                ৳ <?= bn_number(number_format($totalExpense,2)) ?>
             </div>
 
             <a href="index.php?page=garage/report" class="stat-link">
@@ -930,7 +930,7 @@ if ($hourNow < 12) {
 
             <div class="module-number">
 
-                ৳ <?= number_format($totalKisti,2) ?>
+                ৳ <?= bn_number(number_format($totalKisti,2)) ?>
 
             </div>
 
@@ -938,7 +938,7 @@ if ($hourNow < 12) {
 
                 বকেয়া:
                 <strong class="expense">
-                    ৳ <?= number_format($dueKisti,2) ?>
+                    ৳ <?= bn_number(number_format($dueKisti,2)) ?>
                 </strong>
 
             </div>
@@ -970,19 +970,19 @@ if ($hourNow < 12) {
 
             <div class="module-number">
 
-                ৳ <?= number_format($totalRent,2) ?>
+                ৳ <?= bn_number(number_format($totalRent,2)) ?>
 
             </div>
 
             <div class="module-sub">
 
                 আজ:
-                ৳ <?= number_format($todayRent,2) ?>
+                ৳ <?= bn_number(number_format($todayRent,2)) ?>
 
                 |
 
                 বকেয়া:
-                ৳ <?= number_format($dueRent,2) ?>
+                ৳ <?= bn_number(number_format($dueRent,2)) ?>
 
             </div>
 
@@ -1062,12 +1062,12 @@ if ($hourNow < 12) {
             <div class="module-sub">
 
                 জমা:
-                ৳ <?= number_format($metroCollection,2) ?>
+                ৳ <?=  bn_number(number_format($metroCollection,2)) ?>
 
                 |
 
                 বকেয়া:
-                ৳ <?= number_format($metroDue,2) ?>
+                ৳ <?= bn_number(number_format($metroDue,2)) ?>
 
             </div>
 
@@ -1145,7 +1145,7 @@ if ($hourNow < 12) {
 
             <div class="module-number">
 
-                ৳ <?= number_format($salaryPaid,2) ?>
+                ৳ <?= bn_number(number_format($salaryPaid,2)) ?>
 
             </div>
 
@@ -1153,7 +1153,7 @@ if ($hourNow < 12) {
 
                 বেতন বকেয়া:
                 <strong class="expense">
-                    ৳ <?= number_format($salaryDue,2) ?>
+                    ৳ <?= bn_number(number_format($salaryDue,2)) ?>
                 </strong>
 
             </div>
@@ -1191,7 +1191,7 @@ if ($hourNow < 12) {
 
                     <a href="index.php?page=car/add" class="quick-action">
                         <i>🚗</i>
-                        <span>নতুন গাড়ি</span>
+                        <span>সকল গাড়ি</span>
                     </a>
 
 
@@ -1271,7 +1271,7 @@ if ($hourNow < 12) {
                     </span>
 
                     <span class="money-value income">
-                        ৳ <?= number_format($totalIncome,2) ?>
+                        ৳ <?= bn_number(number_format($totalIncome,2)) ?>
                     </span>
 
                 </div>
@@ -1284,7 +1284,7 @@ if ($hourNow < 12) {
                     </span>
 
                     <span class="money-value expense">
-                        ৳ <?= number_format($totalExpense,2) ?>
+                        ৳ <?= bn_number(number_format($totalExpense,2)) ?>
                     </span>
 
                 </div>
@@ -1297,7 +1297,7 @@ if ($hourNow < 12) {
                     </span>
 
                     <span class="money-value balance">
-                        ৳ <?= number_format($balance,2) ?>
+                        ৳ <?= bn_number(number_format($balance,2)) ?>
                     </span>
 
                 </div>
@@ -1310,7 +1310,7 @@ if ($hourNow < 12) {
                     </span>
 
                     <span class="money-value income">
-                        ৳ <?= number_format($todayKisti,2) ?>
+                        ৳ <?= bn_number(number_format($todayKisti,2)) ?>
                     </span>
 
                 </div>
@@ -1430,7 +1430,7 @@ if ($hourNow < 12) {
                     </div>
 
                     <span class="badge bg-danger">
-                        ৳ <?= number_format($dueKisti,2) ?>
+                        ৳ <?= bn_number(number_format($dueKisti,2)) ?>
                     </span>
 
                 </div>

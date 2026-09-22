@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bank_name = $_POST['bank_name'] ?? null;
     $cheque_no = $_POST['cheque_no'] ?? null;
     $note = $_POST['note'] ?? null;
+    $due_amount = $_POST['due_amount'] ?? null ;
     // Auto calculate
     $total_received = $amount + $fine_amount;
     // Optional fields
@@ -35,13 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             kisti_number, amount, fine_amount, total_received,
             payment_date, payment_method,payment_type,received_by, 
             transaction_id, bank_name, cheque_no,
-            note, status, created_by
+            note, due_amount, status, created_by
         ) VALUES (
             :customer_name, :car_number, :customer_phone,
             :kisti_number, :amount, :fine_amount, :total_received,
             :payment_date, :payment_method, :payment_type, :received_by,
             :transaction_id, :bank_name, :cheque_no,
-            :note, :status, :created_by
+            :note, :due_amount, :status, :created_by
         )";
 
         $stmt = $pdo->prepare($sql);
@@ -62,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':bank_name' => $bank_name,
             ':cheque_no' => $cheque_no,
             ':note' => $note,
+            ':due_amount' => $due_amount,
             ':status' => $status,
             ':created_by' => $created_by
         ]);

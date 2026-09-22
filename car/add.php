@@ -102,10 +102,7 @@
                         <label class="form-label">ডিসকাউন্ট</label>
                         <input class="form-control" type="number" name="discount_amount" step="0.01" value="0">
                     </div> -->
-                     <!-- <div class="col-md-6">
-                        <label class="form-label">ফাইন/পেনাল্টি</label>
-                        <input class="form-control" type="number" name="fine_amount" step="0.01" value="0">
-                    </div> -->
+                  
                  </div>
 
                  <hr class="my-4">
@@ -126,6 +123,10 @@
                          <label class="form-label">কিস্তি শুরুর তারিখ</label>
                          <input class="form-control" type="date" name="kisti_start_date">
                      </div>
+                        <div class="col-md-6">
+                        <label class="form-label">যদি বাকি টাকা থাকে </label>
+                        <input class="form-control" type="number" name="fine_amount" step="0.01" value="0">
+                    </div>
                      <!-- <div class="col-md-6">
                         <label class="form-label">পরবর্তী কিস্তির তারিখ</label>
                         <input class="form-control" type="date" name="next_due_date">

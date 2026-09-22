@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-md-6">
                                 <label class="form-label">পেমেন্ট মেথড <span class="text-danger">*</span></label>
                                 <select name="payment_method" id="payment_method" class="form-select" required>
-                                    <option value="">নির্বাচন করুন</option>
+                               
                                     <option value="cash">নগদ (Cash)</option>
                                     <option value="bkash">বিকাশ</option>
                                     <option value="nagad">নগদ</option>
@@ -152,6 +152,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <option value="মুসলিম">মুসলিম</option>
         <option value="অন্যন">অন্যন</option>
     </select>
+</div>
+                     <div class="col-md-6">
+         <label class="form-label">বাকি পরিশদ</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">৳</span>
+                                    <input type="number" step="0.01" name="due_amount" class="form-control" value="0">
+                                </div>
 </div>
 
                             <div class="col-12">

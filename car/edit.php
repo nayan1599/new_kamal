@@ -85,6 +85,12 @@ if (!$data) {
                     value="<?= $data['kisti_start_date'] ?>">
             </div>
             <div class="col-md-6">
+                <label>যদি বাকি টাকা থাকে</label>
+                <input type="number" name="fine_amount" class="form-control"
+                    value="<?= $data['fine_amount'] ?>">
+            </div>
+
+            <div class="col-md-6">
                 <label class="form-label fw-bold">📌 স্ট্যাটাস</label>
 <select name="status" class="form-select">
 
