@@ -1,5 +1,5 @@
 <?php
-$stmt = $pdo->query("SELECT * FROM customer_records WHERE status != 'completed' ORDER BY created_at DESC ");
+$stmt = $pdo->query("SELECT * FROM customer_records WHERE status = 'active' ORDER BY created_at DESC ");
 $records = $stmt->fetchAll();
  $totalRecords      = count($records);
 $activeCount       =  $pdo->query("SELECT COUNT(*) FROM customer_records WHERE status='active'")->fetchColumn();
@@ -494,23 +494,21 @@ $data = $statusData[$status] ?? [
 
                         </td>
 
-
-
                         <td> <?= bn_number(htmlspecialchars($row['fine_amount'])) ?> </td>
 
                         <td class="text-end">
-                            <a href="index.php?page=car/view&car_number=<?= urlencode($row['car_number'] ?? '') ?>"
+                            <a target="_blank" rel="noopener noreferrer" href="index.php?page=car/view&car_number=<?= urlencode($row['car_number'] ?? '') ?>"
                                 class="btn btn-info btn-sm text-white" title="দেখুন">
                                 <i class="bi bi-eye"></i>
                             </a>
     
-                            <a href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm"
+                            <a target="_blank" rel="noopener noreferrer" href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm"
                                 title="সম্পাদনা">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
      
-                            <a href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
+                            <a target="_blank" rel="noopener noreferrer" href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
                                 class="btn btn-success btn-sm" title="রসিদ">
                                 <i class="bi bi-receipt"></i>
                             </a> 

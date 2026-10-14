@@ -4,6 +4,13 @@ function bn_number($number) {
     $bangla  = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
     return str_replace($english, $bangla, $number);
 }
+
+function en_number($number) {
+    $english = ['0','1','2','3','4','5','6','7','8','9'];
+    $bangla  = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+    return str_replace($bangla, $english, $number);
+}
+
 function takaInWordsBn($amount) {
 
     $words = [
@@ -88,3 +95,5 @@ function takaInWordsBn($amount) {
 
     return $result . ' মাত্র';
 }
+
+ 

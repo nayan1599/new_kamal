@@ -132,7 +132,6 @@
             <!-- ==============================
                  গাড়ি ও গ্রাহক
             =============================== -->
-
             <a
                 class="nav-link d-flex justify-content-between align-items-center"
                 data-bs-toggle="collapse"
@@ -460,6 +459,74 @@
                  মেট্রো গাড়ির হিসাব
             =============================== -->
 
+<!-- Hice Management -->
+<a
+    class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="collapse"
+    href="#hiceMenu"
+    role="button"
+    aria-expanded="false"
+    aria-controls="hiceMenu"
+>
+
+    <span>
+        <i class="bi bi-car-front-fill me-2"></i>
+        Hice ব্যবস্থাপনা
+    </span>
+
+    <i class="bi bi-chevron-down toggle-icon"></i>
+
+</a>
+
+
+<div class="collapse" id="hiceMenu">
+
+    <div class="submenu">
+
+        <!-- সকল হিসাব -->
+        <a
+            class="nav-link"
+            href="index.php?page=hice/index"
+        >
+            <i class="bi bi-list-ul me-2"></i>
+            সকল হিসাব
+        </a>
+
+
+        <!-- গাড়ি ব্যবস্থাপনা -->
+        <a
+            class="nav-link"
+            href="index.php?page=hice/vehicle_add"
+        >
+            <i class="bi bi-car-front-fill me-2"></i>
+            Hice গাড়ি
+        </a>
+
+
+        <!-- নতুন হিসাব -->
+        <a
+            class="nav-link"
+            href="index.php?page=hice/add"
+        >
+            <i class="bi bi-plus-circle me-2"></i>
+            নতুন হিসাব
+        </a>
+
+
+
+
+        <!-- বিস্তারিত রিপোর্ট -->
+        <a
+            class="nav-link"
+            href="index.php?page=hice/report"
+        >
+            <i class="bi bi-bar-chart-line me-2"></i>
+            Hice রিপোর্ট
+        </a>
+
+    </div>
+
+</div>
             <a
                 class="nav-link d-flex justify-content-between align-items-center"
                 data-bs-toggle="collapse"

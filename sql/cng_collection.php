@@ -4,80 +4,104 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// =====================================================
+// REDIRECT URL
+// =====================================================
+
+$redirectUrl = "index.php?page=cng/cng_rent";
+
+// =====================================================
+// REQUEST METHOD CHECK
+// =====================================================
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: index.php?page=cng/cng_rent");
+    header("Location: " . $redirectUrl);
     exit;
 }
-
 
 // =====================================================
 // POST DATA
 // =====================================================
 
-$collection_date = trim($_POST['collection_date'] ?? date('Y-m-d'));
+$collection_date = trim(
+    $_POST['collection_date'] ?? date('Y-m-d')
+);
 
-$vehicleIds      = $_POST['vehicle_id'] ?? [];
-$carNumbers      = $_POST['car_number'] ?? [];
-$amounts         = $_POST['amount'] ?? [];
-$expenseAmounts  = $_POST['expense_amount'] ?? [];
-$expenseNotes    = $_POST['expense_note'] ?? [];
-
+$vehicleIds     = $_POST['vehicle_id'] ?? [];
+$carNumbers     = $_POST['car_number'] ?? [];
+$amounts        = $_POST['amount'] ?? [];
+$expenseAmounts = $_POST['expense_amount'] ?? [];
+$expenseNotes   = $_POST['expense_note'] ?? [];
 
 // =====================================================
 // DATE VALIDATION
 // =====================================================
 
-$dateObject = DateTime::createFromFormat('Y-m-d', $collection_date);
+$dateObject = DateTime::createFromFormat(
+    '!Y-m-d',
+    $collection_date
+);
 
 if (
     !$dateObject ||
     $dateObject->format('Y-m-d') !== $collection_date
 ) {
-    $_SESSION['error'] = "সঠিক তারিখ পাওয়া যায়নি।";
+    $_SESSION['error'] = "সঠিক তারিখ নির্বাচন করুন।";
 
-    header("Location: index.php?page=cng/cng_rent");
+    header("Location: " . $redirectUrl);
     exit;
 }
 
-
 // =====================================================
-// VEHICLE VALIDATION
+// ARRAY VALIDATION
 // =====================================================
 
-if (!is_array($vehicleIds) || empty($vehicleIds)) {
+if (
+    !is_array($vehicleIds) ||
+    !is_array($carNumbers) ||
+    !is_array($amounts) ||
+    !is_array($expenseAmounts) ||
+    !is_array($expenseNotes) ||
+    empty($vehicleIds)
+) {
+    $_SESSION['error'] = "গাড়ির সঠিক তথ্য পাওয়া যায়নি।";
 
-    $_SESSION['error'] = "কোনো গাড়ির তথ্য পাওয়া যায়নি।";
-
-    header("Location: index.php?page=cng/cng_rent");
+    header("Location: " . $redirectUrl);
     exit;
 }
 
+// =====================================================
+// PDO ERROR MODE
+// =====================================================
 
 try {
 
-    $pdo->beginTransaction();
+    $pdo->setAttribute(
+        PDO::ATTR_ERRMODE,
+        PDO::ERRMODE_EXCEPTION
+    );
 
+    $pdo->setAttribute(
+        PDO::ATTR_EMULATE_PREPARES,
+        false
+    );
 
     // =================================================
-    // VEHICLE
+    // PREPARED STATEMENTS
     // =================================================
 
+    // গাড়ির তথ্য
     $vehicleStmt = $pdo->prepare("
         SELECT
             id,
             car_number,
-            daily_rent,
             status
         FROM cng_vehicles
         WHERE id = ?
         LIMIT 1
     ");
 
-
-    // =================================================
-    // EXISTING COLLECTION
-    // =================================================
-
+    // একই তারিখে গাড়ির হিসাব আছে কি না
     $checkStmt = $pdo->prepare("
         SELECT id
         FROM cng_daily_collections
@@ -86,11 +110,7 @@ try {
         LIMIT 1
     ");
 
-
-    // =================================================
-    // UPDATE
-    // =================================================
-
+    // পুরোনো হিসাব আপডেট
     $updateStmt = $pdo->prepare("
         UPDATE cng_daily_collections
         SET
@@ -101,11 +121,7 @@ try {
         WHERE id = ?
     ");
 
-
-    // =================================================
-    // INSERT
-    // =================================================
-
+    // নতুন হিসাব সংরক্ষণ
     $insertStmt = $pdo->prepare("
         INSERT INTO cng_daily_collections
         (
@@ -116,46 +132,51 @@ try {
             expense_amount,
             expense_note
         )
-        VALUES
-        (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
     ");
 
+    // =================================================
+    // COUNTERS
+    // =================================================
 
     $saved   = 0;
     $updated = 0;
     $skipped = 0;
 
+    $pdo->beginTransaction();
 
     // =================================================
-    // LOOP
+    // LOOP THROUGH VEHICLES
     // =================================================
 
     foreach ($vehicleIds as $vehicleId) {
 
-        $vehicleId = (int)$vehicleId;
+        $vehicleId = filter_var(
+            $vehicleId,
+            FILTER_VALIDATE_INT
+        );
 
-        if ($vehicleId <= 0) {
+        if (!$vehicleId || $vehicleId <= 0) {
             $skipped++;
             continue;
         }
 
+        // ---------------------------------------------
+        // GET FORM VALUES
+        // ---------------------------------------------
 
-        // =================================================
-        // GET VALUES
-        // =================================================
+        $amount = $amounts[$vehicleId] ?? '';
 
-        $amount = $amounts[$vehicleId] ?? 0;
-
-        $expenseAmount = $expenseAmounts[$vehicleId] ?? 0;
+        $expenseAmount =
+            $expenseAmounts[$vehicleId] ?? '';
 
         $expenseNote = trim(
-            $expenseNotes[$vehicleId] ?? ''
+            (string) ($expenseNotes[$vehicleId] ?? '')
         );
 
-
-        // =================================================
-        // EMPTY VALUES
-        // =================================================
+        // ---------------------------------------------
+        // EMPTY AMOUNT = ZERO
+        // ---------------------------------------------
 
         if ($amount === '' || $amount === null) {
             $amount = 0;
@@ -168,212 +189,208 @@ try {
             $expenseAmount = 0;
         }
 
-
-        // =================================================
-        // NUMERIC CHECK
-        // =================================================
-
-        if (!is_numeric($amount)) {
-            $skipped++;
-            continue;
-        }
-
-        if (!is_numeric($expenseAmount)) {
-            $skipped++;
-            continue;
-        }
-
-
-        $amount = (float)$amount;
-
-        $expenseAmount = (float)$expenseAmount;
-
-
-        // =================================================
-        // NEGATIVE VALUE
-        // =================================================
-
-        if ($amount < 0) {
-            $amount = 0;
-        }
-
-        if ($expenseAmount < 0) {
-            $expenseAmount = 0;
-        }
-
-
-        // =================================================
-        // NOTHING ENTERED
-        // =================================================
+        // ---------------------------------------------
+        // NUMERIC VALIDATION
+        // ---------------------------------------------
 
         if (
-            $amount <= 0 &&
-            $expenseAmount <= 0 &&
+            !is_numeric($amount) ||
+            !is_numeric($expenseAmount)
+        ) {
+            $skipped++;
+            continue;
+        }
+
+        $amount = (float) $amount;
+
+        $expenseAmount = (float) $expenseAmount;
+
+        // ---------------------------------------------
+        // NEGATIVE AMOUNT VALIDATION
+        // ---------------------------------------------
+
+        if ($amount < 0 || $expenseAmount < 0) {
+            $skipped++;
+            continue;
+        }
+
+        // ---------------------------------------------
+        // NOTHING ENTERED: SKIP
+        // ---------------------------------------------
+
+        if (
+            $amount == 0 &&
+            $expenseAmount == 0 &&
             $expenseNote === ''
         ) {
             $skipped++;
             continue;
         }
 
-
-        // =================================================
-        // GET VEHICLE
-        // =================================================
+        // ---------------------------------------------
+        // GET VEHICLE FROM DATABASE
+        // ---------------------------------------------
 
         $vehicleStmt->execute([$vehicleId]);
 
-        $vehicle = $vehicleStmt->fetch(PDO::FETCH_ASSOC);
-
+        $vehicle = $vehicleStmt->fetch(
+            PDO::FETCH_ASSOC
+        );
 
         if (!$vehicle) {
             $skipped++;
             continue;
         }
 
-
-        // =================================================
-        // ACTIVE CHECK
-        // =================================================
+        // ---------------------------------------------
+        // ACTIVE VEHICLE CHECK
+        // ---------------------------------------------
 
         if (
-            strtolower(trim($vehicle['status'])) !== 'active'
+            strtolower(trim(
+                (string) ($vehicle['status'] ?? '')
+            )) !== 'active'
         ) {
             $skipped++;
             continue;
         }
 
-
-        // =================================================
+        // ---------------------------------------------
         // CAR NUMBER
-        // =================================================
+        // Use database value as the trusted value
+        // ---------------------------------------------
 
-        // POST থেকে car number থাকলে সেটি ব্যবহার করবে
         $carNumber = trim(
-            $carNumbers[$vehicleId]
-            ?? $vehicle['car_number']
-            ?? ''
+            (string) $vehicle['car_number']
         );
 
+        if ($carNumber === '') {
+            $carNumber = trim(
+                (string) ($carNumbers[$vehicleId] ?? '')
+            );
+        }
 
-        // =================================================
-        // CHECK EXISTING
-        // =================================================
+        // ---------------------------------------------
+        // CHECK EXISTING RECORD
+        // ---------------------------------------------
 
         $checkStmt->execute([
             $vehicleId,
             $collection_date
         ]);
 
-        $existing = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        $existing = $checkStmt->fetch(
+            PDO::FETCH_ASSOC
+        );
 
-
-        // =================================================
-        // UPDATE
-        // =================================================
+        // ---------------------------------------------
+        // UPDATE EXISTING RECORD
+        // ---------------------------------------------
 
         if ($existing) {
 
-            $updateStmt->execute([
 
-                $carNumber,
+$updateStmt = $pdo->prepare("
+    UPDATE cng_daily_collections
+    SET
+        car_number = ?,
+        amount = ?,
+        expense_amount = ?,
+        expense_note = ?
+    WHERE id = ?
+");
 
-                $amount,
-
-                $expenseAmount,
-
-                $expenseNote !== ''
-                    ? $expenseNote
-                    : null,
-
-                (int)$existing['id']
-            ]);
+            // $updateStmt->execute([
+            //     $carNumber,
+            //     $amount,
+            //     $expenseAmount,
+            //     $expenseNote !== '' ? $expenseNote : null,
+            //     (int) $existing['id']
+            // ]);
 
             $updated++;
 
-        }
+        } else {
 
-
-        // =================================================
-        // INSERT
-        // =================================================
-
-        else {
+            // -----------------------------------------
+            // INSERT NEW RECORD
+            // -----------------------------------------
 
             $insertStmt->execute([
-
                 $vehicleId,
-
                 $carNumber,
-
                 $collection_date,
-
                 $amount,
-
                 $expenseAmount,
-
-                $expenseNote !== ''
-                    ? $expenseNote
-                    : null
+                $expenseNote !== '' ? $expenseNote : null
             ]);
 
             $saved++;
         }
     }
 
-
     // =================================================
-    // COMMIT
+    // COMMIT TRANSACTION
     // =================================================
 
     $pdo->commit();
 
-
     // =================================================
-    // SUCCESS MESSAGE
+    // SUCCESS / ERROR MESSAGES
     // =================================================
 
-    if ($saved > 0 && $updated > 0) {
+    if ($saved > 0 || $updated > 0) {
 
-        $_SESSION['success'] =
-            "{$saved} টি গাড়ির হিসাব সংরক্ষণ হয়েছে এবং "
-            . "{$updated} টি গাড়ির হিসাব আপডেট হয়েছে।";
+        $message = '';
 
-    } elseif ($saved > 0) {
+        if ($saved > 0) {
+            $message .=
+                "{$saved} টি গাড়ির হিসাব নতুন করে সংরক্ষণ হয়েছে। ";
+        }
 
-        $_SESSION['success'] =
-            "সফলভাবে {$saved} টি গাড়ির হিসাব সংরক্ষণ হয়েছে।";
+        if ($updated > 0) {
+            $message .=
+                "{$updated} টি গাড়ির হিসাব আপডেট হয়েছে। ";
+        }
 
-    } elseif ($updated > 0) {
+        if ($skipped > 0) {
+            $message .=
+                "{$skipped} টি গাড়ি বাদ দেওয়া হয়েছে।";
+        }
 
-        $_SESSION['success'] =
-            "সফলভাবে {$updated} টি গাড়ির হিসাব আপডেট হয়েছে।";
+        $_SESSION['success'] = trim($message);
 
     } else {
 
         $_SESSION['error'] =
-            "কোনো জমা বা খরচের তথ্য দেওয়া হয়নি।";
+            "কোনো হিসাব সংরক্ষণ হয়নি। "
+            . "গাড়ির স্ট্যাটাস ও টাকার পরিমাণ পরীক্ষা করুন।";
     }
 
+} catch (Throwable $e) {
 
-} catch (PDOException $e) {
+    // =================================================
+    // ROLLBACK ON ERROR
+    // =================================================
 
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
 
+    // বিস্তারিত ত্রুটি সার্ভার লগে সংরক্ষণ
     error_log(
         "CNG Collection Error: " .
         $e->getMessage()
     );
 
     $_SESSION['error'] =
-        "Database Error: " . $e->getMessage();
+        "হিসাব সংরক্ষণ করা যায়নি। "
+        . "ডাটাবেজের কলাম ও Error Log পরীক্ষা করুন।";
 }
-
 
 // =====================================================
 // REDIRECT
 // =====================================================
 
-header("Location: index.php?page=cng/cng_rent");
+header("Location: " . $redirectUrl);
 exit;

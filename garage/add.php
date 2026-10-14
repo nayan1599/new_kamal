@@ -121,21 +121,31 @@ $garages = $garageStmt->fetchAll(PDO::FETCH_ASSOC);
 
                     <!-- CATEGORY -->
 
-                    <div class="col-md-6">
+<div class="col-md-6">
 
-                        <label class="form-label fw-bold">
-                            খাত
-                        </label>
+    <label class="form-label fw-bold">
+        খাত
+    </label>
 
-                        <input
-                            type="text"
-                            name="category"
-                            class="form-control"
-                            placeholder="যেমন: সার্ভিস, বেতন, তেল"
-                            required
-                        >
+    <select name="category" class="form-select" required>
+        <option value="">-- খাত নির্বাচন করুন --</option>
 
-                    </div>
+        <option value="পার্টস বিল">পার্টস বিল</option>
+        <option value="লেতের বিল">লেতের বিল</option>
+        <option value="মিস্ত্রি বিল">মিস্ত্রি বিল</option>
+        <option value="তেল বিল">তেল বিল</option>
+        <option value="গ্যাস বিল">গ্যাস বিল</option>
+        <option value="বিদ্যুৎ বিল">বিদ্যুৎ বিল</option>
+        <option value="ব্যাটারি বিল">ব্যাটারি বিল</option>
+        <option value="গ্যারেজ ভাড়া">গ্যারেজ ভাড়া</option>
+        <option value="মালামাল বিল">মালামাল বিল</option>
+        <option value="চা-নাস্তা বিল">চা-নাস্তা বিল</option>
+        <option value="অফিস খরচ">অফিস খরচ</option>
+        <option value="কাগজপত্র/ডকুমেন্ট বিল">কাগজপত্র/ডকুমেন্ট বিল</option>
+        <option value="অন্যান্য বিল">অন্যান্য বিল</option>
+    </select>
+
+</div>
 
 
                     <!-- AMOUNT -->

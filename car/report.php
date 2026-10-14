@@ -552,23 +552,23 @@ $records = $stmt->fetchAll();
                             </a>
 
                             <!-- Edit -->
-                            <a href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm"
+                            <a  target="_blank" rel="noopener noreferrer" href="index.php?page=car/edit&id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm"
                                 title="সম্পাদনা">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
                             <!-- Receipt -->
-                            <a href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
+                            <a  target="_blank" rel="noopener noreferrer" href="index.php?page=car/receipt&id=<?= (int)$row['id'] ?>"
                                 class="btn btn-success btn-sm" title="রসিদ">
                                 <i class="bi bi-receipt"></i>
                             </a>
 
                             <!-- Call Story -->
-                            <a href="index.php?page=call_story/callstory&id=<?= (int)$row['id'] ?>"
+                            <a  target="_blank" rel="noopener noreferrer" href="index.php?page=call_story/callstory&id=<?= (int)$row['id'] ?>"
                                 class="btn btn-primary btn-sm" title="কল স্টোরি">
                                 <i class="bi bi-telephone"></i>
                             </a>
-                            <a href="index.php?page=car/delete&id=<?= (int)$row['id'] ?>" class="btn btn-danger btn-sm"
+                            <a  target="_blank" rel="noopener noreferrer" href="index.php?page=car/delete&id=<?= (int)$row['id'] ?>" class="btn btn-danger btn-sm"
                                 title="ডিলিট"
                                 onclick="return confirm('আপনি কি নিশ্চিতভাবে এই গাড়িটি ডিলিট করতে চান?');">
                                 <i class="bi bi-trash"></i>

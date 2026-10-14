@@ -1189,7 +1189,7 @@ if ($hourNow < 12) {
                 <div class="quick-grid">
 
 
-                    <a href="index.php?page=car/add" class="quick-action">
+                    <a href="index.php?page=car/index" class="quick-action">
                         <i>🚗</i>
                         <span>সকল গাড়ি</span>
                     </a>
