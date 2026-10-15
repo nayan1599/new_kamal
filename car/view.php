@@ -60,6 +60,7 @@ $customer_phone = $record['customer_phone'] ?? '';
 $customer_email = $record['customer_email'] ?? null;
 $customer_nid   = $record['nid'] ?? null;
 $customer_addr  = $record['address'] ?? null;
+$total_due      = $record[''] ?? null;
 $note  = $record['note'] ?? null;
 
 // যদি customer_records-এ তথ্য না থাকে,
