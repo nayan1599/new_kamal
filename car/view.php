@@ -384,8 +384,8 @@ if (
 
                 $lateDays = $dueDateObj->diff($today)->days;
 
-                $fineAmount =
-                    $lateDays * $dailyFine;
+                $fineAmount = 0;
+                // $lateDays * $dailyFine;
 
                 $autoFineTotal += $fineAmount;
 
@@ -1925,7 +1925,7 @@ if (!empty($record['invoice_no'])) {
                  শুধু UNPAID কিস্তির জরিমানা থাকলে দেখাবে
             ===================================================== -->
 
-            <?php if ($autoFineTotal > 0): ?>
+            <!-- <?php if ($autoFineTotal > 0): ?>
 
                 <div
                     style="
@@ -1966,7 +1966,7 @@ if (!empty($record['invoice_no'])) {
 
                 </div>
 
-            <?php endif; ?>
+            <?php endif; ?> -->
 
 
             <!-- =====================================================
@@ -2155,8 +2155,8 @@ if (!empty($record['invoice_no'])) {
 
                 </div>
 
-            <?php endif; ?>
- -->
+            <?php endif; ?> -->
+
 
             <!-- =====================================================
                  PAYMENT LIST
@@ -2264,7 +2264,8 @@ if (!empty($record['invoice_no'])) {
                                     জমা
                                 </th>
 
-                                <th
+                                
+      <th
                                     style="
                                         background:#0d2340;
                                         color:#f2ead3;
@@ -2272,9 +2273,8 @@ if (!empty($record['invoice_no'])) {
                                         text-align:right;
                                     "
                                 >
-                                    বাকি
+                               বাকি পরিশদ
                                 </th>
-
                                 <th
                                     style="
                                         background:#0d2340;
@@ -2511,6 +2511,7 @@ if (!empty($record['invoice_no'])) {
 
                                     <!-- DUE -->
 
+                                    
                                     <td
                                         style="
                                             padding:10px 12px;
@@ -2521,14 +2522,14 @@ if (!empty($record['invoice_no'])) {
                                         "
                                     >
 
-                                        <?= bn_number(
-                                            number_format(
-                                                $due
+                                        <?=  bn_number( 
+                                           strtoupper(
+                                            htmlspecialchars(
+                                                $row['due_amount']
                                             )
-                                        ) ?>
+                                        ) )?>
 
                                     </td>
-
 
                                     <!-- FINE -->
 
